@@ -25,7 +25,6 @@ public class MineMulti {
 		// parameters for TextDirectoryLoader
 		String currDir = FolderWithDropbox
 				+ "\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Felix\\Backup\\DP_real\\rawData\\DP";
-		String title;
 
 		// Set Thresholds
 		threshold.add(0.0001);
@@ -52,11 +51,14 @@ public class MineMulti {
 		stop.add(3);
 		// parameters for StringToVector
 
-		int WordsToKeep = 1000000;
+		int WordsToKeep = 100000;
 		settings.put(options.Ngram, true);
 		// Boolean Ngram = true; // True/False
 		int ngram_min = 1;
 		String list1 = null;
+		
+		String title;
+		
 		for (int NG : ngram) {
 			for (Boolean LC : values) {
 				for (Boolean ST : values) {
@@ -75,22 +77,31 @@ public class MineMulti {
 								settings.put(options.BinarizeNumericAttributes,
 										BNA);
 
+								title = "NG-"+NG+",LC-"+LC +",ST-"+ST+",NDL-"+NDL+",BNA-"+BNA+",SW-";
+								
 								if (SW == 1) {
 									settings.put(options.Stopword, true);
 									list1 = "resources\\germanST.txt";
+									title += "germanST";
 								} else if (SW == 2) {
 									settings.put(options.Stopword, true);
 									list1 = "resources\\stop.txt";
+									title += "stop";
 								} else {
 									settings.put(options.Stopword, false);
+									list1 = null;
+									title += "false";
 								}
 								// parameters for Attribute Selection
 
 								// stop.txt / germanST.txt
 
+								
+								
 								MineMulti.runMine(currDir, WordsToKeep,
 										ngram_min, ngram_max, list1, threshold,
-										settings);
+										settings, title);
+								return;
 							}
 						}
 					}
@@ -101,7 +112,7 @@ public class MineMulti {
 
 	public static void runMine(String currDir, int WordsToKeep, int ngram_min,
 			int ngram_max, String list1, List<Double> threshold,
-			Map<options, Boolean> settings) throws Exception {
+			Map<options, Boolean> settings, String title) throws Exception {
 
 		/*
 		 * 
@@ -118,7 +129,6 @@ public class MineMulti {
 		MyOutput selected;
 		Instances dataSelected;
 		MyClassificationOutput logistic;
-		int t;
 
 		// Load data to Weka
 		text_data = WekaMagic.loadText(currDir);
@@ -144,12 +154,11 @@ public class MineMulti {
 		dataFiltered.randomize(new Random(1));
 
 		// Store featured data from Weka to arff file
-		WekaMagic.saveToArff(dataFiltered, fileName + "_featured", filtered);
+		//WekaMagic.saveToArff(dataFiltered, fileName + "_featured", filtered);
 
-		Map<Double, ArrayList<Object>> results = new HashMap<Double, ArrayList<Object>>();
+		List<List<Double>> results = new ArrayList<List<Double>>();
 
 		for (double currentThreshold : threshold) {
-
 			// Run selection
 			selected = WekaMagic.selectionByInfo(dataFiltered,
 					settings.get(options.BinarizeNumericAttributes),
@@ -168,15 +177,15 @@ public class MineMulti {
 					+ currentThreshold, logistic);
 
 			// Result processing
-			ArrayList<Object> al = new ArrayList<Object>();
-			al.add(0, logistic.getUAR());
-			al.add(1, logistic.getElapsedTime());
-			results.put(currentThreshold, al);
+			List<Double> al = new ArrayList<Double>();
+			al.add(0,currentThreshold);
+			al.add(1,logistic.getUAR());
+			al.add(2, (double)logistic.getElapsedTime());
+			results.add(al);
 		}
 		// Store treshold, UAR
-		ArrayList<Integer> tl = new ArrayList<Integer>();
-		tl.add(0, 1);
-		tl.add(1, 2);
-		WekaMagic.printHashMap(results, tl, fileName + "_results_2.csv");
+		WekaMagic.printHashMap(results, fileName + "_results_"+title+".csv");
+		
+		GeneratesPlot.create(results,title);
 	}
 }

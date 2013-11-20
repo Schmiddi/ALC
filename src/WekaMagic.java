@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.List;
 import java.util.Random;
 import java.util.Iterator;
 import java.util.Map;
@@ -156,34 +157,23 @@ public class WekaMagic {
 		}
 	}
 
-	public static void printHashMap(Map<Double, ArrayList<Object>> m,
-			ArrayList<Integer> types, String path) throws Exception {
+	public static void printHashMap(List<List<Double>> m, String path)
+			throws Exception {
 		FileWriter fstream;
 		BufferedWriter out;
-		int i;
 
 		fstream = new FileWriter(path);
 		out = new BufferedWriter(fstream);
 
-		Iterator it = m.entrySet().iterator();
-
-		while (it.hasNext()) {
-			Map.Entry pairs = (Map.Entry) it.next();
-			out.write("\"" + String.format(Locale.US, "%1$.4f", pairs.getKey())
+		for (List<Double> dataset : m) {
+			out.write("\"" + String.format(Locale.US, "%1$.4f", dataset.get(0))
 					+ "\"");
 
-			ArrayList<Object> value = (ArrayList<Object>) pairs.getValue();
-			for (i = 0; i < value.size(); i++) {
-				if (types.get(i) == 1) {
-					out.write(",\""
-							+ String.format(Locale.US, "%1$.4f", value.get(i))
-							+ "\"");
-				} else {
-					out.write(",\"" + value.get(i) + "\"");
-				}
-			}
+			out.write(",\""
+					+ String.format(Locale.US, "%1$.4f", dataset.get(1)) + "\"");
+			out.write(",\""
+					+ String.format(Locale.US, "%1$.0f", dataset.get(2)) + "\"");
 			out.write("\n");
-			it.remove(); // avoids a ConcurrentModificationException
 		}
 		out.close();
 	}

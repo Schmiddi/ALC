@@ -29,11 +29,10 @@ public class GeneratesPlot {
 	 * @return a sample dataset.
 	 */
 
-	private XYDataset createDataset(List <List> myList) {
+	private static XYDataset createDataset(List <List<Double>> myList) {
 		final XYSeries series = new XYSeries("Third");
-		for(List tempList : myList){
-			series.add((double)tempList.get(0),(double)tempList.get(1));
-			System.out.println((double)tempList.get(0)+"hallo"+(double)tempList.get(1));
+		for(List<Double> tempList : myList){
+			series.add(tempList.get(0),tempList.get(1));
 		}
 
 		final XYSeriesCollection dataset = new XYSeriesCollection();
@@ -51,7 +50,7 @@ public class GeneratesPlot {
 	 * 
 	 * @return a chart.
 	 */
-	private JFreeChart createChart(final XYDataset dataset, String title) {
+	private static JFreeChart createChart(final XYDataset dataset, String title) {
 
 		// create the chart...
 		final JFreeChart chart = ChartFactory.createXYLineChart(
@@ -89,7 +88,7 @@ public class GeneratesPlot {
 		return chart;
 	}
 
-	public void create(List <List> myList, String filename) {
+	public static void create(List <List<Double>> myList, String filename) {
 
 		// Get the Data
 		final XYDataset dataset = createDataset(myList);
@@ -118,21 +117,20 @@ public class GeneratesPlot {
 	 *            ignored.
 	 */
 	public static void main(final String[] args) {
-		final GeneratesPlot demo = new GeneratesPlot();
 		
-		List <List>myList = new ArrayList<List>();
-		List <Object>data = new ArrayList<Object>();
+		List <List<Double>>myList = new ArrayList<List<Double>>();
+		List <Double>data = new ArrayList<Double>();
 		data.add(0.0003);
 		data.add(0.3);
-		data.add(5461);
+		data.add(5461.0);
 		myList.add(data);
-		data = new ArrayList<Object>();
+		data = new ArrayList<Double>();
 		data.add(0.008);
 		data.add(0.5);
-		data.add(4571);
+		data.add(4571.0);
 		myList.add(data);
 		
-		demo.create(myList,"Test");
+		GeneratesPlot.create(myList,"Test");
 	}
 
 }
