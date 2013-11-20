@@ -1,7 +1,6 @@
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.TileObserver;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -23,19 +22,6 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 
 public class GeneratesPlot {
-
-	final String title;
-	
-	/**
-	 * Creates a new demo.
-	 * 
-	 * @param title
-	 *            the frame title.
-	 */
-	public GeneratesPlot(final String title) {
-		this.title = title;
-	}
-	
 
 	/**
 	 * Creates a sample dataset.
@@ -65,13 +51,13 @@ public class GeneratesPlot {
 	 * 
 	 * @return a chart.
 	 */
-	private JFreeChart createChart(final XYDataset dataset) {
+	private JFreeChart createChart(final XYDataset dataset, String title) {
 
 		// create the chart...
 		final JFreeChart chart = ChartFactory.createXYLineChart(
 				title, // chart title
 				"Threshold", // x axis label
-				"Y", // y axis label
+				"UDA", // y axis label
 				dataset, // data
 				PlotOrientation.VERTICAL, 
 				false, // no legend
@@ -90,27 +76,27 @@ public class GeneratesPlot {
 		// change the auto tick unit selection to integer units only...
 		// X-Axis
 		NumberAxis domain = (NumberAxis) plot.getDomainAxis();
-		domain.setRange(0.00, 13.00);
-		domain.setTickUnit(new NumberTickUnit(1));
+		domain.setRange(0.00, 0.01);
+		domain.setTickUnit(new NumberTickUnit(0.001));
 		domain.setVerticalTickLabels(false);
 
 		// Y-Axis
 		NumberAxis range = (NumberAxis) plot.getRangeAxis();
-		range.setRange(0.0, 11.0);
-		range.setTickUnit(new NumberTickUnit(1));
+		range.setRange(0.4, 1.0);
+		range.setTickUnit(new NumberTickUnit(0.1));
 		range.setVerticalTickLabels(false); // Horizontal Alignment
 
 		return chart;
 	}
 
-	public void create(List <List> myList) {
+	public void create(List <List> myList, String filename) {
 
 		// Get the Data
 		final XYDataset dataset = createDataset(myList);
-		final JFreeChart chart = createChart(dataset);
+		final JFreeChart chart = createChart(dataset,filename);
 
 		// Size: Width, Height
-		BufferedImage objBufferedImage = chart.createBufferedImage(600, 300);
+		BufferedImage objBufferedImage = chart.createBufferedImage(1000, 600);
 
 		ByteArrayOutputStream bas = new ByteArrayOutputStream();
 		try {
@@ -118,7 +104,7 @@ public class GeneratesPlot {
 			byte[] byteArray = bas.toByteArray();
 			InputStream in = new ByteArrayInputStream(byteArray);
 			BufferedImage image = ImageIO.read(in);
-			File outputfile = new File("image.png"); // File Name
+			File outputfile = new File(filename+".png"); // File Name
 			ImageIO.write(image, "png", outputfile);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -132,21 +118,21 @@ public class GeneratesPlot {
 	 *            ignored.
 	 */
 	public static void main(final String[] args) {
-		final GeneratesPlot demo = new GeneratesPlot("Line Chart Demo 6");
+		final GeneratesPlot demo = new GeneratesPlot();
 		
 		List <List>myList = new ArrayList<List>();
 		List <Object>data = new ArrayList<Object>();
-		data.add(11.1);
-		data.add(2.2);
+		data.add(0.0003);
+		data.add(0.3);
 		data.add(5461);
 		myList.add(data);
 		data = new ArrayList<Object>();
-		data.add(0.5);
+		data.add(0.008);
 		data.add(0.5);
 		data.add(4571);
 		myList.add(data);
 		
-		demo.create(myList);
+		demo.create(myList,"Test");
 	}
 
 }
