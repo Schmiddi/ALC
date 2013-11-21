@@ -14,11 +14,9 @@ import weka.classifiers.rules.DecisionTable;
 import weka.classifiers.rules.JRip;
 import weka.classifiers.trees.*;
 import weka.classifiers.Classifier;
-import weka.experiment.LearningRateResultProducer;
 import weka.filters.*;
 import weka.filters.supervised.attribute.AttributeSelection;
 import weka.filters.unsupervised.attribute.*;
-import weka.filters.unsupervised.instance.RemovePercentage;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -62,7 +60,6 @@ public class Classify {
         private static String path                                 = paths.get("sep");        //per default the separate_all folder is taken as source for references
         private static boolean applyInfoGain         = false;                        //apply filtering by info gain before running classifies
         private static boolean partitioned                 = true;                                //partition data by classes
-        private static int maxNumSelect                 = -1;                                   //auto select features after info gain
         private static double treshold                         = 1e-10;                          //Info Gain > 0
         private static int validateTimes                 = 10;                           //how often to run cross validate
         private static boolean wordCount                 = false;                        //do word count instead of word presence
