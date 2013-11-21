@@ -23,8 +23,7 @@ public class MineMulti {
 		List<Double> threshold = new ArrayList<Double>();
 
 		// parameters for TextDirectoryLoader
-		String currDir = FolderWithDropbox
-				+ "\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Felix\\Backup\\DP_real\\rawData\\DP";
+		String currDir = "/home/bas-alc/test/rawData/separate_all/DP";
 
 		// Set Thresholds
 		threshold.add(0.0001);
