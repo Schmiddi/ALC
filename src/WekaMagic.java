@@ -26,8 +26,25 @@ public class WekaMagic {
 		Instances dataRaw = loader.getDataSet();
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
-
+		
 		return new MyOutput(dataRaw, loader, elapsedTime);
+	}
+	
+	public Instances[] separateTrainTest(Instances data, float percent, int randseed){
+		Instances [] sets = new Instances[2];
+		
+		//Randomize
+		data.randomize(new Random(randseed));
+		
+		// Percent split
+		int fnum = data.numInstances();
+		int trainSize = (int) Math.round(fnum * percent / 100);
+		int testSize = fnum - trainSize;
+		
+		sets[0] = new Instances(data, 0, trainSize);          //train
+		sets[1] = new Instances(data, trainSize, testSize);   //test
+		
+		return sets;			
 	}
 
 	public static MyOutput generateFeatures(Instances dataRaw, int WordsToKeep,
@@ -178,8 +195,6 @@ public class WekaMagic {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// String currDir = args[0];
-
 		/**
 		 * 
 		 * Set parameter of input function
