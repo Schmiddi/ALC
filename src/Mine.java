@@ -1,8 +1,7 @@
 import weka.core.Instances;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public class Mine {
@@ -87,11 +86,11 @@ public class Mine {
 		WekaMagic.saveToArff(dataFiltered, fileName + "_featured", filtered);
 
 		
-		Map<Double, ArrayList<Object>> results = new HashMap<Double, ArrayList<Object>>();
+		List<List<Double>> results = new ArrayList<List<Double>>();
 
 		for (t = 40; t <= 100; t++) {
 
-			threshold = t * 0.0001;
+			threshold = (double)t * (double)0.0001;
 
 			// Run selection
 			selected = WekaMagic.selectionByInfo(dataFiltered,
@@ -109,16 +108,13 @@ public class Mine {
 			WekaMagic.saveToArff(null, fileName + "_logistic_t" + t, logistic);
 			
 			// Result processing
-			ArrayList<Object> al = new ArrayList<Object>();
-			al.add(0, logistic.getUAR());
-			al.add(1, logistic.getElapsedTime());
-			results.put(threshold, al);
+			List<Double> al = new ArrayList<Double>();
+			al.add(0,threshold);
+			al.add(1,logistic.getUAR());
+			al.add(2, (double)logistic.getElapsedTime());
+			results.add(al);
 		}
-		// Store treshold, UAR
-		ArrayList<Integer> tl = new ArrayList<Integer>();
-		tl.add(0, 1);
-		tl.add(1, 2);
-		WekaMagic.printHashMap(results, tl, fileName + "_results_2.csv");
+		WekaMagic.printHashMap(results, fileName + "_results.csv");
 
 	}
 }
