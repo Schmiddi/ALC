@@ -218,8 +218,23 @@ public class WekaMagic {
 	public static MyOutput selectionByInfo(Instances data,
 			Boolean BinarizeNumericAttributes, double threshold)
 			throws Exception {
+		return selectionByInfo(data, null,
+				BinarizeNumericAttributes, threshold);
+	}
+	
+	/**
+	 * @param data      		    		= instances which have been processed by generateFeatures()
+	 * @param BinarizeNumericAttributes     = ??? (true/false) 
+	 * @param threshold						= how much information gain does a feature need to be kept 
+	 * 										  (0 - 0.01)
+	 * @return
+	 * @throws Exception
+	 */
+	public static MyOutput selectionByInfo(Instances train, Instances test,
+			Boolean BinarizeNumericAttributes, double threshold)
+			throws Exception {
 		AttributeSelection as = new AttributeSelection();
-		as.setInputFormat(data);
+		as.setInputFormat(train);
 
 		InfoGainAttributeEval eval = new InfoGainAttributeEval();
 		eval.setBinarizeNumericAttributes(BinarizeNumericAttributes);
@@ -233,9 +248,19 @@ public class WekaMagic {
 		as.setSearch(r);
 
 		long startTime = System.currentTimeMillis();
-		Instances selected = Filter.useFilter(data, as);
+		Instances train_selected = Filter.useFilter(train, as);
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
+		
+		Instances test_selected;
+		if(test != null){
+			test_selected = Filter.useFilter(test, as);   //run filter on test data
+		}
+		else{
+			test_selected = null;
+		}
+		
+		Instances [] selected = iToArray(train_selected,test_selected);
 
 		return new MyOutput(selected, as, elapsedTime);
 	}
@@ -249,21 +274,38 @@ public class WekaMagic {
 	 */
 	public static MyClassificationOutput runLogistic(Instances data)
 			throws Exception {
+		return runLogistic(data, null);
+	}
+	
+	/**
+	 * run Logistic Regression
+	 * 
+	 * @param data = instances which have been processed by selectionByX()
+	 * @return
+	 * @throws Exception
+	 */
+	public static MyClassificationOutput runLogistic(Instances train, Instances test)
+			throws Exception {
 		Logistic l = new Logistic();
 
 		int folds = 10;
 		int seed = 1;
 
-		Evaluation eval = new Evaluation(data);
+		Evaluation eval = new Evaluation(train);
 
 		long startTime = System.currentTimeMillis();
-		eval.crossValidateModel(l, data, folds, new Random(seed));
+		eval.crossValidateModel(l, train, folds, new Random(seed));
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
-
+		
 		String options = "-cv -x " + folds + " -s " + seed;
+		
+		double [] realResults = null;
+		if(test != null){
+			realResults = eval.evaluateModel(l, test);
+		}
 
-		return new MyClassificationOutput(l, eval, options, elapsedTime);
+		return new MyClassificationOutput(l, eval, realResults, options, elapsedTime);
 	}
 
 	/**
