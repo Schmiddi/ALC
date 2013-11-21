@@ -17,6 +17,13 @@ import weka.classifiers.Evaluation;
 import weka.filters.Filter;
 
 public class WekaMagic {
+	
+	/*			
+	 * 		load text files from data folder to get Weka instances
+	 * 			the subfolders correspond to classes (in this case alc/nonalc)
+	 * 			
+	 *			currDir = path of the data folder
+	 */
 
 	public static MyOutput loadText(String currDir) throws Exception {
 		TextDirectoryLoader loader = new TextDirectoryLoader();
@@ -30,10 +37,17 @@ public class WekaMagic {
 		return new MyOutput(dataRaw, loader, elapsedTime);
 	}
 	
+	/*			
+	 * 		split training set from test set to get a scientific result
+	 * 			data      = all given instances
+	 * 			percent   = size of the training set in percent
+	 * 			randseed  = random integer number to define randomness
+	 */
+	
 	public Instances[] separateTrainTest(Instances data, float percent, int randseed){
 		Instances [] sets = new Instances[2];
 		
-		//Randomize
+		//Randomize all given instances
 		data.randomize(new Random(randseed));
 		
 		// Percent split
@@ -46,6 +60,23 @@ public class WekaMagic {
 		
 		return sets;			
 	}
+	
+	/*			
+	 * 		generate features from pure text data
+	 * 			dataRaw      		= instances which have been loaded from the data folder by loadText()
+	 * 			WordsToKeep  		= numbers of words to keep (kept feature number)
+	 * 			Ngram        		= n-gram will be created (true/false) 
+	 * 					   ngram_min	 = minimum degree of n-gram (1,2,3) default=1
+	 * 					   ngram_max     = maximum degree of n-gram (1,2,3) default=3
+	 * 			LowerCase    		= all words will be transformed to lower case format
+	 * 			NormalizeDocLength  = normalize word count dependent on the document length
+	 * 			Stemming			= use german snowball stemming (true/false)
+	 * 			OutputWordCounts    = count the occurance of words (true/false)
+	 * 			IDFTransform		= (true/false)
+	 * 			TFTransform			= (true/false)
+	 * 			Stopword			= use a stop word list (true/false)
+	 * 			               list		 = path to the stop word list text file
+	 */
 
 	public static MyOutput generateFeatures(Instances dataRaw, int WordsToKeep,
 			Boolean Ngram, int ngram_min, int ngram_max, Boolean LowerCase,
