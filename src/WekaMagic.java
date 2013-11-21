@@ -97,7 +97,7 @@ public class WekaMagic {
 		as.setInputFormat(data);
 
 		InfoGainAttributeEval eval = new InfoGainAttributeEval();
-		eval.setBinarizeNumericAttributes(true);
+		eval.setBinarizeNumericAttributes(BinarizeNumericAttributes);
 
 		as.setEvaluator(eval);
 
