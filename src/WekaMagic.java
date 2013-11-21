@@ -16,6 +16,11 @@ import weka.classifiers.functions.Logistic;
 import weka.classifiers.Evaluation;
 import weka.filters.Filter;
 
+/**
+ * @author Felix Neutatz
+ *
+ */
+
 public class WekaMagic {
 	
 	/**
@@ -89,6 +94,41 @@ public class WekaMagic {
 			Boolean OutputWordCounts, Boolean IDFTransform,
 			Boolean TFTransform, Boolean Stopword, String list)
 			throws Exception {
+		
+			
+				return generateFeatures(dataRaw, null, WordsToKeep,
+						Ngram, ngram_min, ngram_max, LowerCase,
+						NormalizeDocLength, Stemming,
+						OutputWordCounts, IDFTransform,
+						TFTransform, Stopword, list);
+	}
+	
+	/**
+	 * generate features from pure text data
+	 * 
+	 * @param train      		  = instances of the training set
+	 * @param test      		  = instances of the test set
+	 * @param WordsToKeep  		  = numbers of words to keep (kept feature number)
+	 * @param Ngram        		  = n-gram will be created (true/false) 
+	 * @param ngram_min	        		= minimum degree of n-gram (1,2,3) default=1
+	 * @param ngram_max					= maximum degree of n-gram (1,2,3) default=3
+	 * @param LowerCase    		  = all words will be transformed to lower case format
+	 * @param NormalizeDocLength  = normalize word count dependent on the document length
+	 * @param Stemming			  = use german snowball stemming (true/false)
+	 * @param OutputWordCounts    = count the occurance of words (true/false)
+	 * @param IDFTransform		  = ??? (true/false)
+	 * @param TFTransform 		  = ??? (true/false)
+	 * @param Stopword   		  = use a stop word list (true/false)
+	 * @param list					   = path to the stop word list text file
+	 * @return
+	 * @throws Exception
+	 */
+	public static MyOutput generateFeatures(Instances train, Instances test, int WordsToKeep,
+			Boolean Ngram, int ngram_min, int ngram_max, Boolean LowerCase,
+			Boolean NormalizeDocLength, Boolean Stemming,
+			Boolean OutputWordCounts, Boolean IDFTransform,
+			Boolean TFTransform, Boolean Stopword, String list)
+			throws Exception {
 		if (IDFTransform || TFTransform || NormalizeDocLength)
 			OutputWordCounts = true;
 
@@ -131,14 +171,39 @@ public class WekaMagic {
 			filter.setStopwords(f);
 		}
 
-		filter.setInputFormat(dataRaw);
+		filter.setInputFormat(train);
 
 		long startTime = System.currentTimeMillis();
-		Instances dataFiltered = Filter.useFilter(dataRaw, filter);
+		Instances train_dataFiltered = Filter.useFilter(train, filter); //run filter on training data
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
+		
+		Instances test_dataFiltered;
+		if(test != null){
+			test_dataFiltered = Filter.useFilter(test, filter);   //run filter on test data
+		}
+		else{
+			test_dataFiltered = null;
+		}
+		
+		Instances [] dataFiltered = iToArray(train_dataFiltered,test_dataFiltered);
 
 		return new MyOutput(dataFiltered, filter, elapsedTime);
+	}
+	
+	
+	/**
+	 * convert single instances to array
+	 * 
+	 * @param train = instances of the training set
+	 * @param test  = instances of the test set
+	 * @return
+	 */
+	public static Instances [] iToArray(Instances train, Instances test){
+		Instances [] data = new Instances[2];
+		data[0] = train;
+		data[1] = test;
+		return data;
 	}
 	
 	
