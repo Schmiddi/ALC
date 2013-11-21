@@ -2,11 +2,11 @@ import java.io.*;
 
 import weka.core.Instances;
 import weka.core.converters.TextDirectoryLoader;
-import weka.filters.*;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 import weka.core.stemmers.*;
 import weka.core.tokenizers.*;
 import weka.core.SelectedTag;
+import weka.filters.Filter;
 
 public class LoadDir {
 	public static void main(String[] args) throws Exception {
@@ -80,7 +80,7 @@ public class LoadDir {
 		filter.setTokenizer(t);
 
 		filter.setInputFormat(dataRaw);
-		Instances dataFiltered = filter.useFilter(dataRaw, filter);
+		Instances dataFiltered = Filter.useFilter(dataRaw, filter);
 
 		FileWriter fstream = new FileWriter(fileName + ".arff");
 		BufferedWriter out = new BufferedWriter(fstream);

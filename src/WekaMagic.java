@@ -1,9 +1,6 @@
 import java.io.*;
 import java.util.List;
 import java.util.Random;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.ArrayList;
 import java.util.Locale;
 
 import weka.attributeSelection.InfoGainAttributeEval;
@@ -17,6 +14,7 @@ import weka.core.tokenizers.*;
 import weka.core.SelectedTag;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.Evaluation;
+import weka.filters.Filter;
 
 public class WekaMagic {
 
@@ -83,7 +81,7 @@ public class WekaMagic {
 		filter.setInputFormat(dataRaw);
 
 		long startTime = System.currentTimeMillis();
-		Instances dataFiltered = filter.useFilter(dataRaw, filter);
+		Instances dataFiltered = Filter.useFilter(dataRaw, filter);
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 
@@ -108,7 +106,7 @@ public class WekaMagic {
 		as.setSearch(r);
 
 		long startTime = System.currentTimeMillis();
-		Instances selected = as.useFilter(data, as);
+		Instances selected = Filter.useFilter(data, as);
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 
