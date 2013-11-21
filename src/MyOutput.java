@@ -47,10 +47,17 @@ public class MyOutput {
 		OptionHandler oh = (OptionHandler) operation;
 		return oh.getOptions();
 	}
+	
+	public int getFeatureNumber(){
+		return data.numAttributes();
+	}
 
 	public String toString() {
 		String s = getName() + ": " + Arrays.toString(getParams())
-				+ " exec-time: " + elapsedTime;
+				+ "\nexec-time: " + elapsedTime 
+				+ "\nNumber of features: " + getFeatureNumber()
+				+ "\n";
+			
 		return s;
 	}
 
