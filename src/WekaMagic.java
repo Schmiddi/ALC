@@ -18,13 +18,14 @@ import weka.filters.Filter;
 
 public class WekaMagic {
 	
-	/*			
-	 * 		load text files from data folder to get Weka instances
+	/**
+	 * load text files from data folder to get Weka instances
 	 * 			the subfolders correspond to classes (in this case alc/nonalc)
-	 * 			
-	 *			currDir = path of the data folder
+	 * 
+	 * @param currDir = path of the data folder
+	 * @return
+	 * @throws Exception
 	 */
-
 	public static MyOutput loadText(String currDir) throws Exception {
 		TextDirectoryLoader loader = new TextDirectoryLoader();
 		loader.setDirectory(new File(currDir));
@@ -37,13 +38,14 @@ public class WekaMagic {
 		return new MyOutput(dataRaw, loader, elapsedTime);
 	}
 	
-	/*			
-	 * 		split training set from test set to get a scientific result
-	 * 			data      = all given instances
-	 * 			percent   = size of the training set in percent
-	 * 			randseed  = random integer number to define randomness
+	/**
+	 * split training set from test set to get a scientific result
+	 * 
+	 * @param data      = all given instances
+	 * @param percent   = size of the training set in percent
+	 * @param randseed  = random integer number to define randomness
+	 * @return
 	 */
-	
 	public Instances[] separateTrainTest(Instances data, float percent, int randseed){
 		Instances [] sets = new Instances[2];
 		
@@ -60,24 +62,27 @@ public class WekaMagic {
 		
 		return sets;			
 	}
-	
-	/*			
-	 * 		generate features from pure text data
-	 * 			dataRaw      		= instances which have been loaded from the data folder by loadText()
-	 * 			WordsToKeep  		= numbers of words to keep (kept feature number)
-	 * 			Ngram        		= n-gram will be created (true/false) 
-	 * 					   ngram_min	 = minimum degree of n-gram (1,2,3) default=1
-	 * 					   ngram_max     = maximum degree of n-gram (1,2,3) default=3
-	 * 			LowerCase    		= all words will be transformed to lower case format
-	 * 			NormalizeDocLength  = normalize word count dependent on the document length
-	 * 			Stemming			= use german snowball stemming (true/false)
-	 * 			OutputWordCounts    = count the occurance of words (true/false)
-	 * 			IDFTransform		= (true/false)
-	 * 			TFTransform			= (true/false)
-	 * 			Stopword			= use a stop word list (true/false)
-	 * 			               list		 = path to the stop word list text file
-	 */
 
+	
+	/**
+	 * generate features from pure text data
+	 * 
+	 * @param dataRaw      		  = instances which have been loaded from the data folder by loadText()
+	 * @param WordsToKeep  		  = numbers of words to keep (kept feature number)
+	 * @param Ngram        		  = n-gram will be created (true/false) 
+	 * @param ngram_min	        		= minimum degree of n-gram (1,2,3) default=1
+	 * @param ngram_max					= maximum degree of n-gram (1,2,3) default=3
+	 * @param LowerCase    		  = all words will be transformed to lower case format
+	 * @param NormalizeDocLength  = normalize word count dependent on the document length
+	 * @param Stemming			  = use german snowball stemming (true/false)
+	 * @param OutputWordCounts    = count the occurance of words (true/false)
+	 * @param IDFTransform		  = ??? (true/false)
+	 * @param TFTransform 		  = ??? (true/false)
+	 * @param Stopword   		  = use a stop word list (true/false)
+	 * @param list					   = path to the stop word list text file
+	 * @return
+	 * @throws Exception
+	 */
 	public static MyOutput generateFeatures(Instances dataRaw, int WordsToKeep,
 			Boolean Ngram, int ngram_min, int ngram_max, Boolean LowerCase,
 			Boolean NormalizeDocLength, Boolean Stemming,
@@ -135,7 +140,16 @@ public class WekaMagic {
 
 		return new MyOutput(dataFiltered, filter, elapsedTime);
 	}
-
+	
+	
+	/**
+	 * @param data      		    		= instances which have been processed by generateFeatures()
+	 * @param BinarizeNumericAttributes     = ??? (true/false) 
+	 * @param threshold						= how much information gain does a feature need to be kept 
+	 * 										  (0 - 0.01)
+	 * @return
+	 * @throws Exception
+	 */
 	public static MyOutput selectionByInfo(Instances data,
 			Boolean BinarizeNumericAttributes, double threshold)
 			throws Exception {
@@ -160,7 +174,14 @@ public class WekaMagic {
 
 		return new MyOutput(selected, as, elapsedTime);
 	}
-
+	
+	/**
+	 * run Logistic Regression
+	 * 
+	 * @param data = instances which have been processed by selectionByX()
+	 * @return
+	 * @throws Exception
+	 */
 	public static MyClassificationOutput runLogistic(Instances data)
 			throws Exception {
 		Logistic l = new Logistic();
@@ -180,6 +201,16 @@ public class WekaMagic {
 		return new MyClassificationOutput(l, eval, options, elapsedTime);
 	}
 
+	/**
+	 * save current instances and their description (how to build these instances)
+	 * @param data      		= current instances
+	 * @param path				= name of the output file (without extension)
+	 * 									-> it will create two files:
+	 * 										filename.arff (weka output format) &
+	 * 										filename_desc.txt (description about the instances)
+	 * @param m					= MyOutput / MyClassificationOutput
+	 * @throws Exception
+	 */
 	public static void saveToArff(Instances data, String path, Object m)
 			throws Exception {
 		FileWriter fstream;
@@ -203,6 +234,13 @@ public class WekaMagic {
 		}
 	}
 
+	/**
+	 * print results to csv file
+	 * 
+	 * @param m    =  List of List of double numbers
+	 * @param path =  path to csv file
+	 * @throws Exception
+	 */
 	public static void printHashMap(List<List<Double>> m, String path)
 			throws Exception {
 		FileWriter fstream;
