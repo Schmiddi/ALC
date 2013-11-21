@@ -161,19 +161,20 @@ public class WekaMagic {
 			throws Exception {
 		FileWriter fstream;
 		BufferedWriter out;
+		int i;
 
 		fstream = new FileWriter(path);
 		out = new BufferedWriter(fstream);
 
 		for (List<Double> dataset : m) {
-			out.write("\"" + String.format(Locale.US, "%1$.4f", dataset.get(0))
+			i=0;
+			for(Double d : dataset){
+				if(i>0) out.write(",");
+				out.write("\"" + String.format(Locale.US, "%1$.4f", d)
 					+ "\"");
-
-			out.write(",\""
-					+ String.format(Locale.US, "%1$.4f", dataset.get(1)) + "\"");
-			out.write(",\""
-					+ String.format(Locale.US, "%1$.0f", dataset.get(2)) + "\"");
-			out.write("\n");
+				i++;
+			}
+			out.write("\n");			
 		}
 		out.close();
 	}
@@ -207,7 +208,8 @@ public class WekaMagic {
 
 		Boolean Stopword = true;
 		// String list1 =
-		// "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Felix\\stopwords\\stop.txt";
+		// "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in
+		// Speech\\Felix\\stopwords\\stop.txt";
 		String list1 = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Felix\\stopwords\\germanST.txt";
 
 		// parameters for Attribute Selection
