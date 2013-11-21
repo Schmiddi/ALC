@@ -7,16 +7,27 @@ public class MyClassificationOutput {
 	private Evaluation eval;
 	private String eval_options;
 	private long elapsedTime;
+	private double [] results;
 
-	public MyClassificationOutput(Object classifier, Evaluation eval,
+	public MyClassificationOutput(Object classifier, Evaluation eval, double [] results,
 			String eval_options, long elapsedTime) {
 		super();
 		this.classifier = classifier;
 		this.eval = eval;
+		this.results = results;
 		this.eval_options = eval_options;
 		this.elapsedTime = elapsedTime;
 	}
+	
+	
+	
 
+	public double[] getResults() {
+		return results;
+	}
+	public void setResults(double[] results) {
+		this.results = results;
+	}
 	public long getElapsedTime() {
 		return elapsedTime;
 	}
@@ -67,6 +78,7 @@ public class MyClassificationOutput {
 
 		s += "\nunweightedAverageRecall = " + getUAR();
 		s += "\n" + eval.toSummaryString();
+		s += "\n\n" + Arrays.toString(results) + "\n\n";
 		return s;
 	}
 
