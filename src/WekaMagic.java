@@ -40,9 +40,25 @@ public class WekaMagic {
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 		
-		dataRaw.setClassIndex(dataRaw.numAttributes() - 1);//last index = class
+		setClassIndex(dataRaw);
 		
 		return new MyOutput(dataRaw, loader, elapsedTime);
+	}
+	
+	/**
+	 * This function makes sure that the class column is always set correctly
+	 * -> is not really necessary, but nice to have
+	 * 
+	 * @param data
+	 */
+	public static void setClassIndex(Instances data){
+		int i;
+		for(i=0;i<data.numAttributes();i++){
+			if(data.attribute(i).toString().contains("alc,nonalc")){
+				data.setClassIndex(i);
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -67,8 +83,8 @@ public class WekaMagic {
 		sets[0] = new Instances(data, 0, trainSize);          //train
 		sets[1] = new Instances(data, trainSize, testSize);   //test
 		
-		sets[0].setClassIndex(sets[0].numAttributes() - 1);//last index = class
-		sets[1].setClassIndex(sets[1].numAttributes() - 1);//last index = class
+		setClassIndex(sets[0]);
+		setClassIndex(sets[1]);
 		
 		return sets;			
 	}
@@ -186,13 +202,13 @@ public class WekaMagic {
 		Instances test_dataFiltered;
 		if(test != null){
 			test_dataFiltered = Filter.useFilter(test, filter);   //run filter on test data
+			setClassIndex(test_dataFiltered);
 		}
 		else{
 			test_dataFiltered = null;
 		}
 		
-		train_dataFiltered.setClassIndex(0);//first index = class
-		test_dataFiltered.setClassIndex(0); //first index = class
+		setClassIndex(train_dataFiltered);
 		
 		Instances [] dataFiltered = iToArray(train_dataFiltered,test_dataFiltered);
 
@@ -263,13 +279,13 @@ public class WekaMagic {
 		Instances test_selected;
 		if(test != null){
 			test_selected = Filter.useFilter(test, as);   //run filter on test data
+			setClassIndex(test_selected);
 		}
 		else{
 			test_selected = null;
 		}
 		
-		train_selected.setClassIndex(train_selected.numAttributes() - 1);//last index = class
-		test_selected.setClassIndex(test_selected.numAttributes() - 1);  //last index = class
+		setClassIndex(train_selected);
 		
 		Instances [] selected = iToArray(train_selected,test_selected);
 
