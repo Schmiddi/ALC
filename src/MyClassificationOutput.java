@@ -83,10 +83,13 @@ public class MyClassificationOutput {
 
 		s += "\nunweightedAverageRecall = " + getUARTrain();
 		s += "\n" + eval.toSummaryString();
-	    s += "\n\n" + "----------------------------------------------------------------------------" + "\n\n";
-	    s += "Test:\n";
-		s += "\nunweightedAverageRecall = " + getUARTest();
-		s += "\n" + test_eval.toSummaryString();
+	    
+		if(test_eval!=null){
+			s += "\n\n" + "----------------------------------------------------------------------------" + "\n\n";
+		    s += "Test:\n";
+			s += "\nunweightedAverageRecall = " + getUARTest();
+			s += "\n" + test_eval.toSummaryString();
+		}
 		s += "\n\n";
 		return s;
 	}
