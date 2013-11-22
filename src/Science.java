@@ -31,7 +31,7 @@ public class Science {
 		Boolean IDFTransform = true; // True/False
 		Boolean TFTransform = true; // True/False
 
-		Boolean Stopword = true; // True/False
+		Boolean Stopword = false; // True/False
 
 		// stop.txt / germanST.txt
 		// String list1 =
