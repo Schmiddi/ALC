@@ -100,7 +100,6 @@ public class MineMulti {
 								MineMulti.runMine(currDir, WordsToKeep,
 										ngram_min, ngram_max, list1, threshold,
 										settings, title);
-								return;
 							}
 						}
 					}
