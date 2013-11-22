@@ -40,6 +40,8 @@ public class WekaMagic {
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 		
+		dataRaw.setClassIndex(dataRaw.numAttributes() - 1);//last index = class
+		
 		return new MyOutput(dataRaw, loader, elapsedTime);
 	}
 	
@@ -51,7 +53,7 @@ public class WekaMagic {
 	 * @param randseed  = random integer number to define randomness
 	 * @return
 	 */
-	public Instances[] separateTrainTest(Instances data, float percent, int randseed){
+	public static Instances[] separateTrainTest(Instances data, double percent, int randseed){
 		Instances [] sets = new Instances[2];
 		
 		//Randomize all given instances
@@ -64,6 +66,9 @@ public class WekaMagic {
 		
 		sets[0] = new Instances(data, 0, trainSize);          //train
 		sets[1] = new Instances(data, trainSize, testSize);   //test
+		
+		sets[0].setClassIndex(sets[0].numAttributes() - 1);//last index = class
+		sets[1].setClassIndex(sets[1].numAttributes() - 1);//last index = class
 		
 		return sets;			
 	}
@@ -186,6 +191,9 @@ public class WekaMagic {
 			test_dataFiltered = null;
 		}
 		
+		train_dataFiltered.setClassIndex(0);//first index = class
+		test_dataFiltered.setClassIndex(0); //first index = class
+		
 		Instances [] dataFiltered = iToArray(train_dataFiltered,test_dataFiltered);
 
 		return new MyOutput(dataFiltered, filter, elapsedTime);
@@ -260,6 +268,9 @@ public class WekaMagic {
 			test_selected = null;
 		}
 		
+		train_selected.setClassIndex(train_selected.numAttributes() - 1);//last index = class
+		test_selected.setClassIndex(test_selected.numAttributes() - 1);  //last index = class
+		
 		Instances [] selected = iToArray(train_selected,test_selected);
 
 		return new MyOutput(selected, as, elapsedTime);
@@ -298,14 +309,18 @@ public class WekaMagic {
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 		
+		Logistic real = new Logistic();
+		real.buildClassifier(train);
+		
 		String options = "-cv -x " + folds + " -s " + seed;
 		
-		double [] realResults = null;
+		Evaluation realEva = null;
 		if(test != null){
-			realResults = eval.evaluateModel(l, test);
+			realEva = new Evaluation(test);
+			realEva.evaluateModel(real,test);
 		}
 
-		return new MyClassificationOutput(l, eval, realResults, options, elapsedTime);
+		return new MyClassificationOutput(l, eval, realEva, options, elapsedTime);
 	}
 
 	/**
