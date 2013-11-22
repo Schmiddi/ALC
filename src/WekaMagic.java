@@ -217,7 +217,7 @@ public class WekaMagic {
 	
 	/**
 	 * @param data      		    		= instances which have been processed by generateFeatures()
-	 * @param BinarizeNumericAttributes     = ??? (true/false) 
+	 * @param BinarizeNumericAttributes     = ??? (true/false) // set always to true
 	 * @param threshold						= how much information gain does a feature need to be kept 
 	 * 										  (0 - 0.01)
 	 * @return
@@ -232,7 +232,7 @@ public class WekaMagic {
 	
 	/**
 	 * @param data      		    		= instances which have been processed by generateFeatures()
-	 * @param BinarizeNumericAttributes     = ??? (true/false) 
+	 * @param BinarizeNumericAttributes     = ??? (true/false)  // set always to true
 	 * @param threshold						= how much information gain does a feature need to be kept 
 	 * 										  (0 - 0.01)
 	 * @return
