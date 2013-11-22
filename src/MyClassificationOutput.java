@@ -7,26 +7,26 @@ public class MyClassificationOutput {
 	private Evaluation eval;
 	private String eval_options;
 	private long elapsedTime;
-	private double [] results;
+	private Evaluation test_eval;
 
-	public MyClassificationOutput(Object classifier, Evaluation eval, double [] results,
+	public MyClassificationOutput(Object classifier, Evaluation eval, Evaluation real_eval,
 			String eval_options, long elapsedTime) {
 		super();
 		this.classifier = classifier;
 		this.eval = eval;
-		this.results = results;
+		this.test_eval = real_eval;
 		this.eval_options = eval_options;
 		this.elapsedTime = elapsedTime;
 	}
 	
 	
 	
-
-	public double[] getResults() {
-		return results;
+	
+	public Evaluation getTest_eval() {
+		return test_eval;
 	}
-	public void setResults(double[] results) {
-		this.results = results;
+	public void setTest_eval(Evaluation test_eval) {
+		this.test_eval = test_eval;
 	}
 	public long getElapsedTime() {
 		return elapsedTime;
@@ -65,20 +65,29 @@ public class MyClassificationOutput {
 		return oh.getOptions();
 	}
 
-	public double getUAR() {
+	public double getUARTrain() {
 		double unweightedAverageRecall = (eval.recall(0) + eval.recall(1)) / 2;
+		return unweightedAverageRecall;
+	}
+	public double getUARTest() {
+		double unweightedAverageRecall = (test_eval.recall(0) + test_eval.recall(1)) / 2;
 		return unweightedAverageRecall;
 	}
 
 	public String toString() {
-		String s = "weka.classifiers.Evaluation: " + getEval_options()
-				+ "\nexec-time: " + elapsedTime + "\n\n";
+		String s = "Training:\n"
+		         + "weka.classifiers.Evaluation: " + getEval_options()
+				 + "\nexec-time: " + elapsedTime + "\n\n";
 		s += classifier.getClass().getName() + ": "
 				+ Arrays.toString(getClassifierParams()) + "\n\n";
 
-		s += "\nunweightedAverageRecall = " + getUAR();
+		s += "\nunweightedAverageRecall = " + getUARTrain();
 		s += "\n" + eval.toSummaryString();
-		s += "\n\n" + Arrays.toString(results) + "\n\n";
+	    s += "\n\n" + "----------------------------------------------------------------------------" + "\n\n";
+	    s += "Test:\n";
+		s += "\nunweightedAverageRecall = " + getUARTest();
+		s += "\n" + test_eval.toSummaryString();
+		s += "\n\n";
 		return s;
 	}
 
