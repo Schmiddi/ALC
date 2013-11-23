@@ -313,34 +313,39 @@ public class WekaMagic {
 	 */
 	public static MyClassificationOutput runLogistic(Instances train, Instances test)
 			throws Exception {
-//		Logistic l = new Logistic();
-
-		int folds = 10;
-		int seed = 1;
-
-		Evaluation eval = new Evaluation(train);
-
-//		long startTime = System.currentTimeMillis();
-//		eval.crossValidateModel(l, train, folds, new Random(seed));
-//		long stopTime = System.currentTimeMillis();
-//		long elapsedTime = stopTime - startTime;
 		
-		Logistic real = new Logistic();
+		Logistic l = new Logistic();
+		long elapsedTime;
+		Evaluation eval;
+		String options;
 		
-		long startTime = System.currentTimeMillis();
-		real.buildClassifier(train);
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = stopTime - startTime;
-				
-		String options = "-cv -x " + folds + " -s " + seed;
-		
-		Evaluation realEva = null;
-		if(test != null){
-			realEva = new Evaluation(test);
-			realEva.evaluateModel(real,test);
+		if(test == null){
+
+			int folds = 10;
+			int seed = 1;
+			
+			options = "-cv -x " + folds + " -s " + seed;
+	
+			eval = new Evaluation(train);
+	
+			long startTime = System.currentTimeMillis();
+			eval.crossValidateModel(l, train, folds, new Random(seed));
+			long stopTime = System.currentTimeMillis();
+			elapsedTime = stopTime - startTime;
 		}
-
-		return new MyClassificationOutput(real, eval, realEva, options, elapsedTime);
+		else{	
+			options = "single run";
+			
+			long startTime = System.currentTimeMillis();
+			l.buildClassifier(train);
+			long stopTime = System.currentTimeMillis();
+			elapsedTime = stopTime - startTime;
+			
+			eval = new Evaluation(test);
+			eval.evaluateModel(l,test);
+		}
+				
+		return new MyClassificationOutput(l, eval, options, elapsedTime);
 	}
 
 	/**
