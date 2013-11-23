@@ -313,21 +313,25 @@ public class WekaMagic {
 	 */
 	public static MyClassificationOutput runLogistic(Instances train, Instances test)
 			throws Exception {
-		Logistic l = new Logistic();
+//		Logistic l = new Logistic();
 
 		int folds = 10;
 		int seed = 1;
 
 		Evaluation eval = new Evaluation(train);
 
-		long startTime = System.currentTimeMillis();
-		eval.crossValidateModel(l, train, folds, new Random(seed));
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = stopTime - startTime;
+//		long startTime = System.currentTimeMillis();
+//		eval.crossValidateModel(l, train, folds, new Random(seed));
+//		long stopTime = System.currentTimeMillis();
+//		long elapsedTime = stopTime - startTime;
 		
 		Logistic real = new Logistic();
-		real.buildClassifier(train);
 		
+		long startTime = System.currentTimeMillis();
+		real.buildClassifier(train);
+		long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+				
 		String options = "-cv -x " + folds + " -s " + seed;
 		
 		Evaluation realEva = null;
@@ -336,7 +340,7 @@ public class WekaMagic {
 			realEva.evaluateModel(real,test);
 		}
 
-		return new MyClassificationOutput(l, eval, realEva, options, elapsedTime);
+		return new MyClassificationOutput(real, eval, realEva, options, elapsedTime);
 	}
 
 	/**
