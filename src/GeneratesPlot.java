@@ -56,7 +56,7 @@ public class GeneratesPlot {
 		final JFreeChart chart = ChartFactory.createXYLineChart(
 				title, // chart title
 				"Threshold", // x axis label
-				"UDA", // y axis label
+				"UAR", // y axis label
 				dataset, // data
 				PlotOrientation.VERTICAL, 
 				false, // no legend
