@@ -26,11 +26,14 @@ public class ScienceMulti {
 		// String currDir = "/home/bas-alc/test/rawData/separate_all/DP";
 		String currDir = "E:\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Felix\\Backup\\DP_real\\rawData\\DP";
 		// Set Thresholds
-		/*
-		 * threshold.add(0.0001); threshold.add(0.0003); threshold.add(0.0006);
-		 * threshold.add(0.001); threshold.add(0.003); threshold.add(0.004);
-		 * threshold.add(0.005);
-		 */
+
+		threshold.add(0.0001);
+		threshold.add(0.0003);
+		threshold.add(0.0006);
+		threshold.add(0.001);
+		threshold.add(0.003);
+		threshold.add(0.004);
+		threshold.add(0.005);
 		threshold.add(0.006);
 		threshold.add(0.007);
 		threshold.add(0.008);
@@ -72,8 +75,7 @@ public class ScienceMulti {
 							settings.put(options.TFTransform, NDL);
 							settings.put(options.BinarizeNumericAttributes, true);
 
-							title = "NG-" + NG + ",LC-" + LC + ",ST-" + ST + ",NDL-" + NDL
-									+ ",SW-";
+							title = "NG-" + NG + ",LC-" + LC + ",ST-" + ST + ",NDL-" + NDL + ",SW-";
 
 							if (SW == 1) {
 								settings.put(options.Stopword, true);
