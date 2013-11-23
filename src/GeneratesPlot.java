@@ -88,7 +88,7 @@ public class GeneratesPlot {
 		return chart;
 	}
 
-	public static void create(List <List<Double>> myList, String filename) {
+	public static void create(List <List<Double>> myList, String outputFolder, String filename) {
 
 		// Get the Data
 		final XYDataset dataset = createDataset(myList);
@@ -103,7 +103,7 @@ public class GeneratesPlot {
 			byte[] byteArray = bas.toByteArray();
 			InputStream in = new ByteArrayInputStream(byteArray);
 			BufferedImage image = ImageIO.read(in);
-			File outputfile = new File(filename+".png"); // File Name
+			File outputfile = new File(outputFolder + filename+".png"); // File Name
 			ImageIO.write(image, "png", outputfile);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -130,7 +130,7 @@ public class GeneratesPlot {
 		data.add(4571.0);
 		myList.add(data);
 		
-		GeneratesPlot.create(myList,"Test");
+		GeneratesPlot.create(myList,"","Test");
 	}
 
 }

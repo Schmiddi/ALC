@@ -1,4 +1,7 @@
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +26,27 @@ public class ScienceMulti {
 		List<Double> threshold = new ArrayList<Double>();
 
 		// parameters for TextDirectoryLoader
-		// String currDir = "/home/bas-alc/test/rawData/separate_all/DP";
-		String currDir = "E:\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Felix\\Backup\\DP_real\\rawData\\DP";
+		
+		// String inputFolder = "/home/bas-alc/test/rawData/separate_all/DP";
+		String inputFolder = "E:/Dropbox/Detecting Alcohol Intoxication in Speech/Felix/Backup/DP_real/rawData/DP";
+        
+		String[] fullPath = inputFolder.split("/");
+		String fileName = fullPath[fullPath.length - 1];
+		
+		String outputMainFolder = "E:/Dropbox/Detecting Alcohol Intoxication in Speech/Dennis";
+		
+		// Create run folder
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd,HH-mm");
+
+        Date resultdate = new Date(System.currentTimeMillis());
+        
+        String outputFolder = outputMainFolder+"/Result-"+fileName+","+sdf.format(resultdate);
+		Boolean success = (new File(outputFolder)).mkdirs();
+		if (!success) {
+		    System.out.println("Directory creation failed");
+		    return;
+		}
+		outputFolder += "/";
 		// Set Thresholds
 
 		threshold.add(0.0001);
@@ -94,8 +116,8 @@ public class ScienceMulti {
 
 							// stop.txt / germanST.txt
 
-							ScienceMulti.runScience(currDir, WordsToKeep, ngram_min, ngram_max,
-									list1, threshold, settings, title);
+							ScienceMulti.runScience(inputFolder, WordsToKeep, ngram_min, ngram_max,
+									list1, threshold, settings, title, outputFolder);
 						}
 					}
 				}
@@ -104,7 +126,7 @@ public class ScienceMulti {
 	}
 
 	public static void runScience(String currDir, int WordsToKeep, int ngram_min, int ngram_max,
-			String list1, List<Double> threshold, Map<options, Boolean> settings, String title)
+			String list1, List<Double> threshold, Map<options, Boolean> settings, String title,String outputFolder)
 			throws Exception {
 
 		/**
@@ -112,8 +134,7 @@ public class ScienceMulti {
 		 * Set parameter of input function
 		 */
 
-		String[] fullPath = currDir.split("/");
-		String fileName = fullPath[fullPath.length - 1];
+		
 
 		MyOutput text_data;
 		Instances dataRaw;
@@ -129,7 +150,6 @@ public class ScienceMulti {
 		MyOutput selected;
 		Instances selected_train;
 		Instances selected_test;
-
 		MyClassificationOutput logistic;
 
 		// Load data to Weka
@@ -138,15 +158,15 @@ public class ScienceMulti {
 		dataRaw = text_data.getData();
 
 		// Store raw data from Weka to arff file
-		WekaMagic.saveToArff(dataRaw, fileName + "_raw_text", text_data);
+		WekaMagic.saveToArff(dataRaw, outputFolder + title + "raw_text", text_data);
 
 		// split data to training & test data
 		split = WekaMagic.separateTrainTest(dataRaw, 90, 1);
 		train_split = split[0];
 		test_split = split[1];
 
-		WekaMagic.saveToArff(train_split, fileName + "_raw_train", null);
-		WekaMagic.saveToArff(test_split, fileName + "_raw_test", null);
+		WekaMagic.saveToArff(train_split, outputFolder + title + "raw_train", null);
+		WekaMagic.saveToArff(test_split, outputFolder + title + "raw_test", null);
 
 		// Generate the features
 		filtered = WekaMagic.generateFeatures(train_split, test_split, WordsToKeep, settings
@@ -159,8 +179,8 @@ public class ScienceMulti {
 		filtered_test = filtered.getTestData();
 
 		// Store featured data from Weka to arff file
-		WekaMagic.saveToArff(filtered_train, fileName + "_featured_train", filtered);
-		WekaMagic.saveToArff(filtered_test, fileName + "_featured_test", null);
+		WekaMagic.saveToArff(filtered_train, outputFolder + title +"_featured_train", filtered);
+		WekaMagic.saveToArff(filtered_test, outputFolder + title + "_featured_test", null);
 
 		List<List<Double>> results = new ArrayList<List<Double>>();
 
@@ -173,13 +193,13 @@ public class ScienceMulti {
 			selected_test = selected.getTestData();
 
 			// Backup the selection
-			WekaMagic.saveToArff(selected_train, fileName + "_selected_train", selected);
-			WekaMagic.saveToArff(selected_test, fileName + "_selected_test", selected);
+			WekaMagic.saveToArff(selected_train, outputFolder + title + "_" + currentThreshold + "_selected_train", selected);
+			WekaMagic.saveToArff(selected_test, outputFolder + title + "_" + currentThreshold + "_selected_test", selected);
 
 			// Run ML algorithm - logistic
 			logistic = WekaMagic.runLogistic(selected_train, selected_test);
 			logistic.print();
-			WekaMagic.saveToArff(null, fileName + "_logistic_t", logistic);
+			WekaMagic.saveToArff(null, outputFolder + title + "_" + currentThreshold + "_logistic_t", logistic);
 			// Result processing
 			List<Double> al = new ArrayList<Double>();
 			al.add(0, currentThreshold);
@@ -189,8 +209,8 @@ public class ScienceMulti {
 			results.add(al);
 		}
 		// Store treshold, UAR
-		WekaMagic.printHashMap(results, fileName + "_results_" + title + ".csv");
+		WekaMagic.printHashMap(results, outputFolder + title + "_results.csv");
 
-		GeneratesPlot.create(results, title);
+		GeneratesPlot.create(results, outputFolder, title);
 	}
 }

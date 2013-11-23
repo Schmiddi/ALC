@@ -1,6 +1,9 @@
 import weka.core.Instances;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -23,8 +26,28 @@ public class MineMulti {
 		List<Double> threshold = new ArrayList<Double>();
 
 		// parameters for TextDirectoryLoader
-		String currDir = "/home/bas-alc/test/rawData/separate_all/DP";
+		String inputFolder = "/home/bas-alc/test/rawData/separate_all/DP";
+		//String inputFolder = "E:/Dropbox/Detecting Alcohol Intoxication in Speech/Felix/Backup/DP_real/rawData/DP";
+        
+		String[] fullPath = inputFolder.split("/");
+		String fileName = fullPath[fullPath.length - 1];
+		
+		//String outputMainFolder = "E:/Dropbox/Detecting Alcohol Intoxication in Speech/Dennis";
+		String outputMainFolder = "/home/bas-alc/TestResult";
+		
+		// Create run folder
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd,HH-mm");
 
+        Date resultdate = new Date(System.currentTimeMillis());
+        
+        String outputFolder = outputMainFolder+"/Result-"+fileName+","+sdf.format(resultdate);
+		Boolean success = (new File(outputFolder)).mkdirs();
+		if (!success) {
+		    System.out.println("Directory creation failed");
+		    return;
+		}
+		outputFolder += "/";
+		
 		// Set Thresholds
 		threshold.add(0.0001);
 		threshold.add(0.0003);
@@ -97,9 +120,9 @@ public class MineMulti {
 
 								
 								
-								MineMulti.runMine(currDir, WordsToKeep,
+								MineMulti.runMine(inputFolder, WordsToKeep,
 										ngram_min, ngram_max, list1, threshold,
-										settings, title);
+										settings, title, outputFolder);
 							}
 						}
 					}
@@ -110,15 +133,12 @@ public class MineMulti {
 
 	public static void runMine(String currDir, int WordsToKeep, int ngram_min,
 			int ngram_max, String list1, List<Double> threshold,
-			Map<options, Boolean> settings, String title) throws Exception {
+			Map<options, Boolean> settings, String title, String outputFolder) throws Exception {
 
 		/*
 		 * 
 		 * All parameter are set
 		 */
-
-		String[] fullPath = currDir.split("/");
-		String fileName = fullPath[fullPath.length - 1];
 
 		MyOutput text_data;
 		Instances dataRaw;
@@ -134,7 +154,7 @@ public class MineMulti {
 		dataRaw = text_data.getData();
 
 		// Store raw data from Weka to arff file
-		WekaMagic.saveToArff(dataRaw, fileName + "_raw_text", text_data);
+		WekaMagic.saveToArff(dataRaw, outputFolder + title + "_raw_text", text_data);
 
 		// Generate the features
 		filtered = WekaMagic.generateFeatures(dataRaw, WordsToKeep,
@@ -165,14 +185,12 @@ public class MineMulti {
 			dataSelected = selected.getData();
 
 			// Backup the selection
-			WekaMagic.saveToArff(dataSelected, fileName + "_selected_t"
-					+ currentThreshold, selected);
+			WekaMagic.saveToArff(dataSelected, outputFolder + title + "_" + currentThreshold + "_selected_t", selected);
 
 			// Run ML algorithm - logistic
 			logistic = WekaMagic.runLogistic(dataSelected);
 			logistic.print();
-			WekaMagic.saveToArff(null, fileName + "_logistic_t"
-					+ currentThreshold, logistic);
+			WekaMagic.saveToArff(null, outputFolder + title + "_" + currentThreshold + "_logistic_t", logistic);
 
 			// Result processing
 			List<Double> al = new ArrayList<Double>();
@@ -182,8 +200,8 @@ public class MineMulti {
 			results.add(al);
 		}
 		// Store treshold, UAR
-		WekaMagic.printHashMap(results, fileName + "_results_"+title+".csv");
+		WekaMagic.printHashMap(results, outputFolder + title + "_results_.csv");
 		
-		GeneratesPlot.create(results,title);
+		GeneratesPlot.create(results,outputFolder,title);
 	}
 }
