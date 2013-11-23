@@ -366,7 +366,7 @@ public class Classify {
                         
                         selector.setEvaluator(infoGainEval);
                         selector.setSearch(simpleRanker);
-                        selector.setInputFormat(bowRawData);
+                        selector.setInputFormat(bowRawData); // this is going to be the problem !!!!
                         
                         //new method - rerun info gain for ouput
                         writeInfoGainValuesNew(texttype, bowRawData);
@@ -498,7 +498,7 @@ public class Classify {
                     filter.setMinTermFreq(minWordCount);
             }
             
-            filter.setInputFormat(dataRaw);
+            filter.setInputFormat(dataRaw); // this is going to be the problem !!!!
             Instances dataFiltered = Filter.useFilter(dataRaw, filter);
             
             //find out how many features the BOW contains#
