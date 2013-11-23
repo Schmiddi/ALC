@@ -183,8 +183,9 @@ public class ScienceMulti {
 			// Result processing
 			List<Double> al = new ArrayList<Double>();
 			al.add(0, currentThreshold);
-			al.add(1, logistic.getUARTest());
+			al.add(1, logistic.getUAR());
 			al.add(2, (double) logistic.getElapsedTime());
+			al.add(3, (double) selected.getFeatureNumber());
 			results.add(al);
 		}
 		// Store treshold, UAR

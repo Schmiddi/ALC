@@ -177,7 +177,7 @@ public class MineMulti {
 			// Result processing
 			List<Double> al = new ArrayList<Double>();
 			al.add(0,currentThreshold);
-			al.add(1,logistic.getUARTrain());
+			al.add(1,logistic.getUAR());
 			al.add(2, (double)logistic.getElapsedTime());
 			results.add(al);
 		}
