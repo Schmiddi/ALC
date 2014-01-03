@@ -59,6 +59,10 @@ public class MyClassificationOutput {
 		return unweightedAverageRecall;
 	}
 	
+	public double getFScore(int iClass) {
+		return eval.fMeasure(iClass);
+	}
+	
 
 	public String toString() {
 		String s = "Training:\n"
