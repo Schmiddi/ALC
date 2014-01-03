@@ -21,6 +21,10 @@ import weka.filters.Filter;
  *
  */
 
+/**
+ * @author Felix Neutatz
+ *
+ */
 public class WekaMagic {
 	
 	/**
@@ -88,6 +92,71 @@ public class WekaMagic {
 		
 		return sets;			
 	}
+	
+	
+	
+	/**
+	 * Returns a part (percentage) of a set of instances
+	 * 
+	 * @param data - original set
+	 * @param percent - percentage
+	 * @param randseed - random factor
+	 * @return
+	 */
+	public static Instances getPartOf(Instances data, double percent, int randseed){
+		Instances set;
+		
+		//Randomize all given instances
+		data.randomize(new Random(randseed));
+		
+		// Percent split
+		int fnum = data.numInstances();
+		int trainSize = (int) Math.round(fnum * percent / 100);
+		
+		set = new Instances(data, 0, trainSize);      
+		setClassIndex(set);
+		
+		return set;			
+	}
+	
+	
+	/**
+	 * split training set from test set to get a scientific result
+	 * 
+	 * 		default: 
+	 * 					60% - training size
+	 * 					20% - cross validation size
+	 * 					20% - test size
+	 * 
+	 * @param data      = all given instances
+	 * @param percent   = size of the training set in percent
+	 * @param randseed  = random integer number to define randomness
+	 * @return
+	 */
+	public static Instances[] separateInstances(Instances data, double [] percent, int randseed){
+		Instances [] sets = new Instances[percent.length];
+		
+		//Randomize all given instances
+		data.randomize(new Random(randseed));
+				
+		// Percent split
+		int fnum = data.numInstances();
+		
+		
+		int start_point=0;
+		int number_to_copy;
+		
+		for(int i=0;i<percent.length;i++){		
+			number_to_copy = (int) Math.round(fnum * percent[i] / 100);
+			sets[i] = new Instances(data, start_point, number_to_copy);
+			setClassIndex(sets[i]);
+			start_point += number_to_copy;
+		}
+		
+		return sets;			
+	}
+	
+	
 
 	
 	/**
@@ -216,6 +285,21 @@ public class WekaMagic {
 	}
 	
 	
+	
+	/**
+	 * Apply filter on test instances
+	 * @param data
+	 * @param filter
+	 * @return
+	 * @throws Exception
+	 */
+	public static Instances applyFilter(Instances data, MyOutput filter) throws Exception{
+		Instances test_dataFiltered = Filter.useFilter(data, (Filter) filter.getOperation());   //run filter on test data
+		setClassIndex(test_dataFiltered);
+		return test_dataFiltered;
+	}
+	
+	
 	/**
 	 * convert single instances to array
 	 * 
@@ -301,13 +385,17 @@ public class WekaMagic {
 	 */
 	public static MyClassificationOutput runLogistic(Instances data)
 			throws Exception {
-		return runLogistic(data, null);
+		return runLogistic(data, (Instances)null);
 	}
 	
+	
 	/**
-	 * run Logistic Regression
+	 * Run logistic regression and get immediately the evaluation of the classifier for a certain test set
 	 * 
-	 * @param data = instances which have been processed by selectionByX()
+	 * 		ridge / regularization parameter is set to default!
+	 * 
+	 * @param train - training set
+	 * @param test  - test set
 	 * @return
 	 * @throws Exception
 	 */
@@ -347,7 +435,72 @@ public class WekaMagic {
 				
 		return new MyClassificationOutput(l, eval, options, elapsedTime);
 	}
+	
+	
+	/**
+	 * Run logistic regression and get only the evaluation of training set
+	 * 		--> please run the classifier afterwards on the cross-validation set and on the test set!!
+	 * 
+	 * @param train - training set
+	 * @param ridge - regularization parameter
+	 * @return
+	 * @throws Exception
+	 */
+	public static MyClassificationOutput runLogistic(Instances train, Double ridge)
+			throws Exception {
+		
+		Logistic l = new Logistic();
+		long elapsedTime;
+		Evaluation eval;
+		String options;
+		
+		//set regularization parameter
+		if(ridge != null){
+			l.setRidge(ridge);
+		}
+		
+		options = "single run";	
+		
+		//build classifier
+		long startTime = System.currentTimeMillis();
+		l.buildClassifier(train);
+		long stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		
+		//evaluate how good it performes on the training set
+		eval = new Evaluation(train);
+		eval.evaluateModel(l,train);
+		
+				
+		return new MyClassificationOutput(l, eval, options, elapsedTime);
+	}
 
+	
+	/**
+	 * Apply Logoistic regression classifier on a certain test set
+	 * 
+	 * @param test - test set
+	 * @param classifier - output object of runLogistic
+	 * @return
+	 * @throws Exception
+	 */
+	public static MyClassificationOutput applyLogistic(Instances test, MyClassificationOutput classifier)
+	throws Exception {
+
+		Logistic l = (Logistic) classifier.getClassifier();
+		Evaluation eval;
+		String options;
+		
+		options = "single run";	
+		
+		//evaluate how good it performes on the test set
+		eval = new Evaluation(test);
+		eval.evaluateModel(l,test);	
+				
+		return new MyClassificationOutput(l, eval, options, 0);
+	}
+	
+	
 	/**
 	 * save current instances and their description (how to build these instances)
 	 * @param data      		= current instances
