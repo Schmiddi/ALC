@@ -165,6 +165,8 @@ public class BiasVarianceEvaluation {
 		cross_validation_split = split[1];
 		test_split = split[2];
 		
+		List<List<Double>> results = new ArrayList<List<Double>>();
+		
 		//create learning curve 
 		//		performance of the classifier on the training set / cross validation set measured by the F-Score
 		//		in comparison to training set size
@@ -190,8 +192,6 @@ public class BiasVarianceEvaluation {
 				// Store featured data from Weka to arff file
 				//WekaMagic.saveToArff(filtered_train, outputFolder + title +"_featured_train", filtered);
 				//WekaMagic.saveToArff(filtered_test, outputFolder + title + "_featured_test", null);
-		
-				List<List<Double>> results = new ArrayList<List<Double>>();
 		
 				for (double currentThreshold : threshold) {
 					// Run selection
@@ -223,9 +223,11 @@ public class BiasVarianceEvaluation {
 					al.add(1, logistic.getUAR());
 					al.add(2, logistic.getFScore(0));
 					al.add(3, logistic.getFScore(1));
-					al.add(4, (double) curve);
-					al.add(5, (double) logistic.getElapsedTime());
-					al.add(6, (double) selected.getFeatureNumber());
+					al.add(4, evaluation_cross.getFScore(0));
+					al.add(5, evaluation_cross.getFScore(1));
+					al.add(6, (double) curve);
+					al.add(7, (double) logistic.getElapsedTime());
+					al.add(8, (double) selected.getFeatureNumber());
 					results.add(al);
 					
 					break;
@@ -233,7 +235,9 @@ public class BiasVarianceEvaluation {
 				// Store treshold, UAR
 				//WekaMagic.printHashMap(results, outputFolder + title + "_results.csv");
 		
-				//GeneratesPlot.create(results, outputFolder, title);
+				//GeneratesPlot.create(results, outputFolder, title);				
 		}
+		
+		GeneratesPlot.printLearningCurve(results, outputFolder, title);
 	}
 }
