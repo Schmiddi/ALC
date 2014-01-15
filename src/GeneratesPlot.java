@@ -116,8 +116,8 @@ public class GeneratesPlot {
 		final XYSeries series_cross_validation = new XYSeries("Cross-Validation");
 		for(List<Double> tempList : myList){
 								//			percentage of test instances, 		FMeasure
-			series_train.add(					tempList.get(6),				tempList.get(2));
-			series_cross_validation.add(		tempList.get(6), 				tempList.get(4));
+			series_train.add(					tempList.get(4),				tempList.get(2));
+			series_cross_validation.add(		tempList.get(4), 				tempList.get(3));
 		}
 
 		final XYSeriesCollection dataset = new XYSeriesCollection();

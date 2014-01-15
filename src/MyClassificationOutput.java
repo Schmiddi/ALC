@@ -63,6 +63,10 @@ public class MyClassificationOutput {
 		return eval.fMeasure(iClass);
 	}
 	
+	public double getF1Score() {
+		return eval.weightedFMeasure();
+	}
+	
 
 	public String toString() {
 		String s = "Training:\n"

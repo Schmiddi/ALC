@@ -221,13 +221,11 @@ public class BiasVarianceEvaluation {
 					List<Double> al = new ArrayList<Double>();
 					al.add(0, currentThreshold);
 					al.add(1, logistic.getUAR());
-					al.add(2, logistic.getFScore(0));
-					al.add(3, logistic.getFScore(1));
-					al.add(4, evaluation_cross.getFScore(0));
-					al.add(5, evaluation_cross.getFScore(1));
-					al.add(6, (double) curve);
-					al.add(7, (double) logistic.getElapsedTime());
-					al.add(8, (double) selected.getFeatureNumber());
+					al.add(2, logistic.getF1Score());         //training f1 score
+					al.add(3, evaluation_cross.getF1Score()); // cross validation f1 score
+					al.add(4, (double) curve);				  // training size in %
+					al.add(5, (double) logistic.getElapsedTime());
+					al.add(6, (double) selected.getFeatureNumber());
 					results.add(al);
 					
 					break;
