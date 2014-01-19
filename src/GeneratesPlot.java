@@ -136,7 +136,7 @@ public class GeneratesPlot {
 				"FScore", // y axis label
 				dataset, // data
 				PlotOrientation.VERTICAL, 
-				false, // no legend
+				true, // no legend
 				true, // tooltips
 				false // urls
 				);
@@ -152,13 +152,13 @@ public class GeneratesPlot {
 		// change the auto tick unit selection to integer units only...
 		// X-Axis
 		NumberAxis domain = (NumberAxis) plot.getDomainAxis();
-		domain.setRange(0.00, 0.01);
-		domain.setTickUnit(new NumberTickUnit(0.001));
+		domain.setRange(0, 100);
+		domain.setTickUnit(new NumberTickUnit(5));
 		domain.setVerticalTickLabels(false);
 
 		// Y-Axis
 		NumberAxis range = (NumberAxis) plot.getRangeAxis();
-		range.setRange(0.4, 1.0);
+		range.setRange(0, 1.1);
 		range.setTickUnit(new NumberTickUnit(0.1));
 		range.setVerticalTickLabels(false); // Horizontal Alignment
 
@@ -169,7 +169,7 @@ public class GeneratesPlot {
 
 		// Get the Data
 		final XYDataset dataset = createDatasetLC(myList);
-		final JFreeChart chart = createChart(dataset,filename);
+		final JFreeChart chart = createChartLC(dataset,filename);
 
 		// Size: Width, Height
 		BufferedImage objBufferedImage = chart.createBufferedImage(1000, 600);
