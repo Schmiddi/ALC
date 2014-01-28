@@ -209,7 +209,7 @@ public class BiasVarianceEvaluation {
 		
 					
 					// Run ML algorithm - logistic
-					logistic = WekaMagic.runLogistic(selected_train, (Double)null);
+					logistic = WekaMagic.runLogistic(selected_train, (Double)null, (Integer)null);
 					logistic.print();
 					
 					evaluation_cross = WekaMagic.applyLogistic(selected_cross_validation, logistic);

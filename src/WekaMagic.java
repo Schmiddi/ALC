@@ -446,7 +446,7 @@ public class WekaMagic {
 	 * @return
 	 * @throws Exception
 	 */
-	public static MyClassificationOutput runLogistic(Instances train, Double ridge)
+	public static MyClassificationOutput runLogistic(Instances train, Double ridge, Integer maxIterations)
 			throws Exception {
 		
 		Logistic l = new Logistic();
@@ -457,6 +457,9 @@ public class WekaMagic {
 		//set regularization parameter
 		if(ridge != null){
 			l.setRidge(ridge);
+		}
+		if(maxIterations != null){
+			l.setMaxIts(maxIterations);
 		}
 		
 		options = "single run";	
