@@ -173,7 +173,8 @@ public class ScienceMulti {
 				.get(options.Ngram), ngram_min, ngram_max, settings.get(options.LowerCase),
 				settings.get(options.NormalizeDocLength), settings.get(options.Stemming), settings
 						.get(options.OutputWordCounts), settings.get(options.IDFTransform),
-				settings.get(options.TFTransform), settings.get(options.Stopword), list1);
+				settings.get(options.TFTransform), settings.get(options.Stopword), list1,
+				1); //minterm
 		filtered.print();
 		filtered_train = filtered.getTrainData();
 		filtered_test = filtered.getTestData();

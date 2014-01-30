@@ -165,7 +165,8 @@ public class MineMulti {
 				settings.get(options.OutputWordCounts),
 				settings.get(options.IDFTransform),
 				settings.get(options.TFTransform),
-				settings.get(options.Stopword), list1);
+				settings.get(options.Stopword), list1,
+				1); //achtung minterm
 		filtered.print();
 		dataFiltered = filtered.getData();
 		// Randomize data, because they are initially sorted

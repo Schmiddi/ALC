@@ -90,7 +90,8 @@ public class Science {
 		// Generate the features
 		filtered = WekaMagic.generateFeatures(train_split,test_split, WordsToKeep, Ngram,
 				ngram_min, ngram_max, LowerCase, NormalizeDocLength, Stemming,
-				OutputWordCounts, IDFTransform, TFTransform, Stopword, list1);
+				OutputWordCounts, IDFTransform, TFTransform, Stopword, list1,
+				1); //achtung minterm
 		filtered.print();
 		filtered_train = filtered.getTrainData();
 		filtered_test = filtered.getTestData();

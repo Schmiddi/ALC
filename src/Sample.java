@@ -106,7 +106,8 @@ public class Sample {
 		// Generate the features
 		filtered = WekaMagic.generateFeatures(train_split, WordsToKeep, Ngram,
 				ngram_min, ngram_max, LowerCase, NormalizeDocLength, Stemming,
-				OutputWordCounts, IDFTransform, TFTransform, Stopword, list1);
+				OutputWordCounts, IDFTransform, TFTransform, Stopword, list1,
+				1 ); //achtung minterm
 		
 		
 		//filtered.print();

@@ -76,7 +76,7 @@ public class Mine {
 		// Generate the features
 		filtered = WekaMagic.generateFeatures(dataRaw, WordsToKeep, Ngram,
 				ngram_min, ngram_max, LowerCase, NormalizeDocLength, Stemming,
-				OutputWordCounts, IDFTransform, TFTransform, Stopword, list1);
+				OutputWordCounts, IDFTransform, TFTransform, Stopword, list1, 1); //achtung minterm
 		filtered.print();
 		dataFiltered = filtered.getData();
 		// Randomize data, because they are initially sorted
