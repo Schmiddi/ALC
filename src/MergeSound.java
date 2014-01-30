@@ -12,7 +12,13 @@ public class MergeSound {
 		
 		Instances sound = WekaMagic.soundArffToInstances(dir);
 		
+		WekaMagic.saveToArff(sound, dir + "\\sound", null);
+		
 		Instances text = WekaMagic.textCSVToInstances( dir + "\\output.csv");
+		
+		WekaMagic.saveToArff(text, dir + "\\text", null);
+		
+		System.out.println("sound: " + sound.size() + " text: " + text.size());
 		
 		Instances merged = WekaMagic.mergeInstancesBy(sound, text, "file");
 		

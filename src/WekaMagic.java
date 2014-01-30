@@ -3,7 +3,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Locale;
 
-import javax.smartcardio.ATR;
 
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.attributeSelection.Ranker;
@@ -13,7 +12,6 @@ import weka.core.converters.CSVLoader;
 import weka.core.converters.TextDirectoryLoader;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.supervised.attribute.AttributeSelection;
-import weka.filters.unsupervised.attribute.NominalToString;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 import weka.core.stemmers.*;
 import weka.core.tokenizers.*;
@@ -22,8 +20,6 @@ import weka.classifiers.functions.Logistic;
 import weka.classifiers.Evaluation;
 import weka.filters.Filter;
 import weka.core.Attribute;
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Add;
 
 /**
  * @author Felix Neutatz
@@ -614,7 +610,7 @@ public class WekaMagic {
 		a_new.sort(akey);
 		b_new.sort(bkey);
 		
-		a_new.deleteAttributeAt(akey.index());
+		//a_new.deleteAttributeAt(akey.index());
 		b_new.deleteAttributeAt(bkey.index());
 		
 		merged = Instances.mergeInstances(a_new, b_new);
@@ -667,6 +663,21 @@ public class WekaMagic {
 	    return sound;		
 	}
 	
+	public static void NominalToString(Instances data, String attr) throws Exception{
+		Attribute filename = new Attribute("temp",(FastVector)null); //create String Attribute
+	    data.insertAttributeAt(filename, 0);
+	    
+	    Attribute tbc = data.attribute(attr);
+	    
+	    for(int i=0;i<data.size();i++){
+	    	data.get(i).setValue(data.attribute(filename.name()), data.get(i).stringValue(tbc));
+	    }
+	    
+	    data.deleteAttributeAt(data.attribute(attr).index());
+	    
+	    data.renameAttribute(data.attribute("temp"), attr);    
+	}
+	
 	public static Instances textCSVToInstances(String file) throws Exception{
 		CSVLoader loader = new CSVLoader();
 	    loader.setSource(new File(file));
@@ -675,9 +686,8 @@ public class WekaMagic {
 	    loader.setNoHeaderRowPresent(false);
 	    Instances data = loader.getDataSet();
 	    
-//	    NominalToString n = new NominalToString();
-//	    n.setInputFormat(data);
-//	    data = Filter.useFilter(data, n);
+	    NominalToString(data, "file");
+	    NominalToString(data, "text");
 	    
 	    return data;
 		
