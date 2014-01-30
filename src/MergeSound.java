@@ -6,25 +6,25 @@ import weka.core.Instances;
 public class MergeSound {
 	
 	public static void main(String[] args) throws Exception {
-		String dir = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\sound";
+		String par = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\";
+		String dir = par + "sound";
+		
 		
 		
 		
 		Instances sound = WekaMagic.soundArffToInstances(dir);
 		
-		WekaMagic.saveToArff(sound, dir + "\\sound", null);
+		WekaMagic.saveToArff(sound, par+ "sound", null);
 		
-		Instances text = WekaMagic.textCSVToInstances( dir + "\\output.csv");
+		Instances text = WekaMagic.textCSVToInstances( dir + "\\output.csv","file");
 		
-		WekaMagic.saveToArff(text, dir + "\\text", null);
-		
-		System.out.println("sound: " + sound.size() + " text: " + text.size());
+		WekaMagic.saveToArff(text, par + "text", null);
 		
 		Instances merged = WekaMagic.mergeInstancesBy(sound, text, "file");
 		
 		//System.out.println(merged);	
 		
-		WekaMagic.saveToArff(merged, dir + "\\result", null);
+		WekaMagic.saveToArff(merged, par + "result", null);
 	
 	    
 	    

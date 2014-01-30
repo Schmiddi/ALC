@@ -587,7 +587,7 @@ public class WekaMagic {
 	public static Instances mergeInstancesBy(Instances a, Instances b, String AttributeName) throws Exception{
 		Instances merged = new Instances(a);
 		Instances a_new,b_new;
-		int i;
+		int i,o,u;
 		Attribute akey=null,bkey=null;
 		
 		for(i=0;i<a.numAttributes();i++){
@@ -607,13 +607,34 @@ public class WekaMagic {
 		a_new = new Instances(a);
 		b_new = new Instances(b);
 		
-		a_new.sort(akey);
-		b_new.sort(bkey);
+		b_new.renameAttribute(bkey, "bfile");
 		
-		//a_new.deleteAttributeAt(akey.index());
-		b_new.deleteAttributeAt(bkey.index());
 		
-		merged = Instances.mergeInstances(a_new, b_new);
+		for(i=0;i<b_new.numAttributes();i++){
+			a_new.insertAttributeAt(b_new.attribute(i), a_new.numAttributes());
+		}
+		
+		for(i=0;i<a_new.size();i++){
+			for(o=0;o<b_new.size();o++){
+				if(a_new.get(i).stringValue(akey).equals(b_new.get(o).stringValue(b_new.attribute("bfile")))){
+					for(u=0;u<b_new.numAttributes();u++){
+						if(b_new.attribute(u).isNominal() || b_new.attribute(u).isString()){
+							a_new.get(i).setValue(a_new.attribute(b_new.attribute(u).name()),
+								b_new.get(o).stringValue(b_new.attribute(b_new.attribute(u).name())));
+						}else{
+							a_new.get(i).setValue(a_new.attribute(b_new.attribute(u).name()),
+									b_new.get(o).value(b_new.attribute(b_new.attribute(u).name())));
+						}
+					}
+					break;
+				}
+			}
+		}
+		
+		merged = a_new;
+		
+		//merged.deleteAttributeAt(merged.attribute(AttributeName).index());
+		merged.deleteAttributeAt(merged.attribute("bfile").index());
 		
 		return merged;
 	}
@@ -678,7 +699,7 @@ public class WekaMagic {
 	    data.renameAttribute(data.attribute("temp"), attr);    
 	}
 	
-	public static Instances textCSVToInstances(String file) throws Exception{
+	public static Instances textCSVToInstances(String file,String key) throws Exception{
 		CSVLoader loader = new CSVLoader();
 	    loader.setSource(new File(file));
 	    loader.setFieldSeparator(",");
@@ -686,12 +707,16 @@ public class WekaMagic {
 	    loader.setNoHeaderRowPresent(false);
 	    Instances data = loader.getDataSet();
 	    
-	    NominalToString(data, "file");
+	    NominalToString(data, key);
 	    NominalToString(data, "text");
+	    
+	    data.sort(data.attribute(key));
 	    
 	    return data;
 		
 	}
+	
+	
 
 	
 }
