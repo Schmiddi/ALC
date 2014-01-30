@@ -79,8 +79,10 @@ public class Sample {
 		Instances selected_test;
 		
 		MyClassificationOutput logistic_train;
-		MyClassificationOutput logistic_cross;
-		MyClassificationOutput logistic_test;
+		
+		MyClassificationOutput logistic_train_eval;
+		MyClassificationOutput logistic_cross_eval;
+		MyClassificationOutput logistic_test_eval;
 
 		// Load data to Weka
 		text_data = WekaMagic.loadText(currDir);
@@ -133,19 +135,17 @@ public class Sample {
 //		WekaMagic.saveToArff(selected_test, fileName + "_selected_test", selected);
 		
 		// Run ML algorithm - logistic
-
-		logistic_train = WekaMagic.runLogistic(filtered_train, (Double)10000.0, 2);
-		System.out.println(logistic_train.getElapsedTime());
-		System.out.println(Arrays.toString(logistic_train.getClassifierParams()));
-//		logistic_train.print();
+		logistic_train = WekaMagic.runLogistic(filtered_train, (Double)100000.0, 5);
+		logistic_train.print();
 //		WekaMagic.saveToArff(null, fileName + "_logistic_t", logistic);
 		
-		logistic_cross = WekaMagic.applyLogistic(filtered_cross_validation, logistic_train);
-		logistic_test  = WekaMagic.applyLogistic(filtered_test, logistic_train);
+		logistic_train_eval = WekaMagic.applyLogistic(filtered_train, logistic_train);
+		logistic_cross_eval = WekaMagic.applyLogistic(filtered_cross_validation, logistic_train);
+		logistic_test_eval  = WekaMagic.applyLogistic(filtered_test, logistic_train);
 		
-		System.out.println("f1-score - training: " + logistic_train.getF1Score());
-		System.out.println("f1-score - cross:    " + logistic_cross.getF1Score());
-		System.out.println("f1-score - test:     " + logistic_test.getF1Score());
+		System.out.println("f1-score - training: " + logistic_train_eval.getF1Score());
+		System.out.println("f1-score - cross:    " + logistic_cross_eval.getF1Score());
+		System.out.println("f1-score - test:     " + logistic_test_eval.getF1Score());
 			
 
 	}

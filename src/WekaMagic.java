@@ -3,6 +3,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Locale;
 
+import javax.smartcardio.ATR;
+
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.attributeSelection.Ranker;
 import weka.core.Instances;
@@ -15,6 +17,9 @@ import weka.core.SelectedTag;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.Evaluation;
 import weka.filters.Filter;
+import weka.core.Attribute;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Add;
 
 /**
  * @author Felix Neutatz
@@ -565,74 +570,67 @@ public class WekaMagic {
 		}
 		out.close();
 	}
-
-	public static void main(String[] args) throws Exception {
-		/**
-		 * 
-		 * Set parameter of input function
-		 */
-
-		// parameters for TextDirectoryLoader
-		String currDir = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Felix\\Backup\\DP_real\\rawData\\DP";
-
-		// parameters for StringToVector
-
-		int WordsToKeep = 1000000;
-
-		Boolean Ngram = true;
-		int ngram_min = 1;
-		int ngram_max = 3;
-
-		Boolean LowerCase = true;
-		Boolean NormalizeDocLength = true;
-		Boolean Stemming = true;
-
-		Boolean OutputWordCounts = true;
-		Boolean IDFTransform = true;
-		Boolean TFTransform = true;
-
-		Boolean Stopword = true;
-		// String list1 =
-		// "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in
-		// Speech\\Felix\\stopwords\\stop.txt";
-		String list1 = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Felix\\stopwords\\germanST.txt";
-
-		// parameters for Attribute Selection
-
-		Boolean BinarizeNumericAttributes = true;
-		double threshold = 0.004;
-
-		/*
-		 * 
-		 * All parameter are set
-		 */
-
-		String[] fullPath = currDir.split("/");
-		String fileName = fullPath[fullPath.length - 1];
-
-		MyOutput text_data = loadText(currDir);
-		text_data.print();
-		Instances dataRaw = text_data.getData();
-
-		saveToArff(dataRaw, fileName + "_raw_text", text_data);
-
-		MyOutput filtered = generateFeatures(dataRaw, WordsToKeep, Ngram,
-				ngram_min, ngram_max, LowerCase, NormalizeDocLength, Stemming,
-				OutputWordCounts, IDFTransform, TFTransform, Stopword, list1);
-		filtered.print();
-		Instances dataFiltered = filtered.getData();
-
-		saveToArff(dataFiltered, fileName + "_featured", filtered);
-
-		MyOutput selected = selectionByInfo(dataFiltered,
-				BinarizeNumericAttributes, threshold);
-		selected.print();
-		Instances dataSelected = selected.getData();
-
-		saveToArff(dataSelected, fileName + "_selected", selected);
-
-		MyClassificationOutput logistic = runLogistic(dataSelected);
-		logistic.print();
-		saveToArff(null, fileName + "_logistic", logistic);
+	
+	/**
+	 * @param a - Text feature instances 
+	 * @param b - Sound feature instances
+	 * @param AttributeName - Attribute name for the key column - name of the wav file for each instance
+	 * @return
+	 * @throws Exception
+	 */
+	public static Instances mergeInstancesBy(Instances a, Instances b, String AttributeName) throws Exception{
+		Instances merged = new Instances(a);
+		int i,o,u;
+		Attribute akey=null,bkey=null;
+		
+		for(i=0;i<a.numAttributes();i++){
+			if(a.attribute(i).name().equals(AttributeName)){
+				akey = a.attribute(i);
+				break;
+			}
+		}
+		//get all features
+		for(i=0;i<b.numAttributes();i++){
+			if(!b.attribute(i).name().equals(AttributeName)){ //if it is not the key feature
+				Add filter;
+		        filter = new Add();
+		        filter.setAttributeIndex("last");
+		        filter.setAttributeName(b.attribute(i).name());
+		        //filter.setAttributeType(value)
+		        filter.setInputFormat(b);
+		        merged = Filter.useFilter(merged, filter);
+			}
+			else{
+				bkey = b.attribute(i);
+			}
+		}
+		//merge instances
+		for(o=0;o<merged.size();o++){
+			for(i=0;i<b.size();i++){				
+				if(merged.get(o).stringValue(akey).equals(b.get(i).stringValue(bkey))){ //keys are equal
+					for(u=a.numAttributes();u<merged.numAttributes();u++){ //fill matching row 
+						merged.get(o).setValue(merged.attribute(u), 
+								b.get(i).value(b.attribute(a.attribute(u).name())));
+					}
+					break;
+				}
+			}
+		}
+		
+		merged.deleteAttributeAt(akey.index()); //delete String key
+		
+		return merged;
 	}
+	
+	public static Instances soundArffToInstances(String directory){
+		//get all arff files in the directory
+		//every arff file correspondents to one row
+		//the file name will be added as extra column
+		
+		Instances sound = null;
+		
+		return sound;		
+	}
+
+	
 }
