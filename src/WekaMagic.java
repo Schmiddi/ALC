@@ -7,9 +7,13 @@ import javax.smartcardio.ATR;
 
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.attributeSelection.Ranker;
+import weka.core.FastVector;
 import weka.core.Instances;
+import weka.core.converters.CSVLoader;
 import weka.core.converters.TextDirectoryLoader;
+import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.supervised.attribute.AttributeSelection;
+import weka.filters.unsupervised.attribute.NominalToString;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 import weka.core.stemmers.*;
 import weka.core.tokenizers.*;
@@ -187,7 +191,7 @@ public class WekaMagic {
 			Boolean Ngram, int ngram_min, int ngram_max, Boolean LowerCase,
 			Boolean NormalizeDocLength, Boolean Stemming,
 			Boolean OutputWordCounts, Boolean IDFTransform,
-			Boolean TFTransform, Boolean Stopword, String list)
+			Boolean TFTransform, Boolean Stopword, String list, int MinTermFreq)
 			throws Exception {
 		
 			
@@ -195,7 +199,7 @@ public class WekaMagic {
 						Ngram, ngram_min, ngram_max, LowerCase,
 						NormalizeDocLength, Stemming,
 						OutputWordCounts, IDFTransform,
-						TFTransform, Stopword, list);
+						TFTransform, Stopword, list, MinTermFreq);
 	}
 	
 	/**
@@ -222,7 +226,7 @@ public class WekaMagic {
 			Boolean Ngram, int ngram_min, int ngram_max, Boolean LowerCase,
 			Boolean NormalizeDocLength, Boolean Stemming,
 			Boolean OutputWordCounts, Boolean IDFTransform,
-			Boolean TFTransform, Boolean Stopword, String list)
+			Boolean TFTransform, Boolean Stopword, String list, int MinTermFreq)
 			throws Exception {
 		if (IDFTransform || TFTransform || NormalizeDocLength)
 			OutputWordCounts = true;
@@ -233,7 +237,9 @@ public class WekaMagic {
 		filter.setIDFTransform(IDFTransform);
 		filter.setTFTransform(TFTransform);
 		filter.setLowerCaseTokens(LowerCase);
+		
 		filter.setOutputWordCounts(OutputWordCounts);
+		filter.setMinTermFreq(MinTermFreq);
 
 		if (NormalizeDocLength) {
 			SelectedTag tag = new SelectedTag(
@@ -580,7 +586,8 @@ public class WekaMagic {
 	 */
 	public static Instances mergeInstancesBy(Instances a, Instances b, String AttributeName) throws Exception{
 		Instances merged = new Instances(a);
-		int i,o,u;
+		Instances a_new,b_new;
+		int i;
 		Attribute akey=null,bkey=null;
 		
 		for(i=0;i<a.numAttributes();i++){
@@ -589,47 +596,81 @@ public class WekaMagic {
 				break;
 			}
 		}
-		//get all features
+	
 		for(i=0;i<b.numAttributes();i++){
-			if(!b.attribute(i).name().equals(AttributeName)){ //if it is not the key feature
-				Add filter;
-		        filter = new Add();
-		        filter.setAttributeIndex("last");
-		        filter.setAttributeName(b.attribute(i).name());
-		        //filter.setAttributeType(value)
-		        filter.setInputFormat(b);
-		        merged = Filter.useFilter(merged, filter);
-			}
-			else{
+			if(b.attribute(i).name().equals(AttributeName)){ 
 				bkey = b.attribute(i);
-			}
-		}
-		//merge instances
-		for(o=0;o<merged.size();o++){
-			for(i=0;i<b.size();i++){				
-				if(merged.get(o).stringValue(akey).equals(b.get(i).stringValue(bkey))){ //keys are equal
-					for(u=a.numAttributes();u<merged.numAttributes();u++){ //fill matching row 
-						merged.get(o).setValue(merged.attribute(u), 
-								b.get(i).value(b.attribute(a.attribute(u).name())));
-					}
-					break;
-				}
+				break;
 			}
 		}
 		
-		merged.deleteAttributeAt(akey.index()); //delete String key
+		a_new = new Instances(a);
+		b_new = new Instances(b);
+		
+		a_new.sort(akey);
+		b_new.sort(bkey);
+		
+		merged = Instances.mergeInstances(a_new, b_new);
+		
+		merged.deleteStringAttributes();
 		
 		return merged;
 	}
 	
-	public static Instances soundArffToInstances(String directory){
+	
+	public static Instances soundArffToInstances(String directory) throws Exception{
 		//get all arff files in the directory
 		//every arff file correspondents to one row
 		//the file name will be added as extra column
 		
 		Instances sound = null;
+		int i;
+		String key_attr = "filename";
 		
-		return sound;		
+		File f = new File(directory);
+
+	    FilenameFilter textFilter = new FilenameFilter() {
+	        public boolean accept(File dir, String name) {
+	            return name.toLowerCase().endsWith(".arff");
+	        }
+	    };
+
+	    File[] files = f.listFiles(textFilter); //get all arff files in directory
+	    
+	    Attribute filename = new Attribute(key_attr,(FastVector)null); //create String Attribute
+	    
+	    for(i=0;i<files.length;i++){
+	    	DataSource source = new DataSource(files[i].getPath()); //load ARFF file
+	    	Instances data = source.getDataSet();
+	    	
+	    	data.deleteStringAttributes(); //delete all string attributes
+	    	
+	    	if(i==0){ //initialize sound instances
+	    		sound = data;
+	    		
+	    		sound.insertAttributeAt(filename, 0);	//add Filename feature    		
+	    		sound.get(i).setValue(sound.attribute(key_attr), files[i].getName().split("\\.")[0]); //set filename
+	    	}
+	    	else{ //add row for each file
+	    		data.insertAttributeAt(filename, 0);
+	    		data.get(0).setValue(sound.attribute(key_attr), files[i].getName().split("\\.")[0]);
+	    		
+	    		sound.add(data.get(0));
+	    	}
+	    }
+	    
+	    return sound;		
+	}
+	
+	public static Instances textCSVToInstances(String file) throws IOException{
+		CSVLoader loader = new CSVLoader();
+	    loader.setSource(new File(file));
+	    loader.setFieldSeparator(",");
+	    loader.setNoHeaderRowPresent(false);
+	    Instances data = loader.getDataSet();
+	    
+	    return data;
+		
 	}
 
 	
