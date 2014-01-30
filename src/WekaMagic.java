@@ -240,6 +240,10 @@ public class WekaMagic {
 		
 		filter.setOutputWordCounts(OutputWordCounts);
 		filter.setMinTermFreq(MinTermFreq);
+		
+		int  [] attributes = new int[1];
+		attributes[0] =	train.attribute("text").index();
+		filter.setAttributeIndicesArray(attributes);
 
 		if (NormalizeDocLength) {
 			SelectedTag tag = new SelectedTag(
@@ -610,9 +614,10 @@ public class WekaMagic {
 		a_new.sort(akey);
 		b_new.sort(bkey);
 		
-		merged = Instances.mergeInstances(a_new, b_new);
+		a_new.deleteAttributeAt(akey.index());
+		b_new.deleteAttributeAt(bkey.index());
 		
-		merged.deleteStringAttributes();
+		merged = Instances.mergeInstances(a_new, b_new);
 		
 		return merged;
 	}
@@ -625,7 +630,7 @@ public class WekaMagic {
 		
 		Instances sound = null;
 		int i;
-		String key_attr = "filename";
+		String key_attr = "file";
 		
 		File f = new File(directory);
 
@@ -662,12 +667,17 @@ public class WekaMagic {
 	    return sound;		
 	}
 	
-	public static Instances textCSVToInstances(String file) throws IOException{
+	public static Instances textCSVToInstances(String file) throws Exception{
 		CSVLoader loader = new CSVLoader();
 	    loader.setSource(new File(file));
 	    loader.setFieldSeparator(",");
+	    loader.setEnclosureCharacters("@");
 	    loader.setNoHeaderRowPresent(false);
 	    Instances data = loader.getDataSet();
+	    
+//	    NominalToString n = new NominalToString();
+//	    n.setInputFormat(data);
+//	    data = Filter.useFilter(data, n);
 	    
 	    return data;
 		
