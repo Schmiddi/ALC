@@ -1,3 +1,4 @@
+import java.util.Arrays;
 
 import weka.core.Instances;
 
@@ -12,7 +13,12 @@ public class Sample {
 		 */
 
 		// parameters for TextDirectoryLoader
-		String currDir = FolderWithDropbox+"\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Felix\\Backup\\DP_real\\rawData\\DP";
+		String currDir = null;
+
+		if(args.length > 0)
+		    currDir = args[0];
+		else
+		    currDir = FolderWithDropbox+"\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Felix\\Backup\\DP_real\\rawData\\DP";
 
 		// parameters for StringToVector
 
@@ -78,7 +84,7 @@ public class Sample {
 
 		// Load data to Weka
 		text_data = WekaMagic.loadText(currDir);
-		text_data.print();
+		//text_data.print();
 		dataRaw = text_data.getData();
 		
 		// Store raw data from Weka to arff file
@@ -101,7 +107,7 @@ public class Sample {
 				OutputWordCounts, IDFTransform, TFTransform, Stopword, list1);
 		
 		
-		filtered.print();
+		//filtered.print();
 		
 		filtered_train 				= filtered.getTrainData();
 		filtered_cross_validation 	= WekaMagic.applyFilter(cross_validation_split, filtered);
@@ -116,7 +122,7 @@ public class Sample {
 		// Run selection
 		selected = WekaMagic.selectionByInfo(filtered_train,
 				BinarizeNumericAttributes, threshold);
-		selected.print();
+		//selected.print();
 
 		selected_train 			  = selected.getTrainData();
 		selected_cross_validation = WekaMagic.applyFilter(filtered_cross_validation, selected);
@@ -127,12 +133,15 @@ public class Sample {
 //		WekaMagic.saveToArff(selected_test, fileName + "_selected_test", selected);
 		
 		// Run ML algorithm - logistic
-		logistic_train = WekaMagic.runLogistic(selected_train, (Double)100000.0, 5);
-		logistic_train.print();
+
+		logistic_train = WekaMagic.runLogistic(filtered_train, (Double)10000.0, 2);
+		System.out.println(logistic_train.getElapsedTime());
+		System.out.println(Arrays.toString(logistic_train.getClassifierParams()));
+//		logistic_train.print();
 //		WekaMagic.saveToArff(null, fileName + "_logistic_t", logistic);
 		
-		logistic_cross = WekaMagic.applyLogistic(selected_cross_validation, logistic_train);
-		logistic_test  = WekaMagic.applyLogistic(selected_test, logistic_train);
+		logistic_cross = WekaMagic.applyLogistic(filtered_cross_validation, logistic_train);
+		logistic_test  = WekaMagic.applyLogistic(filtered_test, logistic_train);
 		
 		System.out.println("f1-score - training: " + logistic_train.getF1Score());
 		System.out.println("f1-score - cross:    " + logistic_cross.getF1Score());
