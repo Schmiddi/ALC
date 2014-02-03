@@ -94,15 +94,28 @@ public class Sample {
 		
 		
 		//split data to training & test data
-		split = WekaMagic.separateInstances(dataRaw, new double[]{60,20,20}, 1);
+		//split = WekaMagic.separateInstances(dataRaw, new double[]{60,20,20}, 1);
+		split = WekaMagic.getStratifiedSplits(dataRaw, 1);
 		train_split 		   = split[0];
 		cross_validation_split = split[1];
 		test_split  		   = split[2];
 		
+		for(int i=0;i<dataRaw.numAttributes();i++){
+			System.out.println(dataRaw.attribute(i).name());
+		}
+		
+		System.out.println("raw: " + dataRaw.size() + " distr: " + WekaMagic.getDistribution(dataRaw, dataRaw.attribute("@@class@@"), "alc"));
+		
+		System.out.println("train: " + train_split.size() + " distr: " + WekaMagic.getDistribution(train_split, train_split.attribute("@@class@@"), "alc"));
+		System.out.println("cross: " + cross_validation_split.size() + " distr: " + WekaMagic.getDistribution(cross_validation_split, cross_validation_split.attribute("@@class@@"), "alc"));
+		System.out.println("test: " + test_split.size() + " distr: " + WekaMagic.getDistribution(test_split, test_split.attribute("@@class@@"), "alc"));
+		
+		
+		
 		//WekaMagic.saveToArff(train_split, fileName + "_raw_train", null);
 		//WekaMagic.saveToArff(test_split, fileName + "_raw_test", null);
 		
-
+/*
 		// Generate the features
 		filtered = WekaMagic.generateFeatures(train_split, WordsToKeep, Ngram,
 				ngram_min, ngram_max, LowerCase, NormalizeDocLength, Stemming,
@@ -110,7 +123,7 @@ public class Sample {
 				1 ); //achtung minterm
 		
 		
-		//filtered.print();
+		filtered.print();
 		
 		filtered_train 				= filtered.getTrainData();
 		filtered_cross_validation 	= WekaMagic.applyFilter(cross_validation_split, filtered);
@@ -125,7 +138,7 @@ public class Sample {
 		// Run selection
 		selected = WekaMagic.selectionByInfo(filtered_train,
 				BinarizeNumericAttributes, threshold);
-		//selected.print();
+		selected.print();
 
 		selected_train 			  = selected.getTrainData();
 		selected_cross_validation = WekaMagic.applyFilter(filtered_cross_validation, selected);
@@ -147,7 +160,7 @@ public class Sample {
 		System.out.println("f1-score - training: " + logistic_train_eval.getF1Score());
 		System.out.println("f1-score - cross:    " + logistic_cross_eval.getF1Score());
 		System.out.println("f1-score - test:     " + logistic_test_eval.getF1Score());
-			
+			*/
 
 	}
 }

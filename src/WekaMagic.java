@@ -161,6 +161,32 @@ public class WekaMagic {
 		return sets;			
 	}
 	
+	public static Instances[] getStratifiedSplits(Instances data, int randseed){
+		Instances [] sets = new Instances[3];
+		int numFolds = 5;
+		
+		Instances runInstances = new Instances(data);
+	    Random random = new Random(randseed);
+	    runInstances.randomize(random);
+	    if (runInstances.classAttribute().isNominal() && (numFolds > 1)) {
+	      runInstances.stratify(numFolds);
+	    }
+	    
+	    Instances test  = runInstances.testCV(numFolds, 0);
+	    Instances cross = runInstances.testCV(numFolds, 1);	
+	    Instances train = runInstances.testCV(numFolds, 2);
+	    
+	    for(int fold=3;fold<numFolds;fold++){
+	    	train.addAll(runInstances.testCV(numFolds, fold));
+	    }	
+	    
+	    sets[0] = train;
+	    sets[1] = cross;
+	    sets[2] = test;
+		
+		return sets;			
+	}
+	
 	
 
 	
@@ -238,7 +264,7 @@ public class WekaMagic {
 		filter.setMinTermFreq(MinTermFreq);
 		
 		int  [] attributes = new int[1];
-		attributes[0] =	train.attribute("text").index();
+		attributes[0] =	train.attribute("text").index(); //eventuell +1 ???
 		filter.setAttributeIndicesArray(attributes);
 
 		if (NormalizeDocLength) {
@@ -716,7 +742,17 @@ public class WekaMagic {
 		
 	}
 	
-	
+	public static double getDistribution(Instances data, Attribute attr, String s){
+		double distr=0;
+		
+		for(int i=0;i<data.size();i++){
+			if(data.get(i).stringValue(attr).equals(s)) distr++;
+		}
+		
+		distr /= (double)data.size();
+		
+		return distr;
+	}
 
 	
 }
