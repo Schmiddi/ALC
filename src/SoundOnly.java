@@ -15,7 +15,7 @@ public class SoundOnly {
 	 * @param args
 	 */
 	
-	private static final String ARFF_FILE = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\result.arff";
+	//private static final String ARFF_FILE = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\result.arff";
 	private static final String CSV_DIR = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\";
 	
 	public static void main(String[] args) {
@@ -25,8 +25,12 @@ public class SoundOnly {
 		
 		try {
 			Instances data = null;
-			data = testRun.getSoundInstances(ARFF_FILE); //get all instances from arff file
-			System.out.println("Instances read from " + ARFF_FILE + ": " + data.numInstances());
+			//data = testRun.getSoundInstances(ARFF_FILE); //get all instances from arff file
+			
+			
+			data = testRun.getSoundInstances(CSV_DIR + "sound", "\\output.csv");
+			
+			System.out.println("Instances read from " + CSV_DIR + ": " + data.numInstances());
 			Instances[] datasets = new Instances[3];
 			
 			//split all instances into 3 sets
@@ -113,6 +117,25 @@ public class SoundOnly {
     	
     	//set class attribute
     	data.setClassIndex(data.numAttributes()-1);
+    	
+    	return data;
+	}
+	
+	public Instances getSoundInstances(String dir, String csv) throws Exception
+	{
+		Instances sound = WekaMagic.soundArffToInstances(dir);		
+		Instances text = WekaMagic.textCSVToInstances( dir + csv,"file");
+		
+		Instances data = WekaMagic.mergeInstancesBy(sound, text, "file");
+		
+		
+		//delete unnecessary attributes
+		data.deleteAttributeAt(data.attribute("text").index());
+		data.deleteAttributeAt(data.attribute("file").index());
+		data.deleteAttributeAt(data.attribute("numeric_class").index());
+    	
+    	//set class attribute
+    	//data.setClassIndex(data.numAttributes()-1);
     	
     	return data;
 	}
