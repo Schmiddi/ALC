@@ -6,12 +6,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
@@ -40,6 +44,23 @@ public class GeneratesPlot {
 
 		return dataset;
 
+	}
+	
+	
+	private static XYDataset[] createDatasetSound(List <List<Double>>[] myLists) {
+		final XYSeries[] series = new XYSeries[myLists.length];
+		final XYSeriesCollection[] dataset = new XYSeriesCollection[myLists.length];
+		for (int i=0;i<myLists.length;i++)
+		{	
+			for(List<Double> tempList : myLists[i]){
+				series[i].add(tempList.get(0),tempList.get(1));
+			}
+			
+			dataset[i].addSeries(series[i]);
+
+		
+		}
+		return dataset;
 	}
 
 	/**
@@ -87,6 +108,51 @@ public class GeneratesPlot {
 
 		return chart;
 	}
+	
+	private static JFreeChart createChartSound(final XYDataset dataset, String title) {
+
+		// create the chart...
+		final JFreeChart chart = ChartFactory.createXYLineChart(
+				title, // chart title
+				"Ridge", // x axis label
+				"UAR", // y axis label
+				dataset, // data
+				PlotOrientation.VERTICAL, 
+				false, // no legend
+				true, // tooltips
+				false // urls
+				);
+
+		chart.setBackgroundPaint(Color.white);
+
+		// get a reference to the plot for further customisation...
+		final XYPlot plot = chart.getXYPlot();
+		plot.setBackgroundPaint(Color.lightGray);
+		plot.setDomainGridlinePaint(Color.white);
+		plot.setRangeGridlinePaint(Color.white);
+		
+		LogAxis domain = new LogAxis("Ridge");
+	    ((LogAxis)domain).setMinorTickCount(10);
+	    ((LogAxis)domain).setMinorTickMarksVisible(true);
+	    ((LogAxis)domain).setBase(10);
+	    final DecimalFormatSymbols newSymbols = new DecimalFormatSymbols(Locale.GERMAN);
+	    newSymbols.setExponentSeparator("E");
+	    final DecimalFormat decForm = new DecimalFormat("0.##E0#");
+	    decForm.setDecimalFormatSymbols(newSymbols);
+	    ((LogAxis)domain).setNumberFormatOverride(decForm);
+	      
+		plot.setDomainAxis(domain);
+		
+		// Y-Axis
+		NumberAxis range = (NumberAxis) plot.getRangeAxis();
+		range.setRange(0.5, 1.025);
+		range.setTickUnit(new NumberTickUnit(0.025));
+		range.setVerticalTickLabels(false); // Horizontal Alignment
+
+		return chart;
+	}
+
+
 
 	public static void create(List <List<Double>> myList, String outputFolder, String filename) {
 
@@ -110,6 +176,27 @@ public class GeneratesPlot {
 		}
 	}
 	
+	public static void createSound(List <List<Double>> myList, String outputFolder, String filename) {
+
+		// Get the Data
+		final XYDataset dataset = createDataset(myList);
+		final JFreeChart chart = createChartSound(dataset,filename);
+
+		// Size: Width, Height
+		BufferedImage objBufferedImage = chart.createBufferedImage(1000, 600);
+
+		ByteArrayOutputStream bas = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(objBufferedImage, "png", bas); // File Type
+			byte[] byteArray = bas.toByteArray();
+			InputStream in = new ByteArrayInputStream(byteArray);
+			BufferedImage image = ImageIO.read(in);
+			File outputfile = new File(outputFolder + filename+".png"); // File Name
+			ImageIO.write(image, "png", outputfile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	private static XYDataset createDatasetLC(List <List<Double>> myList) {
 		final XYSeries series_train = new XYSeries("Train");
