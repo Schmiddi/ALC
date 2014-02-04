@@ -594,7 +594,7 @@ public class WekaMagic {
 			i=0;
 			for(Double d : dataset){
 				if(i>0) out.write(",");
-				out.write("\"" + String.format(Locale.US, "%1$.4f", d)
+				out.write("\"" + String.format(Locale.US, "%1$.10f", d)
 					+ "\"");
 				i++;
 			}
