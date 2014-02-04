@@ -42,10 +42,11 @@ public class SoundOnly {
 			
 			//run classification tests
 			System.out.println("Running test for train set...");
-			List<List<Double>> resultTrain = testRun.runTest(datasets[0]);
+			List<List<Double>> resultTrain = testRun.runTest(datasets[0], datasets[1],datasets[2]);
 			//save to CSV
 			WekaMagic.printHashMap(resultTrain, CSV_DIR + "result_train.csv");
 			
+			/*
 			System.out.println("Running test for cross set...");
 			List<List<Double>> resultCross = testRun.runTest(datasets[1]);
 			//save to CSV
@@ -54,9 +55,10 @@ public class SoundOnly {
 			System.out.println("Running test for test set...");
 			List<List<Double>> resultTest = testRun.runTest(datasets[2]);
 			//save to CSV
-			WekaMagic.printHashMap(resultTest, CSV_DIR + "result_test.csv");
+			WekaMagic.printHashMap(resultTest, CSV_DIR + "result_test.csv"); */
 			
 			//Plot everything
+			/*
 			System.out.println("Plotting results...");
 			
 			System.out.println("Creating chart " + CSV_DIR + "plot_train.png ...");
@@ -66,7 +68,7 @@ public class SoundOnly {
 			GeneratesPlot.createSound(resultCross, CSV_DIR, "plot_cross.png");
 			
 			System.out.println("Creating chart " + CSV_DIR + "plot_test.png ...");
-			GeneratesPlot.createSound(resultTest, CSV_DIR, "plot_test.png");
+			GeneratesPlot.createSound(resultTest, CSV_DIR, "plot_test.png");*/
 			
 			System.out.println("Finished operations");
 			
@@ -76,7 +78,7 @@ public class SoundOnly {
 
 	}
 	
-	private List<List<Double>> runTest(Instances dataset) throws Exception {
+	private List<List<Double>> runTest(Instances train, Instances cross, Instances test) throws Exception {
 		
 		/* Runs 10 times logistic to regularize and stores results in list */
 		
@@ -85,11 +87,22 @@ public class SoundOnly {
 		double stdRidge = 0.00000001; //10^-8
 		double currentRidge = stdRidge;
 		MyClassificationOutput currentResult = null;
+		MyClassificationOutput logistic_train_eval, logistic_cross_eval, logistic_test_eval;
 		
-		for (int i=0;i<13;i++)
+		for (int i=0;i<15;i++)
 		{
 			currentRidge = stdRidge * (Math.pow(10, i));
-			currentResult = WekaMagic.runLogistic(dataset, currentRidge, 5);
+			currentResult = WekaMagic.runLogistic(test, currentRidge, 5);
+			
+			logistic_train_eval = WekaMagic.applyLogistic(train, currentResult);
+			logistic_cross_eval = WekaMagic.applyLogistic(cross, currentResult);
+			logistic_test_eval  = WekaMagic.applyLogistic(test,  currentResult);
+			
+			System.out.println("Fscore for ridge = " + currentRidge);
+			System.out.println("f1-score - training: " + logistic_train_eval.getF1Score());
+			System.out.println("f1-score - cross:    " + logistic_cross_eval.getF1Score());
+			System.out.println("f1-score - test:     " + logistic_test_eval.getF1Score());
+			System.out.println("");
 			
 			// Result processing
 			List<Double> ex = new ArrayList<Double>();
@@ -104,23 +117,6 @@ public class SoundOnly {
 	}
 
 	
-	public Instances getSoundInstances(String arff_file) throws Exception
-	{
-		BufferedReader reader = new BufferedReader(new FileReader(arff_file));
-		ArffReader arff = new ArffReader(reader);
-		Instances data = arff.getData();
-				
-		//delete unnecessary attributes
-		data.deleteAttributeAt(1584);
-    	data.deleteAttributeAt(1583);
-    	data.deleteAttributeAt(0);
-    	
-    	//set class attribute
-    	data.setClassIndex(data.numAttributes()-1);
-    	
-    	return data;
-	}
-	
 	public Instances getSoundInstances(String dir, String csv) throws Exception
 	{
 		Instances sound = WekaMagic.soundArffToInstances(dir);		
@@ -132,10 +128,7 @@ public class SoundOnly {
 		//delete unnecessary attributes
 		data.deleteAttributeAt(data.attribute("text").index());
 		data.deleteAttributeAt(data.attribute("file").index());
-		data.deleteAttributeAt(data.attribute("numeric_class").index());
-    	
-    	//set class attribute
-    	//data.setClassIndex(data.numAttributes()-1);
+		//data.deleteAttributeAt(data.attribute("numeric_class").index());
     	
     	return data;
 	}
