@@ -662,6 +662,9 @@ public class WekaMagic {
 		//merged.deleteAttributeAt(merged.attribute(AttributeName).index());
 		merged.deleteAttributeAt(merged.attribute("bfile").index());
 		
+		merged.setClass(merged.attribute("class"));
+		
+		
 		return merged;
 	}
 	
@@ -734,7 +737,7 @@ public class WekaMagic {
 	    Instances data = loader.getDataSet();
 	    
 	    NominalToString(data, key);
-	    NominalToString(data, "text");
+	    NominalToString(data, "text");	    
 	    
 	    data.sort(data.attribute(key));
 	    
