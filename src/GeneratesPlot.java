@@ -115,7 +115,7 @@ public class GeneratesPlot {
 		final JFreeChart chart = ChartFactory.createXYLineChart(
 				title, // chart title
 				"Ridge", // x axis label
-				"UAR", // y axis label
+				"F1score", // y axis label
 				dataset, // data
 				PlotOrientation.VERTICAL, 
 				false, // no legend
