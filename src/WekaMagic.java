@@ -663,6 +663,14 @@ public class WekaMagic {
 		merged.deleteAttributeAt(merged.attribute("bfile").index());
 		
 		merged.setClass(merged.attribute("class"));
+		/*
+		//if the attribute only has one value -> this column doesn't make any sense at all
+		for(i=0;i<merged.numAttributes();i++){
+			if(merged.numDistinctValues(i) == 1){
+				merged.deleteAttributeAt(i);
+			}
+		}
+		*/
 		
 		
 		return merged;
