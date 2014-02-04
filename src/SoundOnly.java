@@ -94,7 +94,7 @@ public class SoundOnly {
 			// Result processing
 			List<Double> ex = new ArrayList<Double>();
 			ex.add(0, currentRidge);
-			ex.add(1, currentResult.getUAR());
+			ex.add(1, currentResult.getF1Score());
 			ex.add(2, (double) currentResult.getElapsedTime());
 			values.add(ex);
 		}
