@@ -28,11 +28,12 @@ public class SoundOnly {
 			data = testRun.getSoundInstances(csv_dir + fileSep + "sound", fileSep + "output.csv");
 			
 			System.out.println("Instances read from " + csv_dir + ": " + data.numInstances());
+
 			Instances[] datasets = new Instances[3];
 			
 			//split all instances into 3 sets
 			System.out.println("Splitting instances...");
-			datasets = testRun.getSoundDatasets(data);
+			datasets = getSoundDatasets(data);
 			System.out.println("Train set: " + datasets[0].numInstances() + " instances");
 			System.out.println("Cross set: " + datasets[1].numInstances() + " instances");
 			System.out.println("Test set: " + datasets[2].numInstances() + " instances");
@@ -132,7 +133,7 @@ public class SoundOnly {
 	}
 
 	
-	public Instances getSoundInstances(String dir, String csv) throws Exception
+	public static Instances getSoundInstances(String dir, String csv) throws Exception
 	{
 		Instances sound = WekaMagic.soundArffToInstances(dir);		
 		Instances text = WekaMagic.textCSVToInstances( dir + csv,"file");
@@ -148,7 +149,7 @@ public class SoundOnly {
     	return data;
 	}
 
-	public Instances[] getSoundDatasets(Instances data)
+	public static Instances[] getSoundDatasets(Instances data)
 	{
 		return WekaMagic.getStratifiedSplits(data, 100);
 	}
