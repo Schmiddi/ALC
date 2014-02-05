@@ -49,6 +49,9 @@ public class SoundOnly {
 			//Plot everything
 			System.out.println("Plotting results...");
 			
+			if (isWindows==false)
+				csv_dir += "/";
+			
 			System.out.println("Creating chart " + csv_dir + "plot_train.png ...");
 			GeneratesPlot.createSound(results.get(0), csv_dir, "plot_train.png");
 			
