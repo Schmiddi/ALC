@@ -39,6 +39,11 @@ public class SoundOnly {
 			
 			//run classification tests
 			List<List<List<Double>>> results = testRun.runTest(datasets[0], datasets[1],datasets[2]);
+			
+			//Adjust file path for linux
+			if (isWindows==false)
+				csv_dir += "/";
+			
 			//save to CSV
 			WekaMagic.printHashMap(results.get(0), csv_dir + "result_train.csv");//Train set
 			WekaMagic.printHashMap(results.get(1), csv_dir + "result_cross.csv");//Cross set
@@ -48,10 +53,7 @@ public class SoundOnly {
 		
 			//Plot everything
 			System.out.println("Plotting results...");
-			
-			if (isWindows==false)
-				csv_dir += "/";
-			
+									
 			System.out.println("Creating chart " + csv_dir + "plot_train.png ...");
 			GeneratesPlot.createSound(results.get(0), csv_dir, "plot_train.png");
 			
