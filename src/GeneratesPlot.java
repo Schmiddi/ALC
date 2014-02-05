@@ -145,7 +145,7 @@ public class GeneratesPlot {
 		
 		// Y-Axis
 		NumberAxis range = (NumberAxis) plot.getRangeAxis();
-		range.setRange(0.5, 1.025);
+		range.setRange(0.3, 0.95);
 		range.setTickUnit(new NumberTickUnit(0.025));
 		range.setVerticalTickLabels(false); // Horizontal Alignment
 
