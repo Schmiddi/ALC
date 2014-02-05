@@ -1,10 +1,7 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import weka.core.Instances;
-import weka.core.converters.ArffLoader.ArffReader;
 
 
 public class SoundOnly {
@@ -41,34 +38,25 @@ public class SoundOnly {
 			System.out.println("Test set: " + datasets[2].numInstances() + " instances");
 			
 			//run classification tests
-			System.out.println("Running test for train set...");
-			List<List<Double>> resultTrain = testRun.runTest(datasets[0], datasets[1],datasets[2]);
+			List<List<List<Double>>> results = testRun.runTest(datasets[0], datasets[1],datasets[2]);
 			//save to CSV
-			WekaMagic.printHashMap(resultTrain, CSV_DIR + "result_train.csv");
+			WekaMagic.printHashMap(results.get(0), CSV_DIR + "result_train.csv");//Train set
+			WekaMagic.printHashMap(results.get(1), CSV_DIR + "result_cross.csv");//Cross set
+			WekaMagic.printHashMap(results.get(2), CSV_DIR + "result_test.csv");//Test set
 			
-			/*
-			System.out.println("Running test for cross set...");
-			List<List<Double>> resultCross = testRun.runTest(datasets[1]);
-			//save to CSV
-			WekaMagic.printHashMap(resultCross, CSV_DIR + "result_cross.csv");
-						
-			System.out.println("Running test for test set...");
-			List<List<Double>> resultTest = testRun.runTest(datasets[2]);
-			//save to CSV
-			WekaMagic.printHashMap(resultTest, CSV_DIR + "result_test.csv"); */
 			
+		
 			//Plot everything
-			/*
 			System.out.println("Plotting results...");
 			
 			System.out.println("Creating chart " + CSV_DIR + "plot_train.png ...");
-			GeneratesPlot.createSound(resultTrain, CSV_DIR, "plot_train.png");
+			GeneratesPlot.createSound(results.get(0), CSV_DIR, "plot_train.png");
 			
 			System.out.println("Creating chart " + CSV_DIR + "plot_cross.png ...");
-			GeneratesPlot.createSound(resultCross, CSV_DIR, "plot_cross.png");
+			GeneratesPlot.createSound(results.get(1), CSV_DIR, "plot_cross.png");
 			
 			System.out.println("Creating chart " + CSV_DIR + "plot_test.png ...");
-			GeneratesPlot.createSound(resultTest, CSV_DIR, "plot_test.png");*/
+			GeneratesPlot.createSound(results.get(2), CSV_DIR, "plot_test.png");
 			
 			System.out.println("Finished operations");
 			
@@ -78,17 +66,24 @@ public class SoundOnly {
 
 	}
 	
-	private List<List<Double>> runTest(Instances train, Instances cross, Instances test) throws Exception {
+	private List<List<List<Double>>> runTest(Instances train, Instances cross, Instances test) throws Exception {
 		
 		/* Runs 10 times logistic to regularize and stores results in list */
 		
-		List<List<Double>> values = new ArrayList<List<Double>>();
+		List<List<List<Double>>> values = new ArrayList<List<List<Double>>>();
 		
 		double stdRidge = 0.00000001; //10^-8
 		double currentRidge = stdRidge;
 		MyClassificationOutput currentResult = null;
 		MyClassificationOutput logistic_train_eval, logistic_cross_eval, logistic_test_eval;
 		
+		//create 3 lists storing data for 3 sets
+		List<List<Double>> listTrain = new ArrayList<List<Double>>();
+		List<List<Double>> listCross = new ArrayList<List<Double>>();
+		List<List<Double>> listTest = new ArrayList<List<Double>>();
+		
+		System.out.println("Running tests for train, cross and test set...");
+		//Iterate through different ridge values
 		for (int i=0;i<15;i++)
 		{
 			currentRidge = stdRidge * (Math.pow(10, i));
@@ -104,13 +99,28 @@ public class SoundOnly {
 			System.out.println("f1-score - test:     " + logistic_test_eval.getF1Score());
 			System.out.println("");
 			
-			// Result processing
-			List<Double> ex = new ArrayList<Double>();
-			ex.add(0, currentRidge);
-			ex.add(1, currentResult.getF1Score());
-			ex.add(2, (double) currentResult.getElapsedTime());
-			values.add(ex);
+			// Result processing to lists
+			List<Double> exTrain = new ArrayList<Double>();
+			List<Double> exCross = new ArrayList<Double>();
+			List<Double> exTest = new ArrayList<Double>();
+			
+			exTrain.add(0, currentRidge);
+			exTrain.add(1, logistic_train_eval.getF1Score());
+			listTrain.add(exTrain);
+			
+			exCross.add(0, currentRidge);
+			exCross.add(1, logistic_cross_eval.getF1Score());
+			listCross.add(exCross);
+			
+			exTest.add(0, currentRidge);
+			exTest.add(1, logistic_test_eval.getF1Score());
+			listTest.add(exTest);
+			
 		}
+		
+		values.add(listTrain);
+		values.add(listCross);
+		values.add(listTest);
 		
 		return values;
 				
