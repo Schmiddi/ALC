@@ -25,8 +25,8 @@ public class SoundOnly {
 			//data = testRun.getSoundInstances(ARFF_FILE); //get all instances from arff file
 			
 			String csv_dir = args[0];
-
-			data = getSoundInstances(csv_dir + "sound", fileSep + "output.csv");
+			
+			data = getSoundInstances(csv_dir + fileSep + "sound", fileSep + "output.csv");
 			
 
 			System.out.println("Instances read from " + csv_dir + ": " + data.numInstances());
