@@ -12,22 +12,22 @@ public class SoundOnly {
 	 * @param args
 	 */
 	
-	//private static final String ARFF_FILE = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\result.arff";
-	private static final String CSV_DIR = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\";
+	//private static final String CSV_DIR = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\";
 	
 	public static void main(String[] args) {
 		
 		SoundOnly testRun = new SoundOnly();
-		
+		boolean isWindows = ((System.getProperty("os.name").contains("Windows")))?true:false;
+		String fileSep = isWindows?"\\":"/";
 		
 		try {
 			Instances data = null;
 			//data = testRun.getSoundInstances(ARFF_FILE); //get all instances from arff file
 			
+			String csv_dir = args[0];
+			data = testRun.getSoundInstances(csv_dir + fileSep + "sound", fileSep + "output.csv");
 			
-			data = testRun.getSoundInstances(CSV_DIR + "sound", "\\output.csv");
-			
-			System.out.println("Instances read from " + CSV_DIR + ": " + data.numInstances());
+			System.out.println("Instances read from " + csv_dir + ": " + data.numInstances());
 			Instances[] datasets = new Instances[3];
 			
 			//split all instances into 3 sets
@@ -40,23 +40,23 @@ public class SoundOnly {
 			//run classification tests
 			List<List<List<Double>>> results = testRun.runTest(datasets[0], datasets[1],datasets[2]);
 			//save to CSV
-			WekaMagic.printHashMap(results.get(0), CSV_DIR + "result_train.csv");//Train set
-			WekaMagic.printHashMap(results.get(1), CSV_DIR + "result_cross.csv");//Cross set
-			WekaMagic.printHashMap(results.get(2), CSV_DIR + "result_test.csv");//Test set
+			WekaMagic.printHashMap(results.get(0), csv_dir + "result_train.csv");//Train set
+			WekaMagic.printHashMap(results.get(1), csv_dir + "result_cross.csv");//Cross set
+			WekaMagic.printHashMap(results.get(2), csv_dir + "result_test.csv");//Test set
 			
 			
 		
 			//Plot everything
 			System.out.println("Plotting results...");
 			
-			System.out.println("Creating chart " + CSV_DIR + "plot_train.png ...");
-			GeneratesPlot.createSound(results.get(0), CSV_DIR, "plot_train.png");
+			System.out.println("Creating chart " + csv_dir + "plot_train.png ...");
+			GeneratesPlot.createSound(results.get(0), csv_dir, "plot_train.png");
 			
-			System.out.println("Creating chart " + CSV_DIR + "plot_cross.png ...");
-			GeneratesPlot.createSound(results.get(1), CSV_DIR, "plot_cross.png");
+			System.out.println("Creating chart " + csv_dir + "plot_cross.png ...");
+			GeneratesPlot.createSound(results.get(1), csv_dir, "plot_cross.png");
 			
-			System.out.println("Creating chart " + CSV_DIR + "plot_test.png ...");
-			GeneratesPlot.createSound(results.get(2), CSV_DIR, "plot_test.png");
+			System.out.println("Creating chart " + csv_dir + "plot_test.png ...");
+			GeneratesPlot.createSound(results.get(2), csv_dir, "plot_test.png");
 			
 			System.out.println("Finished operations");
 			
