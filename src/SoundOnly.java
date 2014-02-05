@@ -92,7 +92,7 @@ public class SoundOnly {
 		for (int i=0;i<15;i++)
 		{
 			currentRidge = stdRidge * (Math.pow(10, i));
-			currentResult = WekaMagic.runLogistic(test, currentRidge, 5);
+			currentResult = WekaMagic.runLogistic(train, currentRidge, 5);
 			
 			logistic_train_eval = WekaMagic.applyLogistic(train, currentResult);
 			logistic_cross_eval = WekaMagic.applyLogistic(cross, currentResult);
