@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import weka.classifiers.Evaluation;
 import weka.classifiers.functions.Logistic;
 import weka.core.Instances;
 
@@ -15,36 +14,43 @@ public class SoundOnlyCrossValidation {
 	 */
 	
 	//private static final String ARFF_FILE = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\result.arff";
-	private static final String CSV_DIR = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\";
+	//private static final String CSV_DIR = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\";
 	
 	public static void main(String[] args) {
 		
 		SoundOnlyCrossValidation testRun = new SoundOnlyCrossValidation();
+		boolean isWindows = ((System.getProperty("os.name").contains("Windows")))?true:false;
+		String fileSep = isWindows?"\\":"/";
 		
 		
 		try {
 			Instances data = null;
 			//data = testRun.getSoundInstances(ARFF_FILE); //get all instances from arff file
 			
+			String csv_dir = args[0];
 			
-			data = SoundOnly.getSoundInstances(CSV_DIR + "sound", "\\output.csv");
+			data = SoundOnly.getSoundInstances(csv_dir + fileSep + "sound", fileSep + "output.csv");
 			
-			System.out.println("Instances read from " + CSV_DIR + ": " + data.numInstances());
+			System.out.println("Instances read from " + csv_dir + ": " + data.numInstances());
 			List<List<List<Double>>> results = testRun.runTest(data);
+			
+			
+			//Adjust file path
+			csv_dir += fileSep;
+			
 			//save to CSV
-			WekaMagic.printHashMap(results.get(0), CSV_DIR + "result_train_cross_validation.csv");//Train set
-			WekaMagic.printHashMap(results.get(1), CSV_DIR + "result_cross_cross_validation.csv");//Cross set
+			WekaMagic.printHashMap(results.get(0), csv_dir + "result_train_cross_validation.csv");//Train set
+			WekaMagic.printHashMap(results.get(1), csv_dir + "result_cross_cross_validation.csv");//Cross set
 			
-			
-		
+					
 			//Plot everything
 			System.out.println("Plotting results...");
 			
-			System.out.println("Creating chart " + CSV_DIR + "plot_train_cross_validation.png ...");
-			GeneratesPlot.createSound(results.get(0), CSV_DIR, "plot_train_cross_validation.png");
+			System.out.println("Creating chart " + csv_dir + "plot_train_cross_validation.png ...");
+			GeneratesPlot.createSound(results.get(0), csv_dir, "plot_train_cross_validation.png");
 			
-			System.out.println("Creating chart " + CSV_DIR + "plot_test_cross_validation.png ...");
-			GeneratesPlot.createSound(results.get(1), CSV_DIR, "plot_test_cross_validation.png");
+			System.out.println("Creating chart " + csv_dir + "plot_test_cross_validation.png ...");
+			GeneratesPlot.createSound(results.get(1), csv_dir, "plot_test_cross_validation.png");
 			
 			System.out.println("Finished operations");
 			
@@ -78,6 +84,7 @@ public class SoundOnlyCrossValidation {
 			l.setRidge(currentRidge);
 			l.setMaxIts(5);
 			
+			System.out.println("Cross validation for ridge = " + currentRidge);
 			currentResult = WekaMagic.runLogistic(data, currentRidge, 5);
 			CrossValidationOutput cvo = WekaMagic.crossValidation(currentResult, data, 10, 1);
 			
