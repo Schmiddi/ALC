@@ -20,6 +20,7 @@ import weka.classifiers.functions.Logistic;
 import weka.classifiers.Evaluation;
 import weka.filters.Filter;
 import weka.core.Attribute;
+import weka.classifiers.Classifier;
 
 /**
  * @author Felix Neutatz
@@ -763,6 +764,39 @@ public class WekaMagic {
 		distr /= (double)data.size();
 		
 		return distr;
+	}
+	
+	public static CrossValidationOutput crossValidation(MyClassificationOutput classifier, Instances data, int folds, int randseed) throws Exception{
+		CrossValidationOutput cvo = new CrossValidationOutput();
+		
+		Classifier c = (Classifier)classifier.getClassifier();
+		
+		Instances runInstances = new Instances(data);
+	    Random random = new Random(randseed);
+	    runInstances.randomize(random);
+	    if (runInstances.classAttribute().isNominal() && (folds > 1)) {
+	      runInstances.stratify(folds);
+	    }
+		
+	    Evaluation eval;
+		for (int n = 0; n < folds; n++) {
+			   Instances train = runInstances.trainCV(folds, n);
+			   
+			   long startTime = System.currentTimeMillis();	
+			   c.buildClassifier(train);
+			   long stopTime = System.currentTimeMillis();
+			   long elapsedTime = stopTime - startTime;
+			   
+			   eval = new Evaluation(train);			   
+			   eval.evaluateModel(c,train);	
+			   cvo.addTrainingEval(n, new MyClassificationOutput(c,eval,"MyCrossValidation",elapsedTime));
+			   
+			   Instances test = runInstances.testCV(folds, n);
+			   eval = new Evaluation(test);
+			   eval.evaluateModel(c,test);
+			   cvo.addTestEval(n, new MyClassificationOutput(c,eval,"MyCrossValidation",elapsedTime));
+		}
+		return cvo;
 	}
 
 	
