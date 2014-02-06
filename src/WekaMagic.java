@@ -700,10 +700,7 @@ public class WekaMagic {
 	    Attribute filename = new Attribute(key_attr,(FastVector)null); //create String Attribute
 	    
 	    for(i=0;i<files.length;i++){
-	    	DataSource source = new DataSource(files[i].getPath()); //load ARFF file
-	    	Instances data = source.getDataSet();
-	    	
-	    	data.deleteStringAttributes(); //delete all string attributes
+	    	Instances data = loadFromSoundArff(files[i].getPath()); //load ARFF file
 	    	
 	    	if(i==0){ //initialize sound instances
 	    		sound = data;
@@ -798,6 +795,15 @@ public class WekaMagic {
 			   cvo.addTestEval(n, new MyClassificationOutput(c,eval,"MyCrossValidation",elapsedTime));
 		}
 		return cvo;
+	}
+	
+	public static Instances loadFromSoundArff(String file) throws Exception{
+		DataSource source = new DataSource(file); //load ARFF file
+    	Instances data = source.getDataSet();
+    	
+    	data.deleteStringAttributes(); //delete all string attributes
+    	
+    	return data;
 	}
 
 	
