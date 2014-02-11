@@ -1,14 +1,21 @@
 import java.util.ArrayList;
 
 import weka.classifiers.Classifier;
+import weka.filters.Filter;
 
 public class CrossValidationOutput {
 	private ArrayList<MyClassificationOutput> trainingEval;
 	private ArrayList<MyClassificationOutput> testEval;
+	private ArrayList<MyOutput> filters;
 	
 	public CrossValidationOutput(){
 		trainingEval = new ArrayList<MyClassificationOutput>();
 		testEval = new ArrayList<MyClassificationOutput>();
+		filters = new ArrayList<Filter>();
+	}
+	
+	public void addFilter(Filter filter){
+		filters.add(filter);
 	}
 	
 	public void addTrainingEval(int foldNr, MyClassificationOutput eval){

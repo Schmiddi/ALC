@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import weka.classifiers.functions.Logistic;
+import weka.core.Debug;
 import weka.core.Instances;
 
 
@@ -86,8 +87,11 @@ public class SoundOnlyCrossValidation {
 			
 			System.out.println("Cross validation for ridge = " + currentRidge);
 			currentResult = WekaMagic.runLogistic(data, currentRidge, 5);
-			CrossValidationOutput cvo = WekaMagic.crossValidation(currentResult, data, 10, 1);
+			CrossValidationOutput cvo = WekaMagic.crossValidation(currentResult, data, 10, 1, null);
 			
+			
+			String modelDir = "neu";
+			Debug.saveToFile(modelDir, cvo.getBestClassifier());
 			
 			// Result processing to lists
 			List<Double> exTrain = new ArrayList<Double>();

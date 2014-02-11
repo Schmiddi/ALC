@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Locale;
@@ -380,8 +381,7 @@ public class WekaMagic {
 			Boolean BinarizeNumericAttributes, double threshold)
 			throws Exception {
 		AttributeSelection as = new AttributeSelection();
-		as.setInputFormat(train);
-
+		
 		InfoGainAttributeEval eval = new InfoGainAttributeEval();
 		eval.setBinarizeNumericAttributes(BinarizeNumericAttributes);
 
@@ -392,6 +392,8 @@ public class WekaMagic {
 		r.setThreshold(threshold);
 
 		as.setSearch(r);
+		
+		as.setInputFormat(train);
 
 		long startTime = System.currentTimeMillis();
 		Instances train_selected = Filter.useFilter(train, as);
@@ -763,7 +765,7 @@ public class WekaMagic {
 		return distr;
 	}
 	
-	public static CrossValidationOutput crossValidation(MyClassificationOutput classifier, Instances data, int folds, int randseed) throws Exception{
+	public static CrossValidationOutput crossValidation(MyClassificationOutput classifier, Instances data, int folds, int randseed, ArrayList<MyOutput> filters) throws Exception{
 		CrossValidationOutput cvo = new CrossValidationOutput();
 		
 		Classifier c = (Classifier)classifier.getClassifier();
@@ -777,8 +779,18 @@ public class WekaMagic {
 		
 	    Evaluation eval;
 		for (int n = 0; n < folds; n++) {
-			System.out.println("Running cross fold #" + (n+1) + "/" + folds + " ...");
-			Instances train = runInstances.trainCV(folds, n);
+			   System.out.println("Running cross fold #" + (n+1) + "/" + folds + " ...");
+			  
+			   Instances train = runInstances.trainCV(folds, n);
+			   Instances test = runInstances.testCV(folds, n);
+			   
+			   for(MyOutput m : filters){
+				   Filter f = (Filter)m.getOperation();
+				   f.setInputFormat(train);
+				   cvo.addFilter(f);
+				   train = Filter.useFilter(train, f);
+				   test  = Filter.useFilter(test, f);
+			   }
 			   
 			   long startTime = System.currentTimeMillis();	
 			   c.buildClassifier(train);
@@ -789,7 +801,6 @@ public class WekaMagic {
 			   eval.evaluateModel(c,train);	
 			   cvo.addTrainingEval(n, new MyClassificationOutput(c,eval,"MyCrossValidation",elapsedTime));
 			   
-			   Instances test = runInstances.testCV(folds, n);
 			   eval = new Evaluation(test);
 			   eval.evaluateModel(c,test);
 			   cvo.addTestEval(n, new MyClassificationOutput(c,eval,"MyCrossValidation",elapsedTime));
