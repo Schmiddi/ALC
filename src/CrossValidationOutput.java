@@ -6,7 +6,7 @@ import weka.filters.Filter;
 public class CrossValidationOutput {
 	private ArrayList<MyClassificationOutput> trainingEval;
 	private ArrayList<MyClassificationOutput> testEval;
-	private ArrayList<MyOutput> filters;
+	private ArrayList<Filter> filters;
 	
 	public CrossValidationOutput(){
 		trainingEval = new ArrayList<MyClassificationOutput>();
