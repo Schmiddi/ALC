@@ -300,10 +300,15 @@ public class WekaMagic {
 			filter.setStopwords(f);
 		}
 
-		filter.setInputFormat(train);
+		if(train != null){
+			filter.setInputFormat(train);
+		}
 
 		long startTime = System.currentTimeMillis();
-		Instances train_dataFiltered = Filter.useFilter(train, filter); //run filter on training data
+		Instances train_dataFiltered = null;
+		if(train != null){
+			train_dataFiltered = Filter.useFilter(train, filter); //run filter on training data
+		}
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 		
@@ -491,7 +496,7 @@ public class WekaMagic {
 		
 		Logistic l = new Logistic();
 		long elapsedTime;
-		Evaluation eval;
+		Evaluation eval = null;
 		String options;
 		
 		//set regularization parameter
@@ -506,14 +511,17 @@ public class WekaMagic {
 		
 		//build classifier
 		long startTime = System.currentTimeMillis();
-		l.buildClassifier(train);
+		if(train != null){
+			l.buildClassifier(train);
+		}
 		long stopTime = System.currentTimeMillis();
 		elapsedTime = stopTime - startTime;
 		
 		//evaluate how good it performes on the training set
-		eval = new Evaluation(train);
-		eval.evaluateModel(l,train);
-		
+		if(train != null){
+			eval = new Evaluation(train);
+			eval.evaluateModel(l,train);
+		}
 				
 		return new MyClassificationOutput(l, eval, options, elapsedTime);
 	}
