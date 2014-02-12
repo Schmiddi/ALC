@@ -266,8 +266,10 @@ public class WekaMagic {
 		filter.setMinTermFreq(MinTermFreq);
 		
 		int  [] attributes = new int[1];
-		attributes[0] =	train.attribute("text").index(); //eventuell +1 ???
-		filter.setAttributeIndicesArray(attributes);
+        if(train != null){
+		    attributes[0] =	train.attribute("text").index(); //eventuell +1 ???
+            filter.setAttributeIndicesArray(attributes);
+        }
 
 		if (NormalizeDocLength) {
 			SelectedTag tag = new SelectedTag(
@@ -320,8 +322,9 @@ public class WekaMagic {
 		else{
 			test_dataFiltered = null;
 		}
-		
-		setClassIndex(train_dataFiltered);
+	
+        if(train != null)
+		    setClassIndex(train_dataFiltered);
 		
 		Instances [] dataFiltered = iToArray(train_dataFiltered,test_dataFiltered);
 

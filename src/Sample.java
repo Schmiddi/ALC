@@ -147,75 +147,21 @@ public class Sample {
 		//text_data.print();
 		dataRaw = text_data.getData();
 		
-		// Store raw data from Weka to arff file
-//		WekaMagic.saveToArff(dataRaw, fileName + "_raw_text", text_data);
-		
-		
-		//split data to training & test data
-		//split = WekaMagic.separateInstances(dataRaw, new double[]{60,20,20}, 1);
-		split = WekaMagic.getStratifiedSplits(dataRaw, 1);
-		train_split 		   = split[0];
-		cross_validation_split = split[1];
-		test_split  		   = split[2];
-		
-		for(int i=0;i<dataRaw.numAttributes();i++){
-			System.out.println(dataRaw.attribute(i).name());
-		}
-		
-		System.out.println("raw: " + dataRaw.size() + " distr: " + WekaMagic.getDistribution(dataRaw, dataRaw.attribute("@@class@@"), "alc"));
-		
-		System.out.println("train: " + train_split.size() + " distr: " + WekaMagic.getDistribution(train_split, train_split.attribute("@@class@@"), "alc"));
-		System.out.println("cross: " + cross_validation_split.size() + " distr: " + WekaMagic.getDistribution(cross_validation_split, cross_validation_split.attribute("@@class@@"), "alc"));
-		System.out.println("test: " + test_split.size() + " distr: " + WekaMagic.getDistribution(test_split, test_split.attribute("@@class@@"), "alc"));
-		
-		
-		
-		//WekaMagic.saveToArff(train_split, fileName + "_raw_train", null);
-		//WekaMagic.saveToArff(test_split, fileName + "_raw_test", null);
-		
-		// Generate the features
-		filtered = WekaMagic.generateFeatures(train_split, WordsToKeep, Ngram,
+        // Generate the features
+		filtered = WekaMagic.generateFeatures(null, WordsToKeep, Ngram,
 				ngram_min, ngram_max, LowerCase, NormalizeDocLength, Stemming,
 				OutputWordCounts, IDFTransform, TFTransform, Stopword, list1,
 				minTermFrequency ); //achtung minterm
 		
 		
-		filtered.print();
-		
-		filtered_train 				= filtered.getTrainData();
-		filtered_cross_validation 	= WekaMagic.applyFilter(cross_validation_split, filtered);
-		filtered_test 				= WekaMagic.applyFilter(test_split, filtered);
-		
-		
-		// Store featured data from Weka to arff file
-//		WekaMagic.saveToArff(filtered_train, fileName + "_featured_train", filtered);
-//		WekaMagic.saveToArff(filtered_test, fileName + "_featured_test", null);
-	
-
-		// Run selection
-		selected = WekaMagic.selectionByInfo(filtered_train,
-				BinarizeNumericAttributes, threshold);
-		selected.print();
-
-		selected_train 			  = selected.getTrainData();
-		selected_cross_validation = WekaMagic.applyFilter(filtered_cross_validation, selected);
-		selected_test             = WekaMagic.applyFilter(filtered_test, selected);
-
-		// Backup the selection
-//		WekaMagic.saveToArff(selected_train, fileName + "_selected_train", selected);
-//		WekaMagic.saveToArff(selected_test, fileName + "_selected_test", selected);
 		
 		// Run ML algorithm - logistic
-		logistic_train = WekaMagic.runLogistic(filtered_train, regularization, maxIterations);
-		logistic_train.print();
-//		WekaMagic.saveToArff(null, fileName + "_logistic_t", logistic);
+		logistic_train = WekaMagic.runLogistic(null, regularization, maxIterations);
 		
-		logistic_train_eval = WekaMagic.applyLogistic(filtered_train, logistic_train);
-		logistic_cross_eval = WekaMagic.applyLogistic(filtered_cross_validation, logistic_train);
-		logistic_test_eval  = WekaMagic.applyLogistic(filtered_test, logistic_train);
-		
-		System.out.println("f1-score - training: " + logistic_train_eval.getF1Score());
-		System.out.println("f1-score - cross:    " + logistic_cross_eval.getF1Score());
-		System.out.println("f1-score - test:     " + logistic_test_eval.getF1Score());
-	}
+        ArrayList<MyOutput> filter = new ArrayList<MyOutput>();
+        filter.add(filtered);
+		CrossValidationOutput cvo = WekaMagic.crossValidation(logistic_train, dataRaw, 10, 1, filter);
+	    System.out.println(cvo.getTrainF1Score());
+        System.out.println(cvo.getTestF1Score());
+    }
 }
