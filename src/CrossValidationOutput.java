@@ -38,6 +38,15 @@ public class CrossValidationOutput {
 		return fscore;
 	}
 	
+	public double getTestUAR(){
+		double fscore = 0;
+		for(MyClassificationOutput eval: testEval){
+			fscore += eval.getUAR();
+		}
+		fscore /= numFolds();
+		return fscore;
+	}
+	
 	public double getTestF1ScoreMax(){
 		double fscore = -1;
 		for(MyClassificationOutput eval: testEval){
@@ -77,6 +86,15 @@ public class CrossValidationOutput {
 		double fscore = 0;
 		for(MyClassificationOutput eval: trainingEval){
 			fscore += eval.getF1Score();
+		}
+		fscore /= numFolds();
+		return fscore;
+	}
+	
+	public double getTrainUAR(){
+		double fscore = 0;
+		for(MyClassificationOutput eval: trainingEval){
+			fscore += eval.getUAR();
 		}
 		fscore /= numFolds();
 		return fscore;

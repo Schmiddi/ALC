@@ -22,16 +22,16 @@ public class SoundOnly {
 		
 		try {
 			Instances data = null;
-			//data = testRun.getSoundInstances(ARFF_FILE); //get all instances from arff file
 			
-			String csv_dir = args[0];
+			String arff_dir = args[0];
+			String csv_dir = SoundOnlyCrossValidation.getParent(arff_dir);
 			
-			data = getSoundInstances(csv_dir + fileSep + "sound", fileSep + "output.csv");
+			data = SoundOnly.getSoundInstances(arff_dir, csv_dir + "output.csv");
 			
 
-			System.out.println("Instances read from " + csv_dir + ": " + data.numInstances());
+			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
 
-
+			arff_dir += fileSep;
 
 			Instances[] datasets = new Instances[3];
 			
@@ -50,23 +50,23 @@ public class SoundOnly {
 				csv_dir += "/";
 			
 			//save to CSV
-			WekaMagic.printHashMap(results.get(0), csv_dir + "result_train.csv");//Train set
-			WekaMagic.printHashMap(results.get(1), csv_dir + "result_cross.csv");//Cross set
-			WekaMagic.printHashMap(results.get(2), csv_dir + "result_test.csv");//Test set
+			WekaMagic.printHashMap(results.get(0), arff_dir + "result_train.csv");//Train set
+			WekaMagic.printHashMap(results.get(1), arff_dir + "result_cross.csv");//Cross set
+			WekaMagic.printHashMap(results.get(2), arff_dir + "result_test.csv");//Test set
 			
 			
 		
 			//Plot everything
 			System.out.println("Plotting results...");
 									
-			System.out.println("Creating chart " + csv_dir + "plot_train.png ...");
-			GeneratesPlot.createSound(results.get(0), csv_dir, "plot_train.png");
+			System.out.println("Creating chart " + arff_dir + "plot_train.png ...");
+			GeneratesPlot.createSound(results.get(0), arff_dir, "plot_train.png");
 			
-			System.out.println("Creating chart " + csv_dir + "plot_cross.png ...");
-			GeneratesPlot.createSound(results.get(1), csv_dir, "plot_cross.png");
+			System.out.println("Creating chart " + arff_dir + "plot_cross.png ...");
+			GeneratesPlot.createSound(results.get(1), arff_dir, "plot_cross.png");
 			
-			System.out.println("Creating chart " + csv_dir + "plot_test.png ...");
-			GeneratesPlot.createSound(results.get(2), csv_dir, "plot_test.png");
+			System.out.println("Creating chart " + arff_dir + "plot_test.png ...");
+			GeneratesPlot.createSound(results.get(2), arff_dir, "plot_test.png");
 			
 			System.out.println("Finished operations");
 			
@@ -140,7 +140,7 @@ public class SoundOnly {
 	public static Instances getSoundInstances(String dir, String csv) throws Exception
 	{
 		Instances sound = WekaMagic.soundArffToInstances(dir);		
-		Instances text = WekaMagic.textCSVToInstances( dir + csv,"file");
+		Instances text = WekaMagic.textCSVToInstances(csv,"file");
 		
 		Instances data = WekaMagic.mergeInstancesBy(sound, text, "file");
 		
