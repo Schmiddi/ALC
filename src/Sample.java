@@ -102,9 +102,7 @@ public class Sample {
 											// IDFTransform, TFTransform,
 											// NormalizeDocLength)
 
-        Boolean BinarizeNumericAttributes = true; // True/False
-        double threshold = 0.04;
-		int WordsToKeep = 1000000;
+        int WordsToKeep = 1000000;
         Boolean LowerCase = true;
         int minTermFrequency = 2;
         int maxIterations = 5;
@@ -115,32 +113,12 @@ public class Sample {
 		 */
 
 		
-		String[] fullPath = currDir.split("/");
-		String fileName = fullPath[fullPath.length - 1];
-
 		MyOutput text_data;
 		Instances dataRaw;
 		
-		Instances[] split;
-		Instances train_split;
-		Instances cross_validation_split;
-		Instances test_split;
-		
 		MyOutput filtered;
-		Instances filtered_train;
-		Instances filtered_cross_validation;
-		Instances filtered_test;
-		
-		MyOutput selected;
-		Instances selected_train;
-		Instances selected_cross_validation;
-		Instances selected_test;
-		
 		MyClassificationOutput logistic_train;
 		
-		MyClassificationOutput logistic_train_eval;
-		MyClassificationOutput logistic_cross_eval;
-		MyClassificationOutput logistic_test_eval;
 
 		// Load data to Weka
 		text_data = WekaMagic.loadText(currDir);
