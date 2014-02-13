@@ -81,12 +81,8 @@ public class SoundOnlyCrossValidation {
 		{
 			currentRidge = stdRidge * (Math.pow(10, i));
 			
-			Logistic l = new Logistic();
-			l.setRidge(currentRidge);
-			l.setMaxIts(5);
-			
 			System.out.println("Cross validation for ridge = " + currentRidge);
-			currentResult = WekaMagic.runLogistic(data, currentRidge, 5);
+			currentResult = WekaMagic.runLogistic(null, currentRidge, 5);
 			CrossValidationOutput cvo = WekaMagic.crossValidation(currentResult, data, 10, 1, null);
 			
 			

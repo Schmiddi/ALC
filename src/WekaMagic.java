@@ -795,12 +795,14 @@ public class WekaMagic {
 			   Instances train = runInstances.trainCV(folds, n);
 			   Instances test = runInstances.testCV(folds, n);
 			   
-			   for(MyOutput m : filters){
-				   Filter f = (Filter)m.getOperation();
-				   f.setInputFormat(train);
-				   cvo.addFilter(f);
-				   train = Filter.useFilter(train, f);
-				   test  = Filter.useFilter(test, f);
+			   if(filters != null){
+				   for(MyOutput m : filters){
+					   Filter f = (Filter)m.getOperation();
+					   f.setInputFormat(train);
+					   cvo.addFilter(f);
+					   train = Filter.useFilter(train, f);
+					   test  = Filter.useFilter(test, f);
+				   }
 			   }
 			   
 			   long startTime = System.currentTimeMillis();	

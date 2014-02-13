@@ -144,7 +144,6 @@ public class Sample {
 
 		// Load data to Weka
 		text_data = WekaMagic.loadText(currDir);
-		//text_data.print();
 		dataRaw = text_data.getData();
 		
         // Generate the features
