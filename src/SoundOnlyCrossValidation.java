@@ -33,7 +33,7 @@ public class SoundOnlyCrossValidation {
 			data = SoundOnly.getSoundInstances(arff_dir, csv_dir + "output.csv");
 			
 			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
-			List<List<List<Double>>> results = testRun.runTestUAR(data);
+			List<List<List<Double>>> results = testRun.runTest(data);
 			
 			
 			arff_dir += fileSep;

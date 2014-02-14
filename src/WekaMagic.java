@@ -824,8 +824,12 @@ public class WekaMagic {
 	public static Instances loadFromSoundArff(String file) throws Exception{
 		DataSource source = new DataSource(file); //load ARFF file
     	Instances data = source.getDataSet();
-    	
-    	data.deleteStringAttributes(); //delete all string attributes
+    	if(data == null){
+    		data.deleteStringAttributes(); //delete all string attributes
+    	}
+    	else{
+    		System.out.println("Please fix the input path!");
+    	}
     	
     	return data;
 	}
