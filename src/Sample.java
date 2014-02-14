@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -123,6 +122,10 @@ public class Sample {
 		// Load data to Weka
 		text_data = WekaMagic.loadText(currDir);
 		dataRaw = text_data.getData();
+		
+		for(int d=dataRaw.size()-1;d>20;d--){
+			dataRaw.delete(d);
+		}
 		
         // Generate the features
 		filtered = WekaMagic.generateFeatures(null, WordsToKeep, Ngram,
