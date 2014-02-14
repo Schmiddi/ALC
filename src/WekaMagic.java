@@ -824,7 +824,7 @@ public class WekaMagic {
 	public static Instances loadFromSoundArff(String file) throws Exception{
 		DataSource source = new DataSource(file); //load ARFF file
     	Instances data = source.getDataSet();
-    	if(data == null){
+    	if(data != null){
     		data.deleteStringAttributes(); //delete all string attributes
     	}
     	else{

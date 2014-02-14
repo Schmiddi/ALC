@@ -137,10 +137,10 @@ public class SoundOnly {
 	}
 
 	
-	public static Instances getSoundInstances(String dir, String csv) throws Exception
+	public static Instances getSoundInstances(String arffdir, String csv_file) throws Exception
 	{
-		Instances sound = WekaMagic.soundArffToInstances(dir);		
-		Instances text = WekaMagic.textCSVToInstances(csv,"file");
+		Instances sound = WekaMagic.soundArffToInstances(arffdir);		
+		Instances text = WekaMagic.textCSVToInstances(csv_file,"file");
 		
 		Instances data = WekaMagic.mergeInstancesBy(sound, text, "file");
 		
