@@ -173,7 +173,7 @@ private List<List<List<Double>>> runTestUAR(Instances data) throws Exception {
 		parent = "";
 	    while (Tok.hasMoreElements()){
 	    	if(i<n-1){
-	                parent += Tok.nextElement() + fileSep+ fileSep;
+	                parent += Tok.nextElement() + fileSep;
 	    	}
 	    	else{break;}
 	    	i++;
