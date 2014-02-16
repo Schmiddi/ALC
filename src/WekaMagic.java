@@ -790,7 +790,7 @@ public class WekaMagic {
 		
 	    Evaluation eval;
 		for (int n = 0; n < folds; n++) {
-			   System.out.println("Running cross fold #" + (n+1) + "/" + folds + " ...");
+			   //System.out.println("Running cross fold #" + (n+1) + "/" + folds + " ...");
 			  
 			   Instances train = runInstances.trainCV(folds, n);
 			   Instances test = runInstances.testCV(folds, n);

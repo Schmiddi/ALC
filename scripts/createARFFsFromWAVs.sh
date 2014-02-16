@@ -5,7 +5,7 @@ then
     echo "Usage: $0 <CLASSES-DIRECTORY> <ARFF-OUTPUT-DIRECTORY>"
 else
 
-CONF=/home/alc/tools/opensmile-2.0-rc1/opensmile/config/myIS10_paraling.conf
+CONF=/home/alc/workspace/ALC/test/conf/myemo_large.conf
 BIN=/home/alc/tools/opensmile-2.0-rc1/opensmile/SMILExtract
 
 COUNT=0

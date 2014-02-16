@@ -123,10 +123,6 @@ public class Sample {
 		text_data = WekaMagic.loadText(currDir);
 		dataRaw = text_data.getData();
 		
-		for(int d=dataRaw.size()-1;d>20;d--){
-			dataRaw.delete(d);
-		}
-		
         // Generate the features
 		filtered = WekaMagic.generateFeatures(null, WordsToKeep, Ngram,
 				ngram_min, ngram_max, LowerCase, NormalizeDocLength, Stemming,
