@@ -1,6 +1,9 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 import weka.classifiers.Classifier;
+import weka.core.Attribute;
+import weka.core.Instances;
 import weka.filters.Filter;
 
 public class CrossValidationOutput {
@@ -8,10 +11,104 @@ public class CrossValidationOutput {
 	private ArrayList<MyClassificationOutput> testEval;
 	private ArrayList<Filter> filters;
 	
+	private ArrayList<ArrayList<String>> train_key_set;
+	private ArrayList<ArrayList<String>> test_key_set;
+	private int folds;
+	private int randseed;
+	
+	private Instances table;
+	private Attribute key;
+	
+	
+	
 	public CrossValidationOutput(){
 		trainingEval = new ArrayList<MyClassificationOutput>();
 		testEval = new ArrayList<MyClassificationOutput>();
 		filters = new ArrayList<Filter>();
+	}
+	
+	public CrossValidationOutput(Instances table){
+		trainingEval = new ArrayList<MyClassificationOutput>();
+		testEval = new ArrayList<MyClassificationOutput>();
+		filters = new ArrayList<Filter>();
+		
+		this.table = table;
+		folds = 10;
+		randseed = 1;
+		
+		key = null;
+		for(int i=0;i<table.numAttributes();i++){
+			if(table.attribute(i).isString() && !table.attribute(i).isNominal()){
+				key = table.attribute(i);
+			}
+		}
+		
+		Instances runInstances = new Instances(table);
+	    Random random = new Random(randseed);
+	    runInstances.randomize(random);
+	    if (runInstances.classAttribute().isNominal() && (folds > 1)) {
+	      runInstances.stratify(folds);
+	    }
+		
+	    
+	    train_key_set = new ArrayList<ArrayList<String>>();
+		test_key_set  = new ArrayList<ArrayList<String>>();
+	    
+		
+		//save which file is in the training set / test set
+	    ArrayList<String> keylist = null;
+    	for (int n = 0; n < folds; n++) {
+		   Instances train = runInstances.trainCV(folds, n);
+		   
+		   keylist = new ArrayList<String>();
+		   for(int i=0;i<train.size();i++){
+			   keylist.add(train.get(i).stringValue(key));
+		   }
+		   train_key_set.add(n,keylist);
+		   
+		   Instances test = runInstances.testCV(folds, n);
+		   
+		   keylist = new ArrayList<String>();
+		   for(int i=0;i<test.size();i++){
+			   keylist.add(test.get(i).stringValue(key));
+		   }
+		   test_key_set.add(n,keylist);		   
+		   
+    	}	
+	}
+	
+	public Instances getTrainSet(int n){
+		ArrayList<String> keys = train_key_set.get(n);
+		
+		Instances train = new Instances(table);
+		train.delete();
+		
+		for(int i=0;i<keys.size();i++){
+			for(int u=0;u<table.size();u++){
+				if(table.get(u).stringValue(key).equals(keys.get(i))){
+					train.add(table.get(u));
+				}
+			}
+		}
+		train.deleteStringAttributes();
+		return train;
+	}
+	
+	public Instances getTestSet(int n){
+		ArrayList<String> keys = test_key_set.get(n);
+		
+		Instances test = new Instances(table);
+		test.delete();
+		
+		for(int i=0;i<keys.size();i++){
+			for(int u=0;u<table.size();u++){
+				if(table.get(u).stringValue(key).equals(keys.get(i))){
+					test.add(table.get(u));
+				}
+			}
+		}
+		test.deleteStringAttributes();
+		return test;
 	}
 	
 	public void addFilter(Filter filter){
