@@ -833,6 +833,72 @@ public class WekaMagic {
     	
     	return data;
 	}
+	
+	public static String cleanString(String s){
+		String str = s;
+		
+		String tb_removed = ".*~+_-/\\";
+		
+		for(int i=0;i<tb_removed.length();i++){
+			String character = "" + tb_removed.charAt(i);
+			str = str.replace(character, "");
+		}
+		
+		
+		ArrayList<String> tags_RegExp = new ArrayList<String>();
+		tags_RegExp.add("<[^>]*>");
+		tags_RegExp.add("\\[[^\\]]*\\]");
+		
+		tags_RegExp.add("#[^#]*#");
+		
+		for(int i=0;i<tags_RegExp.size();i++){
+			str = str.replaceAll(tags_RegExp.get(i), "");
+		}
+		
+		return str;
+	}
+	
+	public static Attribute getPhrase(Instances n_data, String s_key){
+		Attribute phrase = null;
+		for(int i=0;i<n_data.numAttributes();i++){
+			if(n_data.attribute(i).isString() && !n_data.attribute(i).name().equals(s_key) && !n_data.attribute(i).isNominal()){
+				phrase = n_data.attribute(i);
+				break;
+			}
+		}
+		
+		return phrase;
+	}
+	
+	public static Instances cleanCorpus(Instances data, String s_key){
+		Instances n_data = new Instances(data);
+		
+		Attribute phrase = getPhrase(n_data,s_key);
+		
+		
+		
+		for(int i=0;i<n_data.size();i++){
+			String s = n_data.get(i).stringValue(phrase);	
+			
+			s = cleanString(s);
+			s = s.trim();
+			
+			n_data.get(i).setValue(phrase,s);		
+		}
+		
+		return n_data;
+	}
+	
+	public static void createReferenceText(String file, Instances data, String s_key) throws FileNotFoundException, UnsupportedEncodingException{
+		PrintWriter writer = new PrintWriter(file, "UTF-8");
+		
+		Attribute phrase = getPhrase(data,s_key);
+		
+		for(int i=0;i<data.size();i++){
+			writer.println("<s>" + data.get(i).stringValue(phrase) + "</s>");
+		}
+		writer.close();		
+	}
 
 	
 }

@@ -27,7 +27,7 @@ public class CrossValidationOutput {
 		filters = new ArrayList<Filter>();
 	}
 	
-	public CrossValidationOutput(Instances table){
+	public CrossValidationOutput(Instances table, String s_key){
 		trainingEval = new ArrayList<MyClassificationOutput>();
 		testEval = new ArrayList<MyClassificationOutput>();
 		filters = new ArrayList<Filter>();
@@ -38,8 +38,9 @@ public class CrossValidationOutput {
 		
 		key = null;
 		for(int i=0;i<table.numAttributes();i++){
-			if(table.attribute(i).isString() && !table.attribute(i).isNominal()){
+			if(table.attribute(i).isString() && !table.attribute(i).isNominal() && table.attribute(i).name().equals(s_key)){
 				key = table.attribute(i);
+				break;
 			}
 		}
 		
@@ -87,11 +88,17 @@ public class CrossValidationOutput {
 			for(int u=0;u<table.size();u++){
 				if(table.get(u).stringValue(key).equals(keys.get(i))){
 					train.add(table.get(u));
+					break;
 				}
 			}
 		}
-		train.deleteStringAttributes();
 		return train;
+	}
+	
+	public Instances getTrainSetWOString(int n){
+		Instances data = getTrainSet(n);
+		data.deleteStringAttributes();
+		return data;
 	}
 	
 	public Instances getTestSet(int n){
@@ -104,11 +111,17 @@ public class CrossValidationOutput {
 			for(int u=0;u<table.size();u++){
 				if(table.get(u).stringValue(key).equals(keys.get(i))){
 					test.add(table.get(u));
+					break;
 				}
 			}
 		}
-		test.deleteStringAttributes();
 		return test;
+	}
+	
+	public Instances getTestSetWOString(int n){
+		Instances data = getTestSet(n);
+		data.deleteStringAttributes();
+		return data;
 	}
 	
 	public void addFilter(Filter filter){
