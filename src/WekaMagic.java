@@ -882,6 +882,7 @@ public class WekaMagic {
 			
 			s = cleanString(s);
 			s = s.trim();
+			//s = s.toLowerCase();
 			
 			n_data.get(i).setValue(phrase,s);		
 		}
@@ -895,7 +896,7 @@ public class WekaMagic {
 		Attribute phrase = getPhrase(data,s_key);
 		
 		for(int i=0;i<data.size();i++){
-			writer.println("<s>" + data.get(i).stringValue(phrase) + "</s>");
+			writer.println("<s> " + data.get(i).stringValue(phrase) + " </s>");
 		}
 		writer.close();		
 	}
