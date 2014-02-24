@@ -252,9 +252,7 @@ public class WekaMagic {
 			Boolean OutputWordCounts, Boolean IDFTransform,
 			Boolean TFTransform, Boolean Stopword, String list, int MinTermFreq)
 			throws Exception {
-		if (IDFTransform || TFTransform || NormalizeDocLength)
-			OutputWordCounts = true;
-
+		
 		StringToWordVector filter = new StringToWordVector();
 		filter.setWordsToKeep(WordsToKeep);
 
