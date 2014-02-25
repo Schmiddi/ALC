@@ -25,8 +25,8 @@ public static void main(String[] args) {
 			MyClassificationOutput currentResult = WekaMagic.runLogistic(data, 10000.0, 5);
 			
 			//save classifier to file
-			String modelDir = args[1];
-		    Debug.saveToFile(modelDir, (Classifier)currentResult.getClassifier());
+			String modelFile = args[1];
+		    Debug.saveToFile(modelFile, (Classifier)currentResult.getClassifier());
 			
 			System.out.println("Classifier saved");
 			
