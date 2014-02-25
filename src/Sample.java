@@ -55,7 +55,7 @@ public class Sample {
             runSample(currDir, NDL, ST, ngram, Stopword,list1, IDF, TF, wordsToKeep,i, (Double)null, true);
         }
     
-        Double listReg[] = {0.00000005, 0.000005, 0.000005,0.00005,0.0005,0.005,0.05,0.5 ,1.0,2.0,3.0,5.0,10.0,20.0,50.0,100.0,150.0,250.0,500.0,1000.0};
+        Double listReg[] = {0.00000005, 0.000005,0.00005,0.0005,0.05,1.0,1000.0,10000.0, 100000.0};
 
         for(int i=0; i < listReg.length; i++){
             System.out.println(">>> Regularization: "+listReg[i] + " <<<");
