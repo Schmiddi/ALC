@@ -70,6 +70,9 @@ public class ClassifyTest {
 			    double pred = fc.classifyInstance(wavsample.get(0));	
 			    String preds = wavsample.classAttribute().value((int) pred);
 			    
+			    double [] pred_array = fc.distributionForInstance(wavsample.get(0));
+			    
+			    
 			    String name = file.getName().split("\\.")[0];
 			    String reals = "";
 			    for(int i=0;i<text.size();i++){
@@ -90,7 +93,7 @@ public class ClassifyTest {
 			    
 			    
 			    System.out.println(name + " classification: " + classify + " real:" + reals + " pred: " + preds);
-			    
+			    System.out.println("class nonalc: " + pred_array[0] + " class alc: " +pred_array[1] +"\n");
 		    }
 		    System.out.println(trueC + "/" + files.length);
 		} catch (Exception e) {
