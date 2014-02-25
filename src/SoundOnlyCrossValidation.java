@@ -170,7 +170,11 @@ private List<List<List<Double>>> runTestUAR(Instances data) throws Exception {
 		
 		Tok = new StringTokenizer(dir,fileSep);
 		int i=0;
-		parent = "";
+		if(isWindows){
+			parent = "";
+		}else{
+			parent = fileSep;
+		}
 	    while (Tok.hasMoreElements()){
 	    	if(i<n-1){
 	                parent += Tok.nextElement() + fileSep;
