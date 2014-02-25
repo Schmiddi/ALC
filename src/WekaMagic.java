@@ -65,7 +65,7 @@ public class WekaMagic {
 	public static void setClassIndex(Instances data){
 		int i;
 		for(i=0;i<data.numAttributes();i++){
-			if(data.attribute(i).toString().contains("alc,nonalc")){
+			if(data.attribute(i).toString().contains("alc,nonalc") || data.attribute(i).toString().contains("nonalc,alc")){
 				data.setClassIndex(i);
 				break;
 			}
@@ -675,6 +675,7 @@ public class WekaMagic {
 		merged.deleteAttributeAt(merged.attribute("bfile").index());
 		
 		merged.setClass(merged.attribute("class"));
+		setClassIndex(merged);
 		/*
 		//if the attribute only has one value -> this column doesn't make any sense at all
 		for(i=0;i<merged.numAttributes();i++){
@@ -757,6 +758,8 @@ public class WekaMagic {
 	    NominalToString(data, "text");	    
 	    
 	    data.sort(data.attribute(key));
+	    
+	    setClassIndex(data);
 	    
 	    return data;
 		
@@ -880,7 +883,7 @@ public class WekaMagic {
 			
 			s = cleanString(s);
 			s = s.trim();
-			//s = s.toLowerCase();
+		    s = s.toLowerCase();
 			
 			n_data.get(i).setValue(phrase,s);		
 		}
