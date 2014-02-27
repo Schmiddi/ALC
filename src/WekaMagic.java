@@ -399,12 +399,18 @@ public class WekaMagic {
 
 		as.setSearch(r);
 		
-		as.setInputFormat(train);
-
-		long startTime = System.currentTimeMillis();
-		Instances train_selected = Filter.useFilter(train, as);
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = stopTime - startTime;
+		
+		Instances train_selected = null;
+		long elapsedTime = -1;
+		if(train != null){
+			as.setInputFormat(train);
+	
+			long startTime = System.currentTimeMillis();
+			train_selected = Filter.useFilter(train, as);
+			long stopTime = System.currentTimeMillis();
+			elapsedTime = stopTime - startTime;
+			setClassIndex(train_selected);
+		}
 		
 		Instances test_selected;
 		if(test != null){
@@ -414,8 +420,6 @@ public class WekaMagic {
 		else{
 			test_selected = null;
 		}
-		
-		setClassIndex(train_selected);
 		
 		Instances [] selected = iToArray(train_selected,test_selected);
 
