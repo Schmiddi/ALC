@@ -28,9 +28,9 @@ public class SoundOnlyCrossValidation {
 			Instances data = null;
 			
 			String arff_dir = args[0];
-			String csv_dir = getParent(arff_dir);
+			String csv_dir = WekaMagic.getParent(arff_dir);
 			
-			data = SoundOnly.getSoundInstances(arff_dir, csv_dir + "output.csv");
+			data = WekaMagic.getSoundInstances(arff_dir, csv_dir + "output.csv");
 			
 			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
 			List<List<List<Double>>> results = testRun.runTest(data);
@@ -155,34 +155,5 @@ private List<List<List<Double>>> runTestUAR(Instances data) throws Exception {
 				
 	}
 	
-	public static String getParent(String dir){
-		boolean isWindows = ((System.getProperty("os.name").contains("Windows")))?true:false;
-		String fileSep = isWindows?"\\":"/";
-		
-		String parent;
-		
-		StringTokenizer Tok = new StringTokenizer(dir,fileSep);
-		int n=0;
-		while (Tok.hasMoreElements()) {
-			Tok.nextElement();
-			n++;
-		}
-		
-		Tok = new StringTokenizer(dir,fileSep);
-		int i=0;
-		if(isWindows){
-			parent = "";
-		}else{
-			parent = fileSep;
-		}
-	    while (Tok.hasMoreElements()){
-	    	if(i<n-1){
-	                parent += Tok.nextElement() + fileSep;
-	    	}
-	    	else{break;}
-	    	i++;
-	    }
-	    
-	    return parent;
-	}
+
 }

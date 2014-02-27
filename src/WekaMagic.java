@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Locale;
+import java.util.StringTokenizer;
 
 
 import weka.attributeSelection.InfoGainAttributeEval;
@@ -904,6 +905,55 @@ public class WekaMagic {
 			writer.println("<s> " + data.get(i).stringValue(phrase) + " </s>");
 		}
 		writer.close();		
+	}
+	
+	//get parent directory
+	public static String getParent(String dir){
+		boolean isWindows = ((System.getProperty("os.name").contains("Windows")))?true:false;
+		String fileSep = isWindows?"\\":"/";
+		
+		String parent;
+		
+		StringTokenizer Tok = new StringTokenizer(dir,fileSep);
+		int n=0;
+		while (Tok.hasMoreElements()) {
+			Tok.nextElement();
+			n++;
+		}
+		
+		Tok = new StringTokenizer(dir,fileSep);
+		int i=0;
+		if(isWindows){
+			parent = "";
+		}else{
+			parent = fileSep;
+		}
+	    while (Tok.hasMoreElements()){
+	    	if(i<n-1){
+	                parent += Tok.nextElement() + fileSep;
+	    	}
+	    	else{break;}
+	    	i++;
+	    }
+	    
+	    return parent;
+	}
+	
+	
+	public static Instances getSoundInstances(String arffdir, String csv_file) throws Exception
+	{
+		Instances sound = WekaMagic.soundArffToInstances(arffdir);		
+		Instances text = WekaMagic.textCSVToInstances(csv_file,"file");
+		
+		Instances data = WekaMagic.mergeInstancesBy(sound, text, "file");
+		
+		
+		//delete unnecessary attributes
+		data.deleteAttributeAt(data.attribute("text").index());
+		data.deleteAttributeAt(data.attribute("file").index());
+		//data.deleteAttributeAt(data.attribute("numeric_class").index());
+    	
+    	return data;
 	}
 
 	

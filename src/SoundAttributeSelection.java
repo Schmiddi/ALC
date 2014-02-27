@@ -28,9 +28,9 @@ public class SoundAttributeSelection {
 			Instances data = null;
 			
 			String arff_dir = args[0];
-			String csv_dir = getParent(arff_dir);
+			String csv_dir = WekaMagic.getParent(arff_dir);
 			
-			data = SoundOnly.getSoundInstances(arff_dir, csv_dir + "output.csv");
+			data = WekaMagic.getSoundInstances(arff_dir, csv_dir + "output.csv");
 			
 			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
 			List<List<List<Double>>> results = testRun.runTest(data);
@@ -116,11 +116,11 @@ public class SoundAttributeSelection {
 				List<Double> exCross = new ArrayList<Double>();
 				
 				exTrain.add(0, threshold.get(i));
-				exTrain.add(1, cvo.getTrainF1Score());
+				exTrain.add(1, cvo.getTrainUAR());
 				listTrain.add(exTrain);
 				
 				exCross.add(0, threshold.get(i));
-				exCross.add(1, cvo.getTestF1Score());
+				exCross.add(1, cvo.getTestUAR());
 				exCross.add(2, currentRidge);
 				listCross.add(exCross);
 			}
@@ -133,80 +133,5 @@ public class SoundAttributeSelection {
 				
 	}
 	
-private List<List<List<Double>>> runTestUAR(Instances data) throws Exception {
-		
-		/* Runs 10 times logistic to regularize and stores results in list */
-		
-		List<List<List<Double>>> values = new ArrayList<List<List<Double>>>();
-		
-		double stdRidge = 0.00000001; //10^-8
-		double currentRidge = stdRidge;
-		MyClassificationOutput currentResult = null;
-		
-		//create 3 lists storing data for 3 sets
-		List<List<Double>> listTrain = new ArrayList<List<Double>>();
-		List<List<Double>> listCross = new ArrayList<List<Double>>();
-		
-		System.out.println("Running tests for train, cross and test set...");
-		//Iterate through different ridge values
-		for (int i=0;i<15;i++)
-		{
-			currentRidge = stdRidge * (Math.pow(10, i));
-			
-			System.out.println("Cross validation for ridge = " + currentRidge);
-			currentResult = WekaMagic.runLogistic(null, currentRidge, 5);
-			CrossValidationOutput cvo = WekaMagic.crossValidation(currentResult, data, 10, 1, null);
-			
-			
-			// Result processing to lists
-			List<Double> exTrain = new ArrayList<Double>();
-			List<Double> exCross = new ArrayList<Double>();
-			
-			exTrain.add(0, currentRidge);
-			exTrain.add(1, cvo.getTrainUAR());
-			listTrain.add(exTrain);
-			
-			exCross.add(0, currentRidge);
-			exCross.add(1, cvo.getTestUAR());
-			listCross.add(exCross);
-			
-		}
-		
-		values.add(listTrain);
-		values.add(listCross);
-		
-		return values;
-				
-	}
-	
-	public static String getParent(String dir){
-		boolean isWindows = ((System.getProperty("os.name").contains("Windows")))?true:false;
-		String fileSep = isWindows?"\\":"/";
-		
-		String parent;
-		
-		StringTokenizer Tok = new StringTokenizer(dir,fileSep);
-		int n=0;
-		while (Tok.hasMoreElements()) {
-			Tok.nextElement();
-			n++;
-		}
-		
-		Tok = new StringTokenizer(dir,fileSep);
-		int i=0;
-		if(isWindows){
-			parent = "";
-		}else{
-			parent = fileSep;
-		}
-	    while (Tok.hasMoreElements()){
-	    	if(i<n-1){
-	                parent += Tok.nextElement() + fileSep;
-	    	}
-	    	else{break;}
-	    	i++;
-	    }
-	    
-	    return parent;
-	}
+
 }

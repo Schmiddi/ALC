@@ -24,9 +24,9 @@ public class SoundOnly {
 			Instances data = null;
 			
 			String arff_dir = args[0];
-			String csv_dir = SoundOnlyCrossValidation.getParent(arff_dir);
+			String csv_dir = WekaMagic.getParent(arff_dir);
 			
-			data = SoundOnly.getSoundInstances(arff_dir, csv_dir + "output.csv");
+			data = WekaMagic.getSoundInstances(arff_dir, csv_dir + "output.csv");
 			
 
 			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
@@ -137,21 +137,7 @@ public class SoundOnly {
 	}
 
 	
-	public static Instances getSoundInstances(String arffdir, String csv_file) throws Exception
-	{
-		Instances sound = WekaMagic.soundArffToInstances(arffdir);		
-		Instances text = WekaMagic.textCSVToInstances(csv_file,"file");
-		
-		Instances data = WekaMagic.mergeInstancesBy(sound, text, "file");
-		
-		
-		//delete unnecessary attributes
-		data.deleteAttributeAt(data.attribute("text").index());
-		data.deleteAttributeAt(data.attribute("file").index());
-		//data.deleteAttributeAt(data.attribute("numeric_class").index());
-    	
-    	return data;
-	}
+	
 
 	public static Instances[] getSoundDatasets(Instances data)
 	{
