@@ -29,9 +29,9 @@ public class CorpusMod {
 				String csv_dir = WekaMagic.getParent(arff_dir);
 				
 				Instances sound = WekaMagic.soundArffToInstances(arff_dir);		
-				Instances text = WekaMagic.textCSVToInstances(csv_dir + "output.csv","file");
+				Instances text = WekaMagic.textCSVToInstances(csv_dir + "output.csv",s_key);
 				
-				data = WekaMagic.mergeInstancesBy(sound, text, "file");
+				data = WekaMagic.mergeInstancesBy(sound, text, s_key);
 				
 				CrossValidationOutput cvo = new CrossValidationOutput(data,s_key);
 				

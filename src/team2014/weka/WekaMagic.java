@@ -876,6 +876,14 @@ public class WekaMagic {
 		return cvo;
 	}
 	
+	
+	/**
+	 * load instances from arff file
+	 * 
+	 * @param file - path of arff file to read
+	 * @return instances
+	 * @throws Exception
+	 */
 	public static Instances loadFromSoundArff(String file) throws Exception{
 		DataSource source = new DataSource(file); //load ARFF file
     	Instances data = source.getDataSet();
@@ -889,23 +897,32 @@ public class WekaMagic {
     	return data;
 	}
 	
+	
+	/**
+	 * method to process the text data to make it suitable to generate the language model
+	 * 
+	 * @param s - string which has to be processed
+	 * @return
+	 */
 	public static String cleanString(String s){
 		String str = s;
 		
 		String tb_removed = ".*~+_-/\\";
 		
+		//remove chararacters
 		for(int i=0;i<tb_removed.length();i++){
 			String character = "" + tb_removed.charAt(i);
 			str = str.replace(character, "");
 		}
 		
-		
+		//definition of tags which have to be removed
 		ArrayList<String> tags_RegExp = new ArrayList<String>();
 		tags_RegExp.add("<[^>]*>");
 		tags_RegExp.add("\\[[^\\]]*\\]");
 		
 		tags_RegExp.add("#[^#]*#");
 		
+		//delete whole tags
 		for(int i=0;i<tags_RegExp.size();i++){
 			str = str.replaceAll(tags_RegExp.get(i), "");
 		}
@@ -913,6 +930,14 @@ public class WekaMagic {
 		return str;
 	}
 	
+	
+	/**
+	 * get attribute text from instances which only contain two string attributes: fileid and text
+	 * 
+	 * @param n_data - instances
+	 * @param s_key - name of the file id attribute - in our case "file"
+	 * @return
+	 */
 	public static Attribute getPhrase(Instances n_data, String s_key){
 		Attribute phrase = null;
 		for(int i=0;i<n_data.numAttributes();i++){
@@ -925,26 +950,43 @@ public class WekaMagic {
 		return phrase;
 	}
 	
+	
+	/**
+	 * process instances to be able to build a language model on them
+	 * 
+	 * @param data - text instances
+	 * @param s_key - file id attribute name - in our case "file"
+	 * @return
+	 */
 	public static Instances cleanCorpus(Instances data, String s_key){
 		Instances n_data = new Instances(data);
 		
-		Attribute phrase = getPhrase(n_data,s_key);
+		Attribute phrase = getPhrase(n_data,s_key); // get text attribute - "text"
 		
-		
-		
+				
 		for(int i=0;i<n_data.size();i++){
-			String s = n_data.get(i).stringValue(phrase);	
+			String s = n_data.get(i).stringValue(phrase);	//get original string value
 			
-			s = cleanString(s);
-			s = s.trim();
-		    s = s.toLowerCase();
+			s = cleanString(s);  //clean string
+			s = s.trim();        //trim white spaces
+		    s = s.toLowerCase(); //to lower case - I am not really sure if this is a good idea
 			
-			n_data.get(i).setValue(phrase,s);		
+			n_data.get(i).setValue(phrase,s);	//set cleaned string	
 		}
 		
 		return n_data;
 	}
 	
+	
+	/**
+	 * print text file for building the language file
+	 * 
+	 * @param file - path where to store the file
+	 * @param data - instances
+	 * @param s_key - file id attribute name - in our case "file"
+	 * @throws FileNotFoundException
+	 * @throws UnsupportedEncodingException
+	 */
 	public static void createReferenceText(String file, Instances data, String s_key) throws FileNotFoundException, UnsupportedEncodingException{
 		PrintWriter writer = new PrintWriter(file, "UTF-8");
 		
@@ -956,8 +998,16 @@ public class WekaMagic {
 		writer.close();		
 	}
 	
-	//get parent directory
+	
+	/**
+	 * returns parent directory of given dir
+	 * 
+	 * @param dir - path to the directory
+	 * @return
+	 */
 	public static String getParent(String dir){
+		
+		//get right fileSeparator
 		boolean isWindows = ((System.getProperty("os.name").contains("Windows")))?true:false;
 		String fileSep = isWindows?"\\":"/";
 		
@@ -970,6 +1020,7 @@ public class WekaMagic {
 			n++;
 		}
 		
+		//generate path of parent directory
 		Tok = new StringTokenizer(dir,fileSep);
 		int i=0;
 		if(isWindows){
@@ -989,17 +1040,25 @@ public class WekaMagic {
 	}
 	
 	
+	/**
+	 * get sound instances with annotated class (nonalc/alc)
+	 * 
+	 * @param arffdir - directory of all arff files
+	 * @param csv_file - csv file of all text data
+	 * @return
+	 * @throws Exception
+	 */
 	public static Instances getSoundInstances(String arffdir, String csv_file) throws Exception
 	{
-		Instances sound = WekaMagic.soundArffToInstances(arffdir);		
-		Instances text = WekaMagic.textCSVToInstances(csv_file,"file");
+		Instances sound = WekaMagic.soundArffToInstances(arffdir);		  //get sound data
+		Instances text = WekaMagic.textCSVToInstances(csv_file,"file");   //get text data (with class)
 		
-		Instances data = WekaMagic.mergeInstancesBy(sound, text, "file");
+		Instances data = WekaMagic.mergeInstancesBy(sound, text, "file"); //merge text and sound data by using the key fileid
 		
 		
 		//delete unnecessary attributes
-		data.deleteAttributeAt(data.attribute("text").index());
-		data.deleteAttributeAt(data.attribute("file").index());
+		data.deleteAttributeAt(data.attribute("text").index()); 		  //remove text attribute
+		data.deleteAttributeAt(data.attribute("file").index());			  //remove key(file id) attribute
 		//data.deleteAttributeAt(data.attribute("numeric_class").index());
     	
     	return data;
