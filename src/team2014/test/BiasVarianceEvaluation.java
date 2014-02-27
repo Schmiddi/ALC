@@ -1,3 +1,4 @@
+package team2014.test;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -6,6 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import team2014.weka.GeneratesPlot;
+import team2014.weka.MyClassificationOutput;
+import team2014.weka.MyOutput;
+import team2014.weka.WekaMagic;
 import weka.core.Instances;
 
 public class BiasVarianceEvaluation {

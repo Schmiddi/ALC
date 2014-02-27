@@ -1,3 +1,6 @@
+package team2014.test;
+import team2014.weka.CrossValidationOutput;
+import team2014.weka.WekaMagic;
 import weka.core.Instances;
 
 

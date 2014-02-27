@@ -1,7 +1,9 @@
+package team2014.test;
 import java.io.File;
 import java.io.FilenameFilter;
 
 
+import team2014.weka.WekaMagic;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instances;

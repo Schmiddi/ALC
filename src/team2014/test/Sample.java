@@ -1,6 +1,11 @@
+package team2014.test;
 import java.util.List;
 import java.util.ArrayList;
 
+import team2014.weka.CrossValidationOutput;
+import team2014.weka.MyClassificationOutput;
+import team2014.weka.MyOutput;
+import team2014.weka.WekaMagic;
 import weka.core.Instances;
 
 public class Sample {

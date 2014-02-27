@@ -1,3 +1,6 @@
+package team2014.test;
+import team2014.weka.MyClassificationOutput;
+import team2014.weka.WekaMagic;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 import weka.core.Debug;
