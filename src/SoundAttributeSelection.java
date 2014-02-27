@@ -1,0 +1,212 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import weka.classifiers.functions.Logistic;
+import weka.core.Debug;
+import weka.core.Instances;
+
+
+public class SoundAttributeSelection {
+
+	/**
+	 * Runs several tests to determine the impact of all sound features
+	 *  
+	 * @param args
+	 */
+	
+	//private static final String ARFF_FILE = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\result.arff";
+	//private static final String CSV_DIR = "C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Moritz\\sound_features\\test\\";
+	
+	public static void main(String[] args) {
+		
+		SoundAttributeSelection testRun = new SoundAttributeSelection();
+		boolean isWindows = ((System.getProperty("os.name").contains("Windows")))?true:false;
+		String fileSep = isWindows?"\\":"/";
+		
+		try {
+			Instances data = null;
+			
+			String arff_dir = args[0];
+			String csv_dir = getParent(arff_dir);
+			
+			data = SoundOnly.getSoundInstances(arff_dir, csv_dir + "output.csv");
+			
+			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
+			List<List<List<Double>>> results = testRun.runTest(data);
+			
+			
+			arff_dir += fileSep;
+			
+			//save to CSV
+			WekaMagic.printHashMap(results.get(0), arff_dir + "attr_result_train_cross_validation.csv");//Train set
+			WekaMagic.printHashMap(results.get(1), arff_dir + "attr_result_cross_cross_validation.csv");//Cross set
+			
+					
+			//Plot everything
+			System.out.println("Plotting results...");
+			
+			System.out.println("Creating chart " + arff_dir + "attr_plot_train_cross_validation.png ...");
+			GeneratesPlot.createSound(results.get(0), arff_dir, "attr_plot_train_cross_validation.png");
+			
+			System.out.println("Creating chart " + arff_dir + "attr_plot_test_cross_validation.png ...");
+			GeneratesPlot.createSound(results.get(1), arff_dir, "attr_plot_test_cross_validation.png");
+			
+			System.out.println("Finished operations");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	private List<List<List<Double>>> runTest(Instances data) throws Exception {
+		
+		/* Runs 10 times logistic to regularize and stores results in list */
+		
+		List<List<List<Double>>> values = new ArrayList<List<List<Double>>>();
+		
+		double stdRidge = 0.00000001; //10^-8
+		double currentRidge = stdRidge;
+		MyClassificationOutput currentResult = null;
+		
+		//create 3 lists storing data for 3 sets
+		List<List<Double>> listTrain = new ArrayList<List<Double>>();
+		List<List<Double>> listCross = new ArrayList<List<Double>>();
+		
+		
+		ArrayList<Double> threshold = new ArrayList<Double>();
+		threshold.add(0.0001);
+		threshold.add(0.0003);
+		threshold.add(0.0006);
+		threshold.add(0.001);
+		threshold.add(0.002);
+		threshold.add(0.0025);
+		threshold.add(0.0030);
+		threshold.add(0.0035);
+		threshold.add(0.004);
+		threshold.add(0.005);
+		threshold.add(0.006);
+		threshold.add(0.007);
+		threshold.add(0.008);
+		threshold.add(0.01);
+		
+		System.out.println("Running tests for train, cross and test set...");
+		//Iterate through different ridge values
+		
+		for (int i=0;i<threshold.size();i++)
+		{
+			for (int u=0;u<15;u++)
+			{
+				currentRidge = stdRidge * (Math.pow(10, u));
+				
+				System.out.println("ridge: " + currentRidge +" threshold = " + threshold.get(i));
+				currentResult = WekaMagic.runLogistic((Instances)null, (Double)currentRidge, 5);
+				
+				//true binarizeNumericAttributes is important
+				MyOutput filtered = WekaMagic.selectionByInfo(null, true, (Double)threshold.get(i));			
+				ArrayList<MyOutput> filter = new ArrayList<MyOutput>();
+		        filter.add(filtered);			
+				
+				CrossValidationOutput cvo = WekaMagic.crossValidation(currentResult, data, 10, 1, filter);
+				
+				
+				// Result processing to lists
+				List<Double> exTrain = new ArrayList<Double>();
+				List<Double> exCross = new ArrayList<Double>();
+				
+				exTrain.add(0, threshold.get(i));
+				exTrain.add(1, cvo.getTrainF1Score());
+				listTrain.add(exTrain);
+				
+				exCross.add(0, threshold.get(i));
+				exCross.add(1, cvo.getTestF1Score());
+				exCross.add(2, currentRidge);
+				listCross.add(exCross);
+			}
+		}
+		
+		values.add(listTrain);
+		values.add(listCross);
+		
+		return values;
+				
+	}
+	
+private List<List<List<Double>>> runTestUAR(Instances data) throws Exception {
+		
+		/* Runs 10 times logistic to regularize and stores results in list */
+		
+		List<List<List<Double>>> values = new ArrayList<List<List<Double>>>();
+		
+		double stdRidge = 0.00000001; //10^-8
+		double currentRidge = stdRidge;
+		MyClassificationOutput currentResult = null;
+		
+		//create 3 lists storing data for 3 sets
+		List<List<Double>> listTrain = new ArrayList<List<Double>>();
+		List<List<Double>> listCross = new ArrayList<List<Double>>();
+		
+		System.out.println("Running tests for train, cross and test set...");
+		//Iterate through different ridge values
+		for (int i=0;i<15;i++)
+		{
+			currentRidge = stdRidge * (Math.pow(10, i));
+			
+			System.out.println("Cross validation for ridge = " + currentRidge);
+			currentResult = WekaMagic.runLogistic(null, currentRidge, 5);
+			CrossValidationOutput cvo = WekaMagic.crossValidation(currentResult, data, 10, 1, null);
+			
+			
+			// Result processing to lists
+			List<Double> exTrain = new ArrayList<Double>();
+			List<Double> exCross = new ArrayList<Double>();
+			
+			exTrain.add(0, currentRidge);
+			exTrain.add(1, cvo.getTrainUAR());
+			listTrain.add(exTrain);
+			
+			exCross.add(0, currentRidge);
+			exCross.add(1, cvo.getTestUAR());
+			listCross.add(exCross);
+			
+		}
+		
+		values.add(listTrain);
+		values.add(listCross);
+		
+		return values;
+				
+	}
+	
+	public static String getParent(String dir){
+		boolean isWindows = ((System.getProperty("os.name").contains("Windows")))?true:false;
+		String fileSep = isWindows?"\\":"/";
+		
+		String parent;
+		
+		StringTokenizer Tok = new StringTokenizer(dir,fileSep);
+		int n=0;
+		while (Tok.hasMoreElements()) {
+			Tok.nextElement();
+			n++;
+		}
+		
+		Tok = new StringTokenizer(dir,fileSep);
+		int i=0;
+		if(isWindows){
+			parent = "";
+		}else{
+			parent = fileSep;
+		}
+	    while (Tok.hasMoreElements()){
+	    	if(i<n-1){
+	                parent += Tok.nextElement() + fileSep;
+	    	}
+	    	else{break;}
+	    	i++;
+	    }
+	    
+	    return parent;
+	}
+}
