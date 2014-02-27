@@ -1,5 +1,3 @@
-import java.util.List;
-
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 import weka.core.Debug;

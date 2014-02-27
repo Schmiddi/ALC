@@ -1,9 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
-import weka.classifiers.functions.Logistic;
-import weka.core.Debug;
 import weka.core.Instances;
 
 
