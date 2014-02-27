@@ -25,7 +25,7 @@ public class CorpusMod {
 				Instances data = null;
 				
 				String arff_dir = args[0];
-				String csv_dir = SoundOnlyCrossValidation.getParent(arff_dir);
+				String csv_dir = WekaMagic.getParent(arff_dir);
 				
 				Instances sound = WekaMagic.soundArffToInstances(arff_dir);		
 				Instances text = WekaMagic.textCSVToInstances(csv_dir + "output.csv","file");
