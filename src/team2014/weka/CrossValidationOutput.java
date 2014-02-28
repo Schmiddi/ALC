@@ -230,4 +230,16 @@ public class CrossValidationOutput {
 		}
 		return fscore;
 	}
+	
+	public Instances processDataByFilters(Instances data) throws Exception{
+		Instances pData = new Instances(data);
+		if(filters != null){
+			   //apply all filters
+			   for(Filter f : filters){
+				   f.setInputFormat(new Instances(pData));
+				   pData = Filter.useFilter(pData, f);
+			   }
+		}
+		return pData;
+	}
 }

@@ -79,6 +79,8 @@ public class SoundAttributeSelection {
 		
 		
 		ArrayList<Double> threshold = new ArrayList<Double>();
+		threshold.add(0.0);
+		threshold.add(0.00000001);
 		threshold.add(0.0001);
 		threshold.add(0.0003);
 		threshold.add(0.0006);
@@ -97,13 +99,15 @@ public class SoundAttributeSelection {
 		System.out.println("Running tests for train, cross and test set...");
 		//Iterate through different ridge values
 		
+		System.out.println("general Number Attributes: " + data.numAttributes());
+		
 		for (int i=0;i<threshold.size();i++)
 		{
 			for (int u=0;u<15;u++)
 			{
 				currentRidge = stdRidge * (Math.pow(10, u));
 				
-				System.out.println("ridge: " + currentRidge +" threshold = " + threshold.get(i));
+				//System.out.println("ridge: " + currentRidge +" threshold = " + threshold.get(i));
 				currentResult = WekaMagic.runLogistic((Instances)null, (Double)currentRidge, 5);
 				
 				//true binarizeNumericAttributes is important
@@ -122,10 +126,21 @@ public class SoundAttributeSelection {
 				exTrain.add(1, cvo.getTrainUAR());
 				listTrain.add(exTrain);
 				
+				
+				Instances ndata = cvo.processDataByFilters(data);
+				
 				exCross.add(0, threshold.get(i));
 				exCross.add(1, cvo.getTestUAR());
-				exCross.add(2, currentRidge);
+				exCross.add(2, currentRidge);				
+				exCross.add(3, (double)ndata.numAttributes());
 				listCross.add(exCross);
+				
+				System.out.print("ridge: " + currentRidge +" threshold = " + threshold.get(i) + " UAR: "+ cvo.getTestUAR()+ " attr: "+ ndata.numAttributes() + " ");
+				
+				for(int t=0;t<ndata.numAttributes();t++){
+					System.out.print(ndata.attribute(t).name() + ",");
+				}
+				System.out.print("\n");
 			}
 		}
 		

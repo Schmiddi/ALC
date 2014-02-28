@@ -850,7 +850,7 @@ public class WekaMagic {
 				   //apply all filters
 				   for(MyOutput m : filters){
 					   Filter f = (Filter)m.getOperation();
-					   f.setInputFormat(train); //use training data to build the filter
+					   f.setInputFormat(new Instances(train)); //use training data to build the filter
 					   cvo.addFilter(f);
 					   train = Filter.useFilter(train, f); //use filter on the training data
 					   test  = Filter.useFilter(test, f);  //use filter on the test data
