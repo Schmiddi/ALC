@@ -127,7 +127,7 @@ public class SoundAttributeSelection {
 				listTrain.add(exTrain);
 				
 				
-				Instances ndata = cvo.processDataByFilters(data);
+				Instances ndata = cvo.processDataByFilters(data,0);
 				
 				exCross.add(0, threshold.get(i));
 				exCross.add(1, cvo.getTestUAR());

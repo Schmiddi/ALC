@@ -11,7 +11,7 @@ import weka.filters.Filter;
 public class CrossValidationOutput {
 	private ArrayList<MyClassificationOutput> trainingEval;
 	private ArrayList<MyClassificationOutput> testEval;
-	private ArrayList<Filter> filters;
+	private ArrayList<ArrayList<Filter>> filters;
 	
 	private ArrayList<ArrayList<String>> train_key_set;
 	private ArrayList<ArrayList<String>> test_key_set;
@@ -26,13 +26,13 @@ public class CrossValidationOutput {
 	public CrossValidationOutput(){
 		trainingEval = new ArrayList<MyClassificationOutput>();
 		testEval = new ArrayList<MyClassificationOutput>();
-		filters = new ArrayList<Filter>();
+		filters = new ArrayList<ArrayList<Filter>>();
 	}
 	
 	public CrossValidationOutput(Instances table, String s_key){
 		trainingEval = new ArrayList<MyClassificationOutput>();
 		testEval = new ArrayList<MyClassificationOutput>();
-		filters = new ArrayList<Filter>();
+		filters = new ArrayList<ArrayList<Filter>>();
 		
 		this.table = table;
 		folds = 10;
@@ -126,8 +126,12 @@ public class CrossValidationOutput {
 		return data;
 	}
 	
-	public void addFilter(Filter filter){
-		filters.add(filter);
+	public void addFilter(Filter filter, int foldNr){
+		if(foldNr == 0){
+			ArrayList<Filter> newfilter = new ArrayList<Filter>();
+			filters.add(newfilter);
+		}
+		filters.get(filters.size()-1).add(foldNr,filter);
 	}
 	
 	public void addTrainingEval(int foldNr, MyClassificationOutput eval){
@@ -231,14 +235,23 @@ public class CrossValidationOutput {
 		return fscore;
 	}
 	
-	public Instances processDataByFilters(Instances data) throws Exception{
+	
+	/**
+	 * use all filters which have been used in the cross validation for one certain fold (0-x)
+	 * 
+	 * @param data - instances which will be processed
+	 * @param foldNr - fold number of cross validation 0 - n
+	 * @return
+	 * @throws Exception
+	 */
+	public Instances processDataByFilters(Instances data, int foldNr) throws Exception{
 		Instances pData = new Instances(data);
 		if(filters != null){
-			   //apply all filters
-			   for(Filter f : filters){
-				   f.setInputFormat(new Instances(pData));
-				   pData = Filter.useFilter(pData, f);
-			   }
+			//apply all filters
+			for(ArrayList<Filter> fl : filters){
+			      Filter f = fl.get(foldNr);          //get filter for fold number x
+				  pData = Filter.useFilter(pData, f); //use filter 		   
+			}
 		}
 		return pData;
 	}
