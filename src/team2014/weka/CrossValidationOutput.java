@@ -237,7 +237,7 @@ public class CrossValidationOutput {
 	
 	
 	/**
-	 * use all filters which have been used in the cross validation for one certain fold (0-x)
+	 * use all filters which have been used in the cross validation for one certain fold (0-x) on given instances
 	 * 
 	 * @param data - instances which will be processed
 	 * @param foldNr - fold number of cross validation 0 - n

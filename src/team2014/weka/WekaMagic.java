@@ -857,6 +857,10 @@ public class WekaMagic {
 				   }
 			   }
 			   
+			   //-------------------------------------------------------------------------
+			   // SoundAttributeSelection.AttributeSelectionByClassifier(c, train, test);
+			   //-------------------------------------------------------------------------
+			   
 			   //build classification model
 			   long startTime = System.currentTimeMillis();	
 			   c.buildClassifier(train);

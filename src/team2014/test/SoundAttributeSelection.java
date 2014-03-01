@@ -7,7 +7,13 @@ import team2014.weka.GeneratesPlot;
 import team2014.weka.MyClassificationOutput;
 import team2014.weka.MyOutput;
 import team2014.weka.WekaMagic;
+import weka.classifiers.Classifier;
 import weka.core.Instances;
+
+import weka.attributeSelection.AttributeSelection;
+import weka.attributeSelection.BestFirst;
+import weka.attributeSelection.WrapperSubsetEval;
+import weka.core.SelectedTag;
 
 
 public class SoundAttributeSelection {
@@ -79,7 +85,7 @@ public class SoundAttributeSelection {
 		
 		
 		ArrayList<Double> threshold = new ArrayList<Double>();
-		threshold.add(0.0);
+		threshold.add(0.0);		
 		threshold.add(0.00000001);
 		threshold.add(0.0001);
 		threshold.add(0.0003);
@@ -103,11 +109,10 @@ public class SoundAttributeSelection {
 		
 		for (int i=0;i<threshold.size();i++)
 		{
-			for (int u=0;u<15;u++)
+			for (int u=0;u<15;u++)  // 0 - 15
 			{
 				currentRidge = stdRidge * (Math.pow(10, u));
 				
-				//System.out.println("ridge: " + currentRidge +" threshold = " + threshold.get(i));
 				currentResult = WekaMagic.runLogistic((Instances)null, (Double)currentRidge, 5);
 				
 				//true binarizeNumericAttributes is important
@@ -129,13 +134,14 @@ public class SoundAttributeSelection {
 				
 				Instances ndata = cvo.processDataByFilters(data,0);
 				
-				exCross.add(0, threshold.get(i));
+	            exCross.add(0, threshold.get(i));
 				exCross.add(1, cvo.getTestUAR());
 				exCross.add(2, currentRidge);				
 				exCross.add(3, (double)ndata.numAttributes());
 				listCross.add(exCross);
 				
-				System.out.print("ridge: " + currentRidge +" threshold = " + threshold.get(i) + " UAR: "+ cvo.getTestUAR()+ " attr: "+ ndata.numAttributes() + " ");
+				//print all information about the result
+				System.out.print("ridge: " + currentRidge +" threshold = " + threshold.get(i) + " UAR: "+ cvo.getTestUAR()+ " attr: "+ ndata.numAttributes() + " attr names: ");
 				
 				for(int t=0;t<ndata.numAttributes();t++){
 					System.out.print(ndata.attribute(t).name() + ",");
@@ -149,6 +155,39 @@ public class SoundAttributeSelection {
 		
 		return values;
 				
+	}
+	
+	public static void AttributeSelectionByClassifier(Classifier c, Instances train, Instances test) throws Exception{
+
+		WrapperSubsetEval bestSubsetAttr = new WrapperSubsetEval();
+		bestSubsetAttr.setClassifier(c);
+		bestSubsetAttr.setFolds(10);
+		bestSubsetAttr.setSeed(1);
+		bestSubsetAttr.setEvaluationMeasure(new SelectedTag(WrapperSubsetEval.EVAL_FMEASURE, WrapperSubsetEval.TAGS_EVALUATION));
+		
+		
+		BestFirst search = new BestFirst();
+		//search.setLookupCacheSize(100);
+							
+		AttributeSelection attsel = new AttributeSelection();				
+		attsel.setEvaluator(bestSubsetAttr);
+        attsel.setSearch(search);
+        attsel.setRanking(true);
+        attsel.setFolds(3);
+        attsel.setSeed(1);
+        attsel.setXval(false);
+        
+        //attsel.SelectAttributes(ndata);
+        //System.out.println(attsel.CVResultsString());
+        
+        attsel.SelectAttributes(train);              
+        train = attsel.reduceDimensionality(train);
+        test = attsel.reduceDimensionality(test);
+        
+        for(int t=0;t<train.numAttributes();t++){
+			System.out.print(train.attribute(t).name() + ",");
+		}
+		System.out.print("\n");
 	}
 	
 
