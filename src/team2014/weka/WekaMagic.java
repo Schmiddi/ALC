@@ -2,7 +2,10 @@ package team2014.weka;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Locale;
 import java.util.StringTokenizer;
@@ -21,10 +24,15 @@ import weka.core.stemmers.*;
 import weka.core.tokenizers.*;
 import weka.core.SelectedTag;
 import weka.classifiers.functions.Logistic;
+import weka.classifiers.functions.SMO;
 import weka.classifiers.Evaluation;
 import weka.filters.Filter;
 import weka.core.Attribute;
 import weka.classifiers.Classifier;
+
+import org.languagetool.JLanguageTool;
+import org.languagetool.rules.RuleMatch;
+import org.languagetool.language.*;
 
 /**
  * @author Felix Neutatz
@@ -355,7 +363,7 @@ public class WekaMagic {
 	 * @param test  = instances of the test set
 	 * @return
 	 */
-	public static Instances [] iToArray(Instances train, Instances test){
+	private static Instances [] iToArray(Instances train, Instances test){
 		Instances [] data = new Instances[2];
 		data[0] = train;
 		data[1] = test;
@@ -931,6 +939,17 @@ public class WekaMagic {
 			str = str.replaceAll(tags_RegExp.get(i), "");
 		}
 		
+		//remove all multiple white spaces
+		String nstr =null;
+		do{
+		  nstr = str;
+		  nstr = nstr.replace("  ", " ");
+		  if(nstr.equals(str)) break;
+		  str = nstr;
+		}while(true);
+		
+		str = str.trim();        //trim white spaces
+		
 		return str;
 	}
 	
@@ -971,8 +990,7 @@ public class WekaMagic {
 		for(int i=0;i<n_data.size();i++){
 			String s = n_data.get(i).stringValue(phrase);	//get original string value
 			
-			s = cleanString(s);  //clean string
-			s = s.trim();        //trim white spaces
+			s = cleanString(s);  //clean string			
 		    s = s.toLowerCase(); //to lower case - I am not really sure if this is a good idea
 			
 			n_data.get(i).setValue(phrase,s);	//set cleaned string	
@@ -1066,6 +1084,165 @@ public class WekaMagic {
 		//data.deleteAttributeAt(data.attribute("numeric_class").index());
     	
     	return data;
+	}
+	
+	
+	public static Instances getGrammarInstances(String csv_file, Boolean normalizeSentenceLength) throws Exception{
+		Instances text = textCSVToInstances(csv_file,"file"); //get text features
+		Instances grammar = checkGrammar(text, normalizeSentenceLength); //get grammar features
+		
+		grammar.deleteAttributeAt(grammar.attribute("text").index()); 		  //remove text attribute
+		grammar.deleteAttributeAt(grammar.attribute("file").index());			  //remove key(file id) attribute
+		
+		
+		return grammar;
+	}
+	
+	
+	
+	public static MyClassificationOutput runSVM(Instances train, Double C, Double epsilon)
+	throws Exception {
+
+		SMO svm = new SMO();
+		long elapsedTime;
+		Evaluation eval = null;
+		String options;
+		
+		//set regularization parameter
+		if(C != null){
+			svm.setC(C);
+		}
+		if(epsilon != null){
+			svm.setEpsilon(epsilon);
+		}
+		
+		svm.setNumFolds(10);
+		svm.setRandomSeed(1);
+		
+		options = "single run";	
+		
+		//build classifier
+		long startTime = System.currentTimeMillis();
+		if(train != null){
+			svm.buildClassifier(train);
+		}
+		long stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		
+		//evaluate how good it performes on the training set
+		if(train != null){
+			eval = new Evaluation(train);
+			eval.evaluateModel(svm,train);
+		}
+				
+		return new MyClassificationOutput(svm, eval, options, elapsedTime);
+	}
+	
+	private static String setRightUmlauts(String str){
+		str = str.replace("\\", "");
+		
+		str = str.replace("\"u", "ü");
+		str = str.replace("\"o", "ö");
+		str = str.replace("\"a", "ä");
+		
+		str = str.replace("\"U", "Ü");
+		str = str.replace("\"O", "Ö");
+		str = str.replace("\"A", "Ä");
+		
+		str = str.replace("\"s", "ß");
+		
+		return str;
+	}
+	
+	public static Instances checkGrammar(Instances text, Boolean normalizeSentenceLength) throws IOException{
+		Instances grammar = new Instances(text);
+		
+		//JLanguageTool langTool = new JLanguageTool(new German());
+		JLanguageTool langTool = new JLanguageTool(new GermanyGerman());
+		langTool.activateDefaultPatternRules();
+		
+		Attribute text_attr = getPhrase(grammar, "file");
+		
+		for(int i=0;i<grammar.size();i++){
+			String s = grammar.get(i).stringValue(text_attr);
+			
+			s = cleanString(s);			
+			s = setRightUmlauts(s);
+		    
+			//System.out.println("Sample " + i + "\n" + s);
+			
+			List<RuleMatch> matches = langTool.check(s);
+			
+			HashMap<String,Integer> grammar_error_list = new HashMap<String,Integer>();
+			 
+			for (RuleMatch match : matches) {
+			  String ruleName = match.getRule().getId();
+			  ruleName.toUpperCase();
+			  
+			  //we don't need komma rules, since kommas are not annotated
+			  //since we are case insensitive, skip also case rules
+			  if(!ruleName.contains("KOMMA") && !ruleName.contains("CASE")){ 
+				  Integer ret = grammar_error_list.put(ruleName, 1);
+				  if(ret != null) grammar_error_list.put(ruleName, (ret+1));
+				  
+				  /*
+				  System.out.println(match.getRule().getId());				  			  
+				  
+				  System.out.println("Potential error at line " +
+				      match.getLine() + ", column " +
+				      match.getColumn() + ": " + match.getMessage());
+				  System.out.println("Suggested correction: " +
+				      match.getSuggestedReplacements());
+				  
+				  System.out.println();*/
+				  
+			  }
+			}
+			
+			grammar = insertGrammarFeatures(grammar, i, s, grammar_error_list, normalizeSentenceLength);
+		}
+		
+		return grammar;
+	}
+	
+	public static int CountWords (String in) {
+	   String trim = in.trim();
+	   if (trim.isEmpty()) return 0;
+	   return trim.split("\\s+").length; //separate string around spaces
+	}
+
+	private static Instances insertGrammarFeatures(Instances grammar, int instanceNumber, String currentSentence,
+			HashMap<String, Integer> grammar_error_list, Boolean normalizeSentenceLength) {
+		
+		Instances ngrammar = new Instances(grammar); //make sure no bad changes happen to the input instances
+		
+		//iterate through all grammar errors which occur in the instance with number i
+		Iterator it = grammar_error_list.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        
+	        String ruleName = (String) pairs.getKey();
+	        double ruleFrequency = (Integer) pairs.getValue();
+	        
+	        //divide number of occurences by number of words
+	        if(normalizeSentenceLength==true){
+	        	ruleFrequency = ruleFrequency / ((double)CountWords(currentSentence));
+	        }
+	        
+	        if(ngrammar.attribute(ruleName)==null){ //attribute doesn'tr exist yet
+	        	//create new numeric attribute
+	        	ngrammar.insertAttributeAt(new Attribute(ruleName), ngrammar.numAttributes());
+	        	for(int i=0;i<ngrammar.size();i++){ //set its value to zero for all instances 
+	        		ngrammar.get(i).setValue(ngrammar.attribute(ruleName), 0.0);
+	        	}
+	        }
+	        
+	        ngrammar.get(instanceNumber).setValue(ngrammar.attribute(ruleName), ruleFrequency);
+	        
+	        it.remove(); // avoids a ConcurrentModificationException
+	    }
+		
+		return ngrammar;
 	}
 
 	
