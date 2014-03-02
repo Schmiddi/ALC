@@ -114,6 +114,7 @@ public class SoundAttributeSelection {
 				currentRidge = stdRidge * (Math.pow(10, u));
 				
 				currentResult = WekaMagic.runLogistic((Instances)null, (Double)currentRidge, 5);
+				//currentResult = WekaMagic.runSVM((Instances)null, (Double)currentRidge, null);
 				
 				//true binarizeNumericAttributes is important
 				MyOutput filtered = WekaMagic.selectionByInfo(null, true, (Double)threshold.get(i));			
@@ -161,8 +162,8 @@ public class SoundAttributeSelection {
 
 		WrapperSubsetEval bestSubsetAttr = new WrapperSubsetEval();
 		bestSubsetAttr.setClassifier(c);
-		bestSubsetAttr.setFolds(10);
-		bestSubsetAttr.setSeed(1);
+		/*bestSubsetAttr.setFolds(10);
+		bestSubsetAttr.setSeed(1);*/
 		bestSubsetAttr.setEvaluationMeasure(new SelectedTag(WrapperSubsetEval.EVAL_FMEASURE, WrapperSubsetEval.TAGS_EVALUATION));
 		
 		
@@ -173,8 +174,8 @@ public class SoundAttributeSelection {
 		attsel.setEvaluator(bestSubsetAttr);
         attsel.setSearch(search);
         attsel.setRanking(true);
-        attsel.setFolds(3);
-        attsel.setSeed(1);
+        /*attsel.setFolds(3);
+        attsel.setSeed(1);*/
         attsel.setXval(false);
         
         //attsel.SelectAttributes(ndata);
