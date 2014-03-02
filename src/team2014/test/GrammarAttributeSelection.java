@@ -39,7 +39,7 @@ public class GrammarAttributeSelection {
 			String arff_dir = args[0];
 			String csv_dir = WekaMagic.getParent(arff_dir);
 			
-			data = WekaMagic.getGrammarInstances(csv_dir + "output.csv", false);
+			data = WekaMagic.getGrammarInstances(csv_dir + "output.csv", true);
 			
 			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
 			List<List<List<Double>>> results = testRun.runTest(data);
@@ -157,39 +157,4 @@ public class GrammarAttributeSelection {
 		return values;
 				
 	}
-	
-	public static void AttributeSelectionByClassifier(Classifier c, Instances train, Instances test) throws Exception{
-
-		WrapperSubsetEval bestSubsetAttr = new WrapperSubsetEval();
-		bestSubsetAttr.setClassifier(c);
-		/*bestSubsetAttr.setFolds(10);
-		bestSubsetAttr.setSeed(1);*/
-		bestSubsetAttr.setEvaluationMeasure(new SelectedTag(WrapperSubsetEval.EVAL_FMEASURE, WrapperSubsetEval.TAGS_EVALUATION));
-		
-		
-		BestFirst search = new BestFirst();
-		//search.setLookupCacheSize(100);
-							
-		AttributeSelection attsel = new AttributeSelection();				
-		attsel.setEvaluator(bestSubsetAttr);
-        attsel.setSearch(search);
-        attsel.setRanking(true);
-        /*attsel.setFolds(3);
-        attsel.setSeed(1);*/
-        attsel.setXval(false);
-        
-        //attsel.SelectAttributes(ndata);
-        //System.out.println(attsel.CVResultsString());
-        
-        attsel.SelectAttributes(train);              
-        train = attsel.reduceDimensionality(train);
-        test = attsel.reduceDimensionality(test);
-        
-        for(int t=0;t<train.numAttributes();t++){
-			System.out.print(train.attribute(t).name() + ",");
-		}
-		System.out.print("\n");
-	}
-	
-
 }
