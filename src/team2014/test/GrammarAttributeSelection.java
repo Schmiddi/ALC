@@ -7,13 +7,7 @@ import team2014.weka.GeneratesPlot;
 import team2014.weka.MyClassificationOutput;
 import team2014.weka.MyOutput;
 import team2014.weka.WekaMagic;
-import weka.classifiers.Classifier;
 import weka.core.Instances;
-
-import weka.attributeSelection.AttributeSelection;
-import weka.attributeSelection.BestFirst;
-import weka.attributeSelection.WrapperSubsetEval;
-import weka.core.SelectedTag;
 
 
 public class GrammarAttributeSelection {
@@ -121,7 +115,7 @@ public class GrammarAttributeSelection {
 				ArrayList<MyOutput> filter = new ArrayList<MyOutput>();
 		        filter.add(filtered);			
 				
-				CrossValidationOutput cvo = WekaMagic.crossValidation(currentResult, data, 10, 1, null);
+				CrossValidationOutput cvo = WekaMagic.crossValidation(currentResult, data, 10, 1, filter);
 				
 				
 				// Result processing to lists
