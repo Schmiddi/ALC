@@ -42,18 +42,18 @@ public class GrammarAttributeSelection {
 			arff_dir += fileSep;
 			
 			//save to CSV
-			WekaMagic.printHashMap(results.get(0), arff_dir + "attr_result_train_cross_validation.csv");//Train set
-			WekaMagic.printHashMap(results.get(1), arff_dir + "attr_result_cross_cross_validation.csv");//Cross set
+			WekaMagic.printHashMap(results.get(0), arff_dir + "grammar_result_train_cross_validation.csv");//Train set
+			WekaMagic.printHashMap(results.get(1), arff_dir + "grammar_result_cross_cross_validation.csv");//Cross set
 			
 					
 			//Plot everything
 			System.out.println("Plotting results...");
 			
-			System.out.println("Creating chart " + arff_dir + "attr_plot_train_cross_validation.png ...");
-			GeneratesPlot.createSound(results.get(0), arff_dir, "attr_plot_train_cross_validation.png");
+			System.out.println("Creating chart " + arff_dir + "grammar_plot_train_cross_validation.png ...");
+			GeneratesPlot.createSound(results.get(0), arff_dir, "grammar_plot_train_cross_validation.png");
 			
-			System.out.println("Creating chart " + arff_dir + "attr_plot_test_cross_validation.png ...");
-			GeneratesPlot.createSound(results.get(1), arff_dir, "attr_plot_test_cross_validation.png");
+			System.out.println("Creating chart " + arff_dir + "grammar_plot_test_cross_validation.png ...");
+			GeneratesPlot.createSound(results.get(1), arff_dir, "grammar_plot_test_cross_validation.png");
 			
 			System.out.println("Finished operations");
 			
