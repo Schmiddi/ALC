@@ -13,11 +13,14 @@ andi: src/andi/*.java
 
 
 test: src/team2014/test/*.java
-	javac -classpath $(JARS):$(JARS_TEST) -d bin src/team2014/test/*.java
+	javac -classpath $(JARS):$(JARS_TEST):$(JARS_WEKA) -d bin src/team2014/test/*.java
 
 
 weka: src/team2014/weka/*.java
 	javac -classpath $(JARS):$(JARS_WEKA) -d bin src/team2014/weka/*.java
+
+runSAS:
+	java -classpath $(JARS):$(JARS_TEST):$(JARS_WEKA) team2014.test.SoundAttributeSelection /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/myIS13_ComParE
 
 # Clean all
 clean:
