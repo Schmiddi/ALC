@@ -1141,15 +1141,15 @@ public class WekaMagic {
 	private static String setRightUmlauts(String str){
 		str = str.replace("\\", "");
 		
-		str = str.replace("\"u", "ü");
-		str = str.replace("\"o", "ö");
-		str = str.replace("\"a", "ä");
+		str = str.replace("\"u", "Ã¼");
+		str = str.replace("\"o", "Ã¶");
+		str = str.replace("\"a", "Ã¤");
 		
-		str = str.replace("\"U", "Ü");
-		str = str.replace("\"O", "Ö");
-		str = str.replace("\"A", "Ä");
+		str = str.replace("\"U", "Ãœ");
+		str = str.replace("\"O", "Ã–");
+		str = str.replace("\"A", "Ã„");
 		
-		str = str.replace("\"s", "ß");
+		str = str.replace("\"s", "ÃŸ");
 		
 		return str;
 	}
