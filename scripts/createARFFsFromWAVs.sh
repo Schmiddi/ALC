@@ -5,7 +5,7 @@ then
     echo "Usage: $0 <CLASSES-DIRECTORY> <ARFF-OUTPUT-DIRECTORY>"
 else
 
-CONF=/home/alc/workspace/ALC/test/conf/myemo_large.conf
+CONF=/home/alc/workspace/ALC/test/conf/myIS13_ComParE.conf
 BIN=/home/alc/tools/opensmile-2.0-rc1/opensmile/SMILExtract
 
 COUNT=0
@@ -30,7 +30,14 @@ do
    ARFF=${f:0:-4}.arff
    OUTP=`basename $ARFF`
    echo "Processing $f ..."
-   $BIN -C $CONF -noconsoleoutput -I $f -O ${2%/}/$OUTP
+   # Check if arff already exists
+   OUTPUT_FILE=${2%/}/$OUTP
+   if [ -f "$OUTPUT_FILE" ]
+   then
+       echo "Skipping $OUTPUT_FILE, as it already exists."
+   else
+       $BIN -C $CONF -noconsoleoutput -I $f -O $OUTPUT_FILE
+   fi
 
   done
 
