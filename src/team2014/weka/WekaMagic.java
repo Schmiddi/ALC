@@ -1168,8 +1168,9 @@ public class WekaMagic {
 			
 			s = cleanString(s);			
 			s = setRightUmlauts(s);
+			s = s.toLowerCase();
 		    
-			//System.out.println("Sample " + i + "\n" + s);
+			System.out.println("Sample " + i + "\n" + s);
 			
 			List<RuleMatch> matches = langTool.check(s);
 			
@@ -1177,15 +1178,18 @@ public class WekaMagic {
 			 
 			for (RuleMatch match : matches) {
 			  String ruleName = match.getRule().getId();
-			  ruleName.toUpperCase();
+			  ruleName.toUpperCase();			  
 			  
 			  //we don't need komma rules, since kommas are not annotated
 			  //since we are case insensitive, skip also case rules
-			  if(!ruleName.contains("KOMMA") && !ruleName.contains("CASE")){ 
+			  if(	!match.getRule().getCategory().getName().contains("Zeichensetzung") && 
+					!match.getRule().getCategory().getName().contains("Groß-/Kleinschreibung")
+				 ){ 
 				  Integer ret = grammar_error_list.put(ruleName, 1);
 				  if(ret != null) grammar_error_list.put(ruleName, (ret+1));
 				  
 				  /*
+				  System.out.println("Category: " + match.getRule().getCategory().getName());
 				  System.out.println(match.getRule().getId());				  			  
 				  
 				  System.out.println("Potential error at line " +
@@ -1194,7 +1198,8 @@ public class WekaMagic {
 				  System.out.println("Suggested correction: " +
 				      match.getSuggestedReplacements());
 				  
-				  System.out.println();*/
+				  System.out.println();
+				  */
 				  
 			  }
 			}

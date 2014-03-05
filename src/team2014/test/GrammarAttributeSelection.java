@@ -32,7 +32,7 @@ public class GrammarAttributeSelection {
 			
 			String arff_dir = args[0];
 			String csv_dir = WekaMagic.getParent(arff_dir);
-			
+						
 			data = WekaMagic.getGrammarInstances(csv_dir + "output.csv", true);
 			
 			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
