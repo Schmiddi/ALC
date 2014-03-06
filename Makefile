@@ -30,10 +30,19 @@ runSAS:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundAttributeSelection $(PATH_SOUND)
 
 runGASwoTT:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarAttributeSelection $(PATH_SOUND_WO_TT)
+
+runGAS:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarAttributeSelection $(PATH_SOUND)
 
 runSCV:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyCrossValidation $(PATH_SOUND)
+
+runTAS:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND)
+
+runTCV:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextCrossValidation $(PATH_SOUND)
 
 # Clean all
 clean:
