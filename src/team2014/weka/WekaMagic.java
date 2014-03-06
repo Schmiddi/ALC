@@ -859,6 +859,13 @@ public class WekaMagic {
 				   for(MyOutput m : filters){
 					   Filter f = (Filter)m.getOperation();
 					   f.setInputFormat(new Instances(train)); //use training data to build the filter
+					   
+					   if(f instanceof StringToWordVector){
+						   int  [] attributes = new int[1];
+						   attributes[0] =	train.attribute("text").index(); //eventuell +1 ???
+				           ((StringToWordVector)f).setAttributeIndicesArray(attributes);						   
+					   }
+					   
 					   cvo.addFilter(f,n);
 					   train = Filter.useFilter(train, f); //use filter on the training data
 					   test  = Filter.useFilter(test, f);  //use filter on the test data
