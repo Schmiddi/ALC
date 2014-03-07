@@ -73,14 +73,15 @@ public class WekaMagic {
 	 * 
 	 * @param data
 	 */
-	public static void setClassIndex(Instances data){
-		int i;
+	public static int setClassIndex(Instances data){
+		int i=-1;
 		for(i=0;i<data.numAttributes();i++){
-			if(data.attribute(i).toString().contains("alc,nonalc") || data.attribute(i).toString().contains("nonalc,alc")){
+			if(data.attribute(i).isNominal() && (data.attribute(i).toString().contains("alc,nonalc") || data.attribute(i).toString().contains("nonalc,alc"))){
 				data.setClassIndex(i);
 				break;
 			}
 		}
+		return i;
 	}
 	
 	/**

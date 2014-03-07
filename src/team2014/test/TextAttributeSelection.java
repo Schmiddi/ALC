@@ -36,6 +36,10 @@ public class TextAttributeSelection {
 			String csv_dir = WekaMagic.getParent(arff_dir);
 			
 			data = WekaMagic.textCSVToInstances(csv_dir + "output.csv", "file");
+			data.deleteAttributeAt(data.attribute("file").index());
+			int class_index = WekaMagic.setClassIndex(data);
+			data.renameAttribute(class_index,"_unique_class_name_");
+			WekaMagic.setClassIndex(data);
 			
 			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
 			List<List<List<Double>>> results = testRun.runTest(data);
