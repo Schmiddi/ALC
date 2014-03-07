@@ -34,8 +34,8 @@ do
    TEXT=`cat $f`
    CLASS=`basename $d`
    echo "Adding data from $BASENAME ($CLASS) to csv ..."
-   echo "${ID},${TEXT},${CLASS}" >> $2
-
+   CSV_LINE=${ID},${TEXT},${CLASS}
+   echo ${CSV_LINE} >> $2
   done
 
  fi
