@@ -42,8 +42,15 @@ public class TextAttributeSelection {
 			WekaMagic.setClassIndex(data);
 			
 			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
-			List<List<List<Double>>> results = testRun.runTest(data);
 			
+			Boolean withAttributeSelection = true;
+			
+			if(args.length >= 2){
+				if(args[1].equals("false"))
+					withAttributeSelection = false;
+			}
+			
+			List<List<List<Double>>> results = testRun.runTest(data, withAttributeSelection);
 			
 			arff_dir += fileSep;
 			
@@ -69,7 +76,15 @@ public class TextAttributeSelection {
 
 	}
 	
-	private List<List<List<Double>>> runTest(Instances data) throws Exception {
+/**
+ * Run the test
+ * 
+ * @param data
+ * @param withAttributeSelection If true, attribute selection will be applied, otherwise skipped
+ * @return
+ * @throws Exception
+ */
+	private List<List<List<Double>>> runTest(Instances data, Boolean withAttributeSelection) throws Exception {
 		
 		/* Runs 10 times logistic to regularize and stores results in list */
 		
@@ -86,27 +101,45 @@ public class TextAttributeSelection {
 		
 		ArrayList<Double> threshold = new ArrayList<Double>();
 		threshold.add(0.0);		
-		threshold.add(0.00000001);
-		threshold.add(0.0001);
-		threshold.add(0.0003);
-		threshold.add(0.0006);
-		threshold.add(0.001);
-		threshold.add(0.002);
-		threshold.add(0.0025);
-		threshold.add(0.0030);
-		threshold.add(0.0035);
-		threshold.add(0.004);
-		threshold.add(0.005);
-		threshold.add(0.006);
-		threshold.add(0.007);
-		threshold.add(0.008);
-		threshold.add(0.01);
+		
+		if(withAttributeSelection){
+			threshold.add(0.00000001);
+			threshold.add(0.0001);
+			threshold.add(0.0003);
+			threshold.add(0.0006);
+			threshold.add(0.001);
+			threshold.add(0.002);
+			threshold.add(0.0025);
+			threshold.add(0.0030);
+			threshold.add(0.0035);
+			threshold.add(0.004);
+			threshold.add(0.005);
+			threshold.add(0.006);
+			threshold.add(0.007);
+			threshold.add(0.008);
+			threshold.add(0.01);
+		}
 		
 		System.out.println("Running tests for train, cross and test set...");
 		//Iterate through different ridge values
 		
 		System.out.println("general Number Attributes: " + data.numAttributes());
 		
+		//perfect configuration
+		Boolean Ngram = true;
+		int ngram_min = 1;
+		int ngram_max = 3;
+        Boolean LowerCase = true;
+        Boolean IDFTransform = false;
+        Boolean TFTransform = false;
+        Boolean Stopword =  true;
+        String list1 = "resources\\germanST.txt";
+        int wordsToKeep = 1000000;
+        Boolean NormalizeDocLength = true;
+        Boolean OutputWordCounts = true;
+        Boolean Stemming = true;
+        int minTermFrequency = 2;
+        
 		for (int i=0;i<threshold.size();i++)
 		{
 			for (int u=0;u<15;u++)  // 0 - 15
@@ -116,35 +149,23 @@ public class TextAttributeSelection {
 				currentResult = WekaMagic.runLogistic((Instances)null, (Double)currentRidge, 5);
 				//currentResult = WekaMagic.runSVM((Instances)null, (Double)currentRidge, null);
 				
-				//perfect configuration
-				Boolean Ngram = true;
-				int ngram_min = 1;
-				int ngram_max = 3;
-                Boolean LowerCase = true;
-                Boolean IDFTransform = false;
-                Boolean TFTransform = false;
-                Boolean Stopword =  true;
-                String list1 = "resources\\germanST.txt";
-                int wordsToKeep = 1000000;
-                Boolean NormalizeDocLength = true;
-                Boolean OutputWordCounts = true;
-                Boolean Stemming = true;
-                int minTermFrequency = 2;
-				
 				MyOutput featuresGen = WekaMagic.generateFeatures(null, wordsToKeep, Ngram,
 						ngram_min, ngram_max, LowerCase, NormalizeDocLength, Stemming,
 						OutputWordCounts, IDFTransform, TFTransform, Stopword, list1,
 						minTermFrequency );
 				
-				
-				//true binarizeNumericAttributes is important
-				Boolean binarizeNumericAttributes = true;
-				MyOutput filtered = WekaMagic.selectionByInfo(null, binarizeNumericAttributes, (Double)threshold.get(i));			
-				
+				MyOutput filtered = null;
+				if(withAttributeSelection){
+					//true binarizeNumericAttributes is important
+					Boolean binarizeNumericAttributes = true;
+					filtered = WekaMagic.selectionByInfo(null, binarizeNumericAttributes, (Double)threshold.get(i));			
+				}
 				
 				ArrayList<MyOutput> filter = new ArrayList<MyOutput>();
 				filter.add(featuresGen);
-		        filter.add(filtered);			
+		        
+				if(withAttributeSelection)
+					filter.add(filtered);			
 				
 				CrossValidationOutput cvo = WekaMagic.crossValidation(currentResult, data, 10, 1, filter);
 				
@@ -155,6 +176,7 @@ public class TextAttributeSelection {
 				
 				exTrain.add(0, threshold.get(i));
 				exTrain.add(1, cvo.getTrainUAR());
+				exTrain.add(2, currentRidge);
 				listTrain.add(exTrain);
 				
 				
