@@ -7,6 +7,7 @@ JARS_ALL := $(JARS):$(JARS_TEST):$(JARS_WEKA)
 PATH_SOUND_WO_TT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/myIS13_ComParE
 PATH_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS13_ComParE
 XMX := -Xmx38g
+NOW := date +"%Y_%m_%d"
 
 # Build all targets of team2014
 all: andi weka test
@@ -38,11 +39,29 @@ runGAS:
 runSCV:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyCrossValidation $(PATH_SOUND)
 
+runSCVwoTT:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyCrossValidation $(PATH_SOUND_WO_TT)
+
 runTAS:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND)
 
+runTASwoTT:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND_WO_TT)
+
+runTASfalse:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND) "false"
+
+runTASfalsewoTT:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND_WO_TT) "false"
+
 runTCV:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextCrossValidation $(PATH_SOUND)
+
+runTCVwoTT:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextCrossValidation $(PATH_SOUND_WO_TT)
+
+my:
+	echo $(NOW)
 
 # Clean all
 clean:
