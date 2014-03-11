@@ -1,96 +1,82 @@
 package team2014.weka;
 
-public class Sample {
-	private String user_id;
-	private String block_nr;
-	private String session_nr;
-	private String recording_nr;
-	private String type; 			//h  : headset channel, m : mouse micro
-	private String version;
-	private String alc;
+import weka.core.Attribute;
+import weka.core.Instance;
+
+public class Sample {	
+	private Instance ins;
+	private Attribute key; //attribute which contains filename
 		
-	public Sample(String filename, String alc){
-		this.user_id    	= filename.substring(0,3);
-		this.block_nr   	= filename.substring(3,5);
-		this.session_nr 	= filename.substring(5,7);
-		this.recording_nr   = filename.substring(7,10);
-		this.type    		= filename.substring(11,12);
-		this.version   		= filename.substring(13,15);
-		this.alc 			= alc;
+	public Sample(Instance ins, Attribute key){		
+		this.ins			= ins;
+		this.key 			= key;
+	}
+	
+	public String getAlc() {
+		return ins.stringValue(ins.classAttribute());
 	}
 
+	public Instance getIns() {
+		return ins;
+	}
+	public void setIns(Instance ins) {
+		this.ins = ins;
+	}
+
+
+
 	public String getUser_idStr() {
-		return user_id;
+		return ins.stringValue(key).substring(0,3);
 	}
 	
 	public int getUser_id() {
-		return Integer.parseInt(this.user_id);
+		return Integer.parseInt(getUser_idStr());
 	}
 
-	public void setUser_id(String user_id) {
-		this.user_id = user_id;
-	}
-
+	
 	public String getBlock_nrStr() {
-		return block_nr;
+		return ins.stringValue(key).substring(3,5);
 	}
 	public int getBlock_nr() {
-		return Integer.parseInt(this.block_nr);
-	}
-
-	public void setBlock_nr(String block_nr) {
-		this.block_nr = block_nr;
+		return Integer.parseInt(getBlock_nrStr());
 	}
 
 	public String getSession_nrStr() {
-		return session_nr;
+		return ins.stringValue(key).substring(5,7);
 	}
 	
 	public int getSession_nr() {
-		return Integer.parseInt(this.session_nr);
-	}
-
-	public void setSession_nr(String session_nr) {
-		this.session_nr = session_nr;
+		return Integer.parseInt(getSession_nrStr());
 	}
 
 	public String getRecording_nrStr() {
-		return recording_nr;
+		return ins.stringValue(key).substring(7,10);
 	}
 	
 	public int getRecording_nr() {
-		return Integer.parseInt(this.recording_nr);
-	}
-
-	public void setRecording_nr(String recording_nr) {
-		this.recording_nr = recording_nr;
+		return Integer.parseInt(getRecording_nrStr());
 	}
 
 	public String getType() {
-		return type;
+		return ins.stringValue(key).substring(11,12);
 	}
 
-	public void setType(String type) {
-		this.type = type;
-	}
 
 	public String getVersionStr() {
-		return version;
+		return ins.stringValue(key).substring(13,15);
 	}
 	
 	public int getVersion() {
-		return Integer.parseInt(this.version);
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
+		return Integer.parseInt(getVersionStr());
 	}
 	
 	public String getFilename(){
-		return user_id + block_nr + session_nr + recording_nr + "_" + type + "_" + version;
+		//return getUser_idStr() + getBlock_nrStr() + getSession_nrStr() + getRecording_nrStr() + "_" + getType() + "_" + getVersionStr();
+		return ins.stringValue(key);
 	}
 	
 	public Boolean isIntoxicated(){
+		String alc = ins.stringValue(ins.classAttribute()); //get class attribute value from instance		
 		if(alc.toUpperCase().contains("NON")){
 			return false;
 		}

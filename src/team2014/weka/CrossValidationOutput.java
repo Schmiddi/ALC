@@ -61,8 +61,7 @@ public class CrossValidationOutput {
 	    //get all instances in form of speaker samples
 	    ArrayList<SpeakerSamples> table_speaker_samples = new ArrayList<SpeakerSamples>();
 	    for(int i=0;i<table.size();i++){
-	    	String filename = table.get(i).stringValue(key);
-	    	Sample current = new Sample(filename, table.get(i).stringValue(table.classAttribute()));
+	    	Sample current = new Sample(table.get(i),key);
 	    	
 	    	int found = 0;
 	 		for(int l=0;l<table_speaker_samples.size();l++){
@@ -82,7 +81,7 @@ public class CrossValidationOutput {
 		    	}
 	    	}
 	    	if(found==0){
-	    		System.out.println("no fitting speaker found for: \"" + filename + "\"");
+	    		System.out.println("No fitting speaker found for: \"" + table.get(i).stringValue(key) + "\"");
 	    	}
 	    }
 	    
