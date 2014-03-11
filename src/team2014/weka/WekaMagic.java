@@ -1,7 +1,9 @@
 package team2014.weka;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1256,6 +1258,56 @@ public class WekaMagic {
 	    }
 		
 		return ngrammar;
+	}
+	
+	public static ArrayList<Speaker> loadSpeakerInfo(String SPEAEXT_TBL) throws IOException{
+		ArrayList<Speaker> al = new ArrayList<Speaker>();
+		
+		InputStream    fis;
+		BufferedReader br;
+		String         line;
+
+		fis = new FileInputStream(SPEAEXT_TBL);
+		br = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
+		int i=0;
+		while ((line = br.readLine()) != null) {
+			//System.out.println("\""+line+"\"");
+			if(i>0 && !line.isEmpty() && line != null && line.length()>5){
+				String[] tokens = line.split("\t");
+				
+				//System.out.println(Arrays.toString(tokens));
+				
+				int id = -1;
+				int age = -1;
+				int weight = -1;
+				int height = -1;
+				
+				try
+				{
+				   id = Integer.parseInt(tokens[0]);
+				   age = Integer.parseInt(tokens[2]);
+				   weight = Integer.parseInt(tokens[4]);
+				   height = Integer.parseInt(tokens[5]);
+				}
+				catch(NumberFormatException nfe)
+				{
+				  // don't do anything
+				}
+				
+				
+				//					id  sex	    age    accent weight height education profession  smo     drh       com
+				al.add(new Speaker(id,tokens[1],age,tokens[3],weight,height,tokens[6],tokens[7],tokens[8],tokens[9],tokens[10]));
+			}
+			i++;
+		}
+
+		// Done with the file
+		br.close();
+		br = null;
+		fis = null;
+		
+		return al;
+		
 	}
 
 	

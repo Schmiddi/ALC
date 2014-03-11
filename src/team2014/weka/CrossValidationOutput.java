@@ -21,12 +21,133 @@ public class CrossValidationOutput {
 	private Instances table;
 	private Attribute key;
 	
+	//new cross validation
+	private ArrayList<ArrayList<SpeakerSamples>> train_sp_set;
+	private ArrayList<ArrayList<SpeakerSamples>> test_sp_set;
 	
 	
 	public CrossValidationOutput(){
 		trainingEval = new ArrayList<MyClassificationOutput>();
 		testEval = new ArrayList<MyClassificationOutput>();
 		filters = new ArrayList<ArrayList<Filter>>();
+	}
+	
+	public CrossValidationOutput(Instances table, String s_key, ArrayList<Speaker> speakers){
+		//initialize anything to null
+		trainingEval = new ArrayList<MyClassificationOutput>();
+		testEval = new ArrayList<MyClassificationOutput>();
+		filters = new ArrayList<ArrayList<Filter>>();
+		
+		//initialize input configuration
+		this.table = table;
+		folds = 10;
+		randseed = 1;
+		
+		//get key attribute
+		key = null;
+		for(int i=0;i<table.numAttributes();i++){
+			if(table.attribute(i).isString() && !table.attribute(i).isNominal() && table.attribute(i).name().equals(s_key)){
+				key = table.attribute(i);
+				break;
+			}
+		}
+		
+		//randomize instances
+		Instances runInstances = new Instances(table);
+	    Random random = new Random(randseed);
+	    runInstances.randomize(random);
+	    
+	    
+	    //get all instances in form of speaker samples
+	    ArrayList<SpeakerSamples> table_speaker_samples = new ArrayList<SpeakerSamples>();
+	    for(int i=0;i<table.size();i++){
+	    	String filename = table.get(i).stringValue(key);
+	    	Sample current = new Sample(filename, table.get(i).stringValue(table.classAttribute()));
+	    	
+	    	int found = 0;
+	 		for(int l=0;l<table_speaker_samples.size();l++){
+	    		if( current.getUser_id() == table_speaker_samples.get(l).getSpeaker().getId()){
+	    			table_speaker_samples.get(l).addFile(current);
+	    			found = 1;
+	    			break;
+	    		}
+    		}
+	    	if(found == 0){
+		    	for(int u=0;u<speakers.size();u++){
+		    		if( current.getUser_id() == speakers.get(u).getId()){
+		    			table_speaker_samples.add(new SpeakerSamples(speakers.get(u),current));
+		    			found = 1;
+		    			break;
+		    		}
+		    	}
+	    	}
+	    	if(found==0){
+	    		System.out.println("no fitting speaker found for: \"" + filename + "\"");
+	    	}
+	    }
+	    
+	    //---------------------------------------------------------------------------------------
+	    //test 
+	    //---------------------------------------------------------------------------------------
+	    
+	    System.out.println("total number of instances: " + table.size());
+	    
+	    int total     =0;
+	    int male      =0;
+	    int alc       =0;
+	    
+	    int male120   =0;
+	    int male90    =0;
+	    int female120 =0;
+	    int female90  =0;
+	    int totalSpeaker =0;
+	    
+	    for(int i=0;i<table_speaker_samples.size();i++){
+	    	totalSpeaker++;
+	    	System.out.println("Speaker (" + table_speaker_samples.get(i).getSpeaker().getSex() + "): "+ (double)table_speaker_samples.get(i).getNumberOfIntoxicated() / table_speaker_samples.get(i).getSize());
+	    	
+	    	System.out.println(table_speaker_samples.get(i).getSize());
+	    	total += table_speaker_samples.get(i).getSize();
+	    	alc += table_speaker_samples.get(i).getNumberOfIntoxicated();
+	    	if(table_speaker_samples.get(i).getSpeaker().isMale()) {
+	    		male += table_speaker_samples.get(i).getSize();
+	    		if(table_speaker_samples.get(i).getSize()==90){
+	    			male90++;
+	    		}else{
+	    			male120++;
+	    		}
+	    	}
+	    	else{
+	    		if(table_speaker_samples.get(i).getSize()==90){
+	    			female90++;
+	    		}else{
+	    			female120++;
+	    		}
+	    	}
+	    }
+	    
+	    System.out.println("total: " + total + " male: "+ male + " female: " + (total-male));
+	    System.out.println("alc: "+ alc + " sober: " + (total-alc));
+	    
+	    System.out.println("female 120: " + female120 + " female 90: " + female90);
+	    System.out.println("male 120: " + male120 + " male 90: " + male90);
+	    
+	    System.out.println("number of speaker: " + totalSpeaker);
+	    
+	    
+	    //---------------------------------------------------------------------------------------
+	    //test end
+	    //---------------------------------------------------------------------------------------
+	    
+	    
+	    if (runInstances.classAttribute().isNominal() && (folds > 1)) {
+	    	//stratify by class, gender - make it speaker independent
+	    	
+	    }
+		
+	    
+	    train_key_set = new ArrayList<ArrayList<String>>();
+		test_key_set  = new ArrayList<ArrayList<String>>();
 	}
 	
 	public CrossValidationOutput(Instances table, String s_key){
