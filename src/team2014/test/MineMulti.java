@@ -208,6 +208,6 @@ public class MineMulti {
 		// Store treshold, UAR
 		WekaMagic.printHashMap(results, outputFolder + title + "_results_.csv");
 		
-		GeneratesPlot.create(results,outputFolder,title);
+		GeneratesPlot.create(results,outputFolder,title,"Threshold","UAR");
 	}
 }

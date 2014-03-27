@@ -217,6 +217,6 @@ public class ScienceMulti {
 		// Store treshold, UAR
 		WekaMagic.printHashMap(results, outputFolder + title + "_results.csv");
 
-		GeneratesPlot.create(results, outputFolder, title);
+		GeneratesPlot.create(results, outputFolder, title, "Threshold","UAR");
 	}
 }
