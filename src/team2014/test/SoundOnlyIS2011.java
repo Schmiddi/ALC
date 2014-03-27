@@ -44,9 +44,9 @@ public class SoundOnlyIS2011 {
 			arff_dir += fileSep;
 			
 			//save to CSV
-			WekaMagic.printHashMap(results.get(0), arff_dir + "result_train_IS2011.csv");//Train set
-			WekaMagic.printHashMap(results.get(1), arff_dir + "result_dev_IS2011.csv");//Dev set
-			WekaMagic.printHashMap(results.get(2), arff_dir + "result_test_IS2011.csv");//Test set
+			WekaMagic.printHashMap(results.get(0), arff_dir + "result_train_soundOnlyIS2011.csv");//Train set
+			WekaMagic.printHashMap(results.get(1), arff_dir + "result_dev_soundOnlyIS2011.csv");//Dev set
+			WekaMagic.printHashMap(results.get(2), arff_dir + "result_test_soundOnlyIS2011.csv");//Test set
 			
 					
 			//Plot everything
