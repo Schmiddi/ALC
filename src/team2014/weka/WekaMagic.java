@@ -13,6 +13,9 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 
 
+
+
+import team2014.test.SetType;
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.attributeSelection.Ranker;
 import weka.core.FastVector;
@@ -898,6 +901,45 @@ public class WekaMagic {
 		return cvo;
 	}
 	
+	/**
+	 * Run our own cross validation
+	 * 
+	 * @param classifier - 
+	 * @param sets
+	 * @param filters - filters which have to be applied first
+	 * @return
+	 * @throws Exception
+	 */
+	public static MyClassificationOutput[] validationIS2011(Instances[] sets, ArrayList<MyOutput> filters, double currentRidge) throws Exception{
+		
+		MyClassificationOutput [] output = new MyClassificationOutput[3];
+		
+		if(filters != null){
+			//apply all filters
+		    for(MyOutput m : filters){
+		    	Filter f = (Filter)m.getOperation();
+			    f.setInputFormat(new Instances(sets[SetType.TRAIN.ordinal()])); //use training data to build the filter
+			   
+			    if(f instanceof StringToWordVector){
+			    	int  [] attributes = new int[1];
+			    	attributes[0] =	sets[SetType.TRAIN.ordinal()].attribute("text").index(); //eventuell +1 ???
+			    	((StringToWordVector)f).setAttributeIndicesArray(attributes);						   
+			    }
+			   
+			    sets[SetType.TRAIN.ordinal()] = Filter.useFilter(sets[SetType.TRAIN.ordinal()], f); //use filter on the training data
+			    sets[SetType.DEV.ordinal()] = Filter.useFilter(sets[SetType.DEV.ordinal()], f); //use filter on the dev data
+			    sets[SetType.TEST.ordinal()] = Filter.useFilter(sets[SetType.TEST.ordinal()], f); //use filter on the test data
+		    }
+		}
+
+		MyClassificationOutput currentResult = WekaMagic.runLogistic(sets[SetType.TRAIN.ordinal()], currentRidge, 5);
+		
+		output[SetType.TRAIN.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TRAIN.ordinal()], currentResult);
+		output[SetType.DEV.ordinal()] = WekaMagic.applyLogistic(sets[SetType.DEV.ordinal()], currentResult);
+		output[SetType.TEST.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TEST.ordinal()],  currentResult);
+		
+		return output;
+	}
 	
 	/**
 	 * load instances from arff file
@@ -1082,15 +1124,32 @@ public class WekaMagic {
 	 */
 	public static Instances getSoundInstances(String arffdir, String csv_file) throws Exception
 	{
+		Instances data = WekaMagic.getSoundInstancesWithFile(arffdir, csv_file);
+
+		//delete unnecessary attributes
+		data.deleteAttributeAt(data.attribute("file").index());			  //remove key(file id) attribute
+    	
+    	return data;
+	}
+	
+	/**
+	 * get sound instances with annotated class (nonalc/alc)
+	 * 
+	 * @param arffdir - directory of all arff files
+	 * @param csv_file - csv file of all text data
+	 * @return
+	 * @throws Exception
+	 */
+	public static Instances getSoundInstancesWithFile(String arffdir, String csv_file) throws Exception
+	{
 		Instances sound = WekaMagic.soundArffToInstances(arffdir);		  //get sound data
 		Instances text = WekaMagic.textCSVToInstances(csv_file,"file");   //get text data (with class)
 		
 		Instances data = WekaMagic.mergeInstancesBy(sound, text, "file"); //merge text and sound data by using the key fileid
-		
-		
+				
 		//delete unnecessary attributes
 		data.deleteAttributeAt(data.attribute("text").index()); 		  //remove text attribute
-		data.deleteAttributeAt(data.attribute("file").index());			  //remove key(file id) attribute
+		//data.deleteAttributeAt(data.attribute("file").index());		//remove key(file id) attribute
 		//data.deleteAttributeAt(data.attribute("numeric_class").index());
     	
     	return data;
