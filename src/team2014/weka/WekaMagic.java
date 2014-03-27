@@ -1309,6 +1309,59 @@ public class WekaMagic {
 		return al;
 		
 	}
+	
+	
+	public static Instances[] getInterspeech2011Sets(String dir, Instances allInstances, String fileAttribute) throws Exception{
+		Instances [] sets = new Instances [3];
+		
+		//get right fileSeparator
+		boolean isWindows = ((System.getProperty("os.name").contains("Windows")))?true:false;
+		String fileSep = isWindows?"\\":"/";
+		
+		String [] filenames = new String[3];
+		
+		filenames[0] = "TRAIN.TBL"; //train_name
+		filenames[1] = "D1.TBL";    //dev_name
+		filenames[2] = "TEST.TBL";  //test_name
+		
+		InputStream    fis;
+		BufferedReader br;
+		String         line;
+		
+		for(int i=0;i<filenames.length;i++){
+			sets[i] = new Instances(allInstances, 0);
+			String filename = dir + fileSep + filenames[i];
+			fis = new FileInputStream(filename);
+			br = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
+			while ((line = br.readLine()) != null) {
+				//System.out.println("\""+line+"\""); // format example: BLOCK30/SES3066/5653066001_h_01.WAV
+				if(!line.isEmpty() && line != null && line.length()>5){
+					String[] tokens = line.split("/");
+					String id = tokens[tokens.length-1].split("\\.")[0];
+					
+					Boolean found = false;
+					for(int u=0;u<allInstances.size();u++){
+								if(allInstances.get(u).stringValue(allInstances.attribute(fileAttribute)).equals(id)){
+									sets[i].add(allInstances.get(u));
+									found = true;
+									break;
+								}					
+					}
+					if(found == false){
+						System.out.println("One file id is only present in one file: " + id);
+						throw new Exception();
+					}
+				}
+			}
+	
+			// Done with the file
+			br.close();
+			br = null;
+			fis = null;
+		}
+		
+		return sets;
+	}
 
 	
 }
