@@ -67,5 +67,14 @@ public class SpeakerSamples {
 		return getSize()-getNumberOfIntoxicated();
 	}
 	
+	public int getNumberOfExperimentByNr(int rec){
+		int sum=0;
+		for(Sample s:files){
+			if(s.getRecording_nr() == rec){
+				sum++;
+			}
+		}
+		return sum;
+	}
 	
 }
