@@ -1,4 +1,4 @@
-package team2014.test;
+package team2014.weka;
 
 public enum SetType {
 	TRAIN, DEV , TEST

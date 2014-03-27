@@ -3,7 +3,6 @@ package team2014.weka;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,9 +12,6 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 
 
-
-
-import team2014.test.SetType;
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.attributeSelection.Ranker;
 import weka.core.FastVector;

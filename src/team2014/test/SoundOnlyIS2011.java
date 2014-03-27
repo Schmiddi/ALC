@@ -4,6 +4,7 @@ import java.util.List;
 
 import team2014.weka.GeneratesPlot;
 import team2014.weka.MyClassificationOutput;
+import team2014.weka.SetType;
 import team2014.weka.WekaMagic;
 import weka.core.Instances;
 
