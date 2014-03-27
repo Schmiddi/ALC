@@ -1353,6 +1353,8 @@ public class WekaMagic {
 					}
 				}
 			}
+			
+			sets[i].deleteAttributeAt(sets[i].attribute(fileAttribute).index());
 	
 			// Done with the file
 			br.close();
