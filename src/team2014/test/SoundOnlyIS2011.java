@@ -50,16 +50,19 @@ public class SoundOnlyIS2011 {
 			
 					
 			//Plot everything
+			String xLabel = "Ridge";
+			String yLabel = "UAR";
+			
 			System.out.println("Plotting results...");
 			
 			System.out.println("Creating chart " + arff_dir + "plot_train_cross_validation.png ...");
-			GeneratesPlot.createSound(results.get(0), arff_dir, "plot_train_cross_validation.png");
+			GeneratesPlot.create(results.get(0), arff_dir, "plot_train_cross_validation.png", xLabel, yLabel);
 			
 			System.out.println("Creating chart " + arff_dir + "plot_dev_cross_validation.png ...");
-			GeneratesPlot.createSound(results.get(1), arff_dir, "plot_dev_cross_validation.png");
+			GeneratesPlot.create(results.get(1), arff_dir, "plot_dev_cross_validation.png", xLabel, yLabel);
 			
 			System.out.println("Creating chart " + arff_dir + "plot_test_cross_validation.png ...");
-			GeneratesPlot.createSound(results.get(2), arff_dir, "plot_test_cross_validation.png");
+			GeneratesPlot.create(results.get(2), arff_dir, "plot_test_cross_validation.png", xLabel, yLabel);
 			
 			System.out.println("Finished operations");
 			
