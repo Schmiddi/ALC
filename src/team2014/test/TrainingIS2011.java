@@ -33,7 +33,24 @@ public class TrainingIS2011 {
 				
 				System.out.println("train size: " + train.size());
 				System.out.println("dev size: " + dev.size());
-				System.out.println("test size: " + test.size());			
+				System.out.println("test size: " + test.size());
+				
+				
+				//difference between all instances and the instances selected by interspeech 2011
+				sets = WekaMagic.getInterspeech2011SetsWithFile(args[1], text, s_key);
+				
+				Instances notInSets = WekaMagic.getOutOfSets(sets, text, s_key);				
+				System.out.println("out of interspeech sets - size: " + notInSets.size());
+				System.out.println(notInSets);
+				
+				//difference between all instances and the set without tongue twisters
+				Instances text_wott = WekaMagic.textCSVToInstances(csv_dir + "output_wott.csv",s_key);
+				
+				notInSets = WekaMagic.getOutOfSets(new Instances [] { text_wott }, text, s_key);				
+				System.out.println("deleted tongue twister - size: " + notInSets.size());
+				System.out.println(notInSets); //print all affected tongue twisters
+				
+				//difference between interspeech 2011 instances and set without tongue twisters
 				
 				
 			} catch (Exception e) {

@@ -1365,8 +1365,7 @@ public class WekaMagic {
 		
 	}
 	
-	
-	public static Instances[] getInterspeech2011Sets(String dir, Instances allInstances, String fileAttribute) throws Exception{
+	public static Instances[] getInterspeech2011SetsWithFile(String dir, Instances allInstances, String fileAttribute) throws Exception{
 		Instances [] sets = new Instances [3];
 		
 		//get right fileSeparator
@@ -1409,8 +1408,6 @@ public class WekaMagic {
 				}
 			}
 			
-			sets[i].deleteAttributeAt(sets[i].attribute(fileAttribute).index());
-	
 			// Done with the file
 			br.close();
 			br = null;
@@ -1418,6 +1415,55 @@ public class WekaMagic {
 		}
 		
 		return sets;
+	}
+	
+	public static Instances[] getInterspeech2011Sets(String dir, Instances allInstances, String fileAttribute) throws Exception{
+		Instances [] sets = new Instances [3];
+		
+		sets = getInterspeech2011SetsWithFile(dir, allInstances, fileAttribute);
+		
+		for(int i=0;i<sets.length;i++){
+			sets[i].deleteAttributeAt(sets[i].attribute(fileAttribute).index());
+		}
+		
+		return sets;
+	}
+
+	public static Instances getOutOfSets(Instances[] sets, Instances allInstances, String s_key) {
+		Instances outOfSets = new Instances(allInstances, 0);
+		Instances merged = new Instances(sets[0]);
+		for(int i=1;i<sets.length;i++){
+			merged.addAll(sets[i]);
+		}
+		
+		System.out.println("size merged: " + merged.size());
+		
+		Instances a = null;
+		Instances b = null;
+		if(merged.size() > allInstances.size()){
+			a = new Instances(merged);
+			b = new Instances(allInstances);
+		}
+		else{
+			a = new Instances(allInstances);
+			b = new Instances(merged);
+		}
+		
+		
+		for(int i=0;i<a.size();i++){
+			Boolean found = false;		
+			for(int u=0;u<b.size();u++){
+				if(b.get(u).stringValue(b.attribute(s_key)).equals(a.get(i).stringValue(a.attribute(s_key)))){
+						found = true;
+						break;
+				}
+			}
+			if(!found){
+				outOfSets.add(a.get(i));
+			}
+		}
+		
+		return outOfSets;
 	}
 
 	
