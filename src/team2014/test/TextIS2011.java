@@ -48,8 +48,8 @@ public class TextIS2011 {
 
 			Boolean withAttributeSelection = true;
 
-			if (args.length >= 2) {
-				if (args[1].equals("false"))
+			if (args.length >= 3) {
+				if (args[2].equals("false"))
 					withAttributeSelection = false;
 			}
 
