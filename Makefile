@@ -6,6 +6,7 @@ JARS_TEST := $(HOME)bin
 JARS_ALL := $(JARS):$(JARS_TEST):$(JARS_WEKA)
 PATH_SOUND_WO_TT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/myIS13_ComParE
 PATH_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS13_ComParE
+PATH_IS2011_SETS := /home/bas-alc/corpus/DOC/IS2011CHALLENGE
 XMX := -Xmx38g
 NOW := date +"%Y_%m_%d"
 
@@ -23,6 +24,16 @@ test: src/team2014/test/*.java
 
 weka: src/team2014/weka/*.java
 	javac -classpath $(JARS):$(JARS_WEKA) -d bin src/team2014/weka/*.java
+
+
+runTISwAttr:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS)
+
+runTISwoAttr:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) "false"
+	
+runSOIS2011:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS)
 
 runSASwoTT:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundAttributeSelection $(PATH_SOUND_WO_TT)
