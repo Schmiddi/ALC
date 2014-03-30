@@ -1,5 +1,7 @@
 package team2014.test;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import team2014.weka.GeneratesPlot;
@@ -44,10 +46,14 @@ public class SoundOnlyIS2011 {
 			
 			arff_dir += fileSep;
 			
+			// Create timestamp
+			Date timestamp = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
+			
 			//save to CSV
-			WekaMagic.printHashMap(results.get(0), arff_dir + "result_train_soundOnlyIS2011.csv");//Train set
-			WekaMagic.printHashMap(results.get(1), arff_dir + "result_dev_soundOnlyIS2011.csv");//Dev set
-			WekaMagic.printHashMap(results.get(2), arff_dir + "result_test_soundOnlyIS2011.csv");//Test set
+			WekaMagic.printHashMap(results.get(0), arff_dir + sdf.format(timestamp) + "result_train_soundOnlyIS2011.csv");//Train set
+			WekaMagic.printHashMap(results.get(1), arff_dir + sdf.format(timestamp) + "result_dev_soundOnlyIS2011.csv");//Dev set
+			WekaMagic.printHashMap(results.get(2), arff_dir + sdf.format(timestamp) + "result_test_soundOnlyIS2011.csv");//Test set
 			
 					
 			//Plot everything
@@ -56,14 +62,14 @@ public class SoundOnlyIS2011 {
 			
 			System.out.println("Plotting results...");
 			
-			System.out.println("Creating chart " + arff_dir + "plot_train_cross_validation.png ...");
-			GeneratesPlot.create(results.get(0), arff_dir, "plot_train_cross_validation.png", xLabel, yLabel);
+			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp) + "plot_train_soundOnlyIS2011.png ...");
+			GeneratesPlot.create(results.get(0), arff_dir, sdf.format(timestamp) + "plot_train_soundOnlyIS2011.png", xLabel, yLabel);
 			
-			System.out.println("Creating chart " + arff_dir + "plot_dev_cross_validation.png ...");
-			GeneratesPlot.create(results.get(1), arff_dir, "plot_dev_cross_validation.png", xLabel, yLabel);
+			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp) + "plot_dev_soundOnlyIS2011.png ...");
+			GeneratesPlot.create(results.get(1), arff_dir, sdf.format(timestamp) + "plot_dev_soundOnlyIS2011", xLabel, yLabel);
 			
-			System.out.println("Creating chart " + arff_dir + "plot_test_cross_validation.png ...");
-			GeneratesPlot.create(results.get(2), arff_dir, "plot_test_cross_validation.png", xLabel, yLabel);
+			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp) + "plot_test_soundOnlyIS2011.png ...");
+			GeneratesPlot.create(results.get(2), arff_dir, sdf.format(timestamp) + "plot_test_soundOnlyIS2011.png", xLabel, yLabel);
 			
 			System.out.println("Finished operations");
 			
