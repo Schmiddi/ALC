@@ -65,9 +65,9 @@ public class SoundOnlyIS2011 {
 				attr = "attr";
 			
 			//save to CSV
-			WekaMagic.printHashMap(results.get(0), arff_dir + sdf.format(timestamp) + "result_train_soundOnlyIS2011"+attr+".csv");//Train set
-			WekaMagic.printHashMap(results.get(1), arff_dir + sdf.format(timestamp) + "result_dev_soundOnlyIS2011"+attr+".csv");//Dev set
-			WekaMagic.printHashMap(results.get(2), arff_dir + sdf.format(timestamp) + "result_test_soundOnlyIS2011"+attr+".csv");//Test set
+			WekaMagic.printHashMap(results.get(0), arff_dir + sdf.format(timestamp) + "result_train"+attr+".csv");//Train set
+			WekaMagic.printHashMap(results.get(1), arff_dir + sdf.format(timestamp) + "result_dev"+attr+".csv");//Dev set
+			WekaMagic.printHashMap(results.get(2), arff_dir + sdf.format(timestamp) + "result_test"+attr+".csv");//Test set
 			
 					
 			//Plot everything
@@ -76,14 +76,14 @@ public class SoundOnlyIS2011 {
 			
 			System.out.println("Plotting results...");
 			
-			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp) + "plot_train_soundOnlyIS2011.png ...");
-			GeneratesPlot.create(results.get(0), arff_dir, sdf.format(timestamp) + "plot_train_soundOnlyIS2011"+attr+".png", xLabel, yLabel);
+			System.out.println("Creating chart " + arff_dir + "sound_IS2011" + sdf.format(timestamp) + "plot_train.png ...");
+			GeneratesPlot.create(results.get(0), arff_dir, "sound_IS2011" + sdf.format(timestamp) + "plot_train"+attr, xLabel, yLabel);
 			
-			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp) + "plot_dev_soundOnlyIS2011.png ...");
-			GeneratesPlot.create(results.get(1), arff_dir, sdf.format(timestamp) + "plot_dev_soundOnlyIS2011"+attr+".png", xLabel, yLabel);
+			System.out.println("Creating chart " + arff_dir + "sound_IS2011" + sdf.format(timestamp) + "plot_dev.png ...");
+			GeneratesPlot.create(results.get(1), arff_dir,"sound_IS2011" + sdf.format(timestamp) + "plot_dev"+attr, xLabel, yLabel);
 			
-			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp) + "plot_test_soundOnlyIS2011"+attr+".png ...");
-			GeneratesPlot.create(results.get(2), arff_dir, sdf.format(timestamp) + "plot_test_soundOnlyIS2011"+attr+".png", xLabel, yLabel);
+			System.out.println("Creating chart " + arff_dir + "sound_IS2011" + sdf.format(timestamp) + "plot_test"+attr+".png ...");
+			GeneratesPlot.create(results.get(2), arff_dir, "sound_IS2011" +sdf.format(timestamp) + "plot_test"+attr, xLabel, yLabel);
 			
 			System.out.println("Finished operations");
 			
@@ -169,15 +169,13 @@ public class SoundOnlyIS2011 {
 				exTest.add(0, currentRidge);
 				exTest.add(1, output[SetType.TEST.ordinal()].getUAR());
 				exTest.add(2, output[SetType.TEST.ordinal()].getF1Score());
-				listDev.add(exTest);
+				listTest.add(exTest);
 				
 				// print all information about the result
 				System.out.print("ridge:" + currentRidge + " threshold:" + threshold.get(i)
 						+ "Train UAR: " + output[SetType.TRAIN.ordinal()].getUAR() + " Dev UAR:"
 						+ output[SetType.DEV.ordinal()].getUAR() + " Test UAR:"
-						+ output[SetType.TEST.ordinal()].getUAR());
-
-				System.out.print("\n");
+						+ output[SetType.TEST.ordinal()].getUAR() + "\n");
 			}
 		}
 		

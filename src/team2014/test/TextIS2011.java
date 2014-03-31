@@ -65,37 +65,37 @@ public class TextIS2011 {
 
 			// Create attr string if with attribute selection
 			String attr = "";
-			if(withAttributeSelection)
+			if (withAttributeSelection)
 				attr = "attr";
-						
-			// save to CSV
-			WekaMagic.printHashMap(results.get(0), arff_dir + sdf.format(timestamp)
-					+ "result_train_textIS2011"+attr+".csv");
-			WekaMagic.printHashMap(results.get(1), arff_dir + sdf.format(timestamp)
-					+ "result_dev_textIS2011"+attr+".csv");
-			WekaMagic.printHashMap(results.get(2), arff_dir + sdf.format(timestamp)
-					+ "result_test_textIS2011"+attr+".csv");
 
-			// Plot everything			
+			// save to CSV
+			WekaMagic.printHashMap(results.get(0), arff_dir + "text_IS2011" + sdf.format(timestamp)
+					+ "result_train" + attr + ".csv");
+			WekaMagic.printHashMap(results.get(1), arff_dir + "text_IS2011" + sdf.format(timestamp)
+					+ "result_dev" + attr + ".csv");
+			WekaMagic.printHashMap(results.get(2), arff_dir + "text_IS2011" + sdf.format(timestamp)
+					+ "result_test" + attr + ".csv");
+
+			// Plot everything
 			String xLabel = "Ridge";
 			String yLabel = "UAR";
 
 			System.out.println("Plotting results...");
 
-			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp)
-					+ "plot_train_textIS2011"+attr+".png ...");
-			GeneratesPlot.create(results.get(0), arff_dir, sdf.format(timestamp)
-					+ "plot_train_textIS2011"+attr+".png", xLabel, yLabel);
+			System.out.println("Creating chart " + arff_dir + "text_IS2011" + sdf.format(timestamp)
+					+ "plot_train" + attr + ".png ...");
+			GeneratesPlot.create(results.get(0), arff_dir, "text_IS2011" + sdf.format(timestamp)
+					+ "plot_train" + attr, xLabel, yLabel);
 
-			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp)
-					+ "plot_dev_textIS2011"+attr+".png ...");
-			GeneratesPlot.create(results.get(1), arff_dir, sdf.format(timestamp)
-					+ "plot_dev_textIS2011"+attr+".png", xLabel, yLabel);
+			System.out.println("Creating chart " + arff_dir + "text_IS2011" + sdf.format(timestamp)
+					+ "plot_dev" + attr + ".png ...");
+			GeneratesPlot.create(results.get(1), arff_dir, "text_IS2011" + sdf.format(timestamp)
+					+ "plot_dev" + attr, xLabel, yLabel);
 
-			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp)
-					+ "plot_test_textIS2011"+attr+".png ...");
-			GeneratesPlot.create(results.get(2), arff_dir, sdf.format(timestamp)
-					+ "plot_test_textIS2011"+attr+".png", xLabel, yLabel);
+			System.out.println("Creating chart " + arff_dir + "text_IS2011" + sdf.format(timestamp)
+					+ "plot_test_textIS2011" + attr + ".png ...");
+			GeneratesPlot.create(results.get(2), arff_dir, "text_IS2011" + sdf.format(timestamp)
+					+ "plot_test" + attr, xLabel, yLabel);
 			System.out.println("Finished operations");
 
 		} catch (Exception e) {
@@ -214,7 +214,7 @@ public class TextIS2011 {
 
 				exTest.add(0, currentRidge);
 				exTest.add(1, output[SetType.TEST.ordinal()].getUAR());
-				listDev.add(exTest);
+				listTest.add(exTest);
 
 				// print all information about the result
 				System.out.print("ridge:" + currentRidge + " threshold:" + threshold.get(i)
