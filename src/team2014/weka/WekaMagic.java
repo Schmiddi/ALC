@@ -1163,6 +1163,15 @@ public class WekaMagic {
 		return grammar;
 	}
 	
+	public static Instances getGrammarInstancesWithFile(String csv_file, Boolean normalizeSentenceLength) throws Exception{
+		Instances text = textCSVToInstances(csv_file,"file"); //get text features
+		Instances grammar = checkGrammar(text, normalizeSentenceLength); //get grammar features
+		
+		grammar.deleteAttributeAt(grammar.attribute("text").index()); 		  //remove text attribute
+
+		return grammar;
+	}
+	
 	
 	
 	public static MyClassificationOutput runSVM(Instances train, Double C, Double epsilon)
