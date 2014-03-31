@@ -63,34 +63,39 @@ public class TextIS2011 {
 			Date timestamp = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
 
+			// Create attr string if with attribute selection
+			String attr = "";
+			if(withAttributeSelection)
+				attr = "attr";
+						
 			// save to CSV
 			WekaMagic.printHashMap(results.get(0), arff_dir + sdf.format(timestamp)
-					+ "result_train_textIS2011.csv");
+					+ "result_train_textIS2011"+attr+".csv");
 			WekaMagic.printHashMap(results.get(1), arff_dir + sdf.format(timestamp)
-					+ "result_dev_textIS2011.csv");
+					+ "result_dev_textIS2011"+attr+".csv");
 			WekaMagic.printHashMap(results.get(2), arff_dir + sdf.format(timestamp)
-					+ "result_test_textIS2011.csv");
+					+ "result_test_textIS2011"+attr+".csv");
 
-			// Plot everything
+			// Plot everything			
 			String xLabel = "Ridge";
 			String yLabel = "UAR";
 
 			System.out.println("Plotting results...");
 
 			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp)
-					+ "plot_train_textIS2011.png ...");
+					+ "plot_train_textIS2011"+attr+".png ...");
 			GeneratesPlot.create(results.get(0), arff_dir, sdf.format(timestamp)
-					+ "plot_train_textIS2011.png", xLabel, yLabel);
+					+ "plot_train_textIS2011"+attr+".png", xLabel, yLabel);
 
 			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp)
-					+ "text_plot_test_cross_validation.png ...");
+					+ "plot_dev_textIS2011"+attr+".png ...");
 			GeneratesPlot.create(results.get(1), arff_dir, sdf.format(timestamp)
-					+ "plot_dev_textIS2011.png", xLabel, yLabel);
+					+ "plot_dev_textIS2011"+attr+".png", xLabel, yLabel);
 
 			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp)
-					+ "text_plot_test_cross_validation.png ...");
+					+ "plot_test_textIS2011"+attr+".png ...");
 			GeneratesPlot.create(results.get(2), arff_dir, sdf.format(timestamp)
-					+ "plot_test_textIS2011.png", xLabel, yLabel);
+					+ "plot_test_textIS2011"+attr+".png", xLabel, yLabel);
 			System.out.println("Finished operations");
 
 		} catch (Exception e) {

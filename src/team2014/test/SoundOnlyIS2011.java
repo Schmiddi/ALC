@@ -59,10 +59,15 @@ public class SoundOnlyIS2011 {
 			Date timestamp = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
 			
+			// Create attr string if with attribute selection
+			String attr = "";
+			if(withAttributeSelection)
+				attr = "attr";
+			
 			//save to CSV
-			WekaMagic.printHashMap(results.get(0), arff_dir + sdf.format(timestamp) + "result_train_soundOnlyIS2011.csv");//Train set
-			WekaMagic.printHashMap(results.get(1), arff_dir + sdf.format(timestamp) + "result_dev_soundOnlyIS2011.csv");//Dev set
-			WekaMagic.printHashMap(results.get(2), arff_dir + sdf.format(timestamp) + "result_test_soundOnlyIS2011.csv");//Test set
+			WekaMagic.printHashMap(results.get(0), arff_dir + sdf.format(timestamp) + "result_train_soundOnlyIS2011"+attr+".csv");//Train set
+			WekaMagic.printHashMap(results.get(1), arff_dir + sdf.format(timestamp) + "result_dev_soundOnlyIS2011"+attr+".csv");//Dev set
+			WekaMagic.printHashMap(results.get(2), arff_dir + sdf.format(timestamp) + "result_test_soundOnlyIS2011"+attr+".csv");//Test set
 			
 					
 			//Plot everything
@@ -72,13 +77,13 @@ public class SoundOnlyIS2011 {
 			System.out.println("Plotting results...");
 			
 			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp) + "plot_train_soundOnlyIS2011.png ...");
-			GeneratesPlot.create(results.get(0), arff_dir, sdf.format(timestamp) + "plot_train_soundOnlyIS2011.png", xLabel, yLabel);
+			GeneratesPlot.create(results.get(0), arff_dir, sdf.format(timestamp) + "plot_train_soundOnlyIS2011"+attr+".png", xLabel, yLabel);
 			
 			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp) + "plot_dev_soundOnlyIS2011.png ...");
-			GeneratesPlot.create(results.get(1), arff_dir, sdf.format(timestamp) + "plot_dev_soundOnlyIS2011", xLabel, yLabel);
+			GeneratesPlot.create(results.get(1), arff_dir, sdf.format(timestamp) + "plot_dev_soundOnlyIS2011"+attr+".png", xLabel, yLabel);
 			
-			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp) + "plot_test_soundOnlyIS2011.png ...");
-			GeneratesPlot.create(results.get(2), arff_dir, sdf.format(timestamp) + "plot_test_soundOnlyIS2011.png", xLabel, yLabel);
+			System.out.println("Creating chart " + arff_dir + sdf.format(timestamp) + "plot_test_soundOnlyIS2011"+attr+".png ...");
+			GeneratesPlot.create(results.get(2), arff_dir, sdf.format(timestamp) + "plot_test_soundOnlyIS2011"+attr+".png", xLabel, yLabel);
 			
 			System.out.println("Finished operations");
 			
