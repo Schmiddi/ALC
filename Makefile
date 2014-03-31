@@ -26,11 +26,17 @@ weka: src/team2014/weka/*.java
 	javac -classpath $(JARS):$(JARS_WEKA) -d bin src/team2014/weka/*.java
 
 
-runTISwAttr:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS)
+runGISwAttr:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) "attr"
 
-runTISwoAttr:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) "false"
+runTISwAttr:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) "attr"
+
+runTIS:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS)
+	
+runSOIS2011wAttr:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) "attr"
 	
 runSOIS2011:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS)
