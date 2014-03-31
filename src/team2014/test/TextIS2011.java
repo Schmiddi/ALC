@@ -46,11 +46,11 @@ public class TextIS2011 {
 
 			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
 
-			Boolean withAttributeSelection = true;
+			Boolean withAttributeSelection = false;
 
 			if (args.length >= 3) {
-				if (args[2].equals("false"))
-					withAttributeSelection = false;
+				if (args[2].equals("attr"))
+					withAttributeSelection = true;
 			}
 
 			Instances[] sets = WekaMagic.getInterspeech2011Sets(args[1], data, s_key);
