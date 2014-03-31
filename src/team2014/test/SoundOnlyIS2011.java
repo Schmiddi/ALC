@@ -171,6 +171,13 @@ public class SoundOnlyIS2011 {
 				exTest.add(2, output[SetType.TEST.ordinal()].getF1Score());
 				listDev.add(exTest);
 				
+				// print all information about the result
+				System.out.print("ridge:" + currentRidge + " threshold:" + threshold.get(i)
+						+ "Train UAR: " + output[SetType.TRAIN.ordinal()].getUAR() + " Dev UAR:"
+						+ output[SetType.DEV.ordinal()].getUAR() + " Test UAR:"
+						+ output[SetType.TEST.ordinal()].getUAR());
+
+				System.out.print("\n");
 			}
 		}
 		
