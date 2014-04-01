@@ -30,30 +30,35 @@ public class SoundOnlyIS2011 {
 		String fileSep = isWindows?"\\":"/";
 		String s_key="file";
 		
+		if(args.length < 3){
+			System.out.println("To less parameters");
+		}
+		
 		try {
 			Instances data = null;
 			
 			String arff_dir = args[0];
+			String dirInterspeech = args[1];
+			String outputFolder = args[2] + fileSep;
+			
 			String csv_dir = WekaMagic.getParent(arff_dir);
 			
 			// Get all Instances
 			data = WekaMagic.getSoundInstancesWithFile(arff_dir, csv_dir + "output.csv");
 			// Split Instances
-			Instances [] sets = WekaMagic.getInterspeech2011Sets(args[1], data, s_key);
+			Instances [] sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
 
 			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
 			
 			Boolean withAttributeSelection = false;
 
-			if (args.length >= 3) {
-				if (args[2].equals("attr"))
+			if (args.length >= 4) {
+				if (args[3].equals("attr"))
 					withAttributeSelection = true;
 			}
 			
-			List<List<List<Double>>> results = testRun.runTestUAR(sets, withAttributeSelection);
+			List<List<Double>> results = testRun.runTestUAR(sets, withAttributeSelection);
 			
-			
-			arff_dir += fileSep;
 			
 			// Create timestamp
 			Date timestamp = new Date();
@@ -64,49 +69,27 @@ public class SoundOnlyIS2011 {
 			if(withAttributeSelection)
 				attr = "attr";
 			
+			
+			// CSV Header
+			String[] header = {"Threshold","Ridge","Train UAR", "Dev UAR", "Test UAR"};
 			//save to CSV
-			WekaMagic.printHashMap(results.get(0), arff_dir + sdf.format(timestamp) + "result_train"+attr+".csv");//Train set
-			WekaMagic.printHashMap(results.get(1), arff_dir + sdf.format(timestamp) + "result_dev"+attr+".csv");//Dev set
-			WekaMagic.printHashMap(results.get(2), arff_dir + sdf.format(timestamp) + "result_test"+attr+".csv");//Test set
-			
-					
-			//Plot everything
-			String xLabel = "Ridge";
-			String yLabel = "UAR";
-			
-			System.out.println("Plotting results...");
-			
-			System.out.println("Creating chart " + arff_dir + "sound_IS2011" + sdf.format(timestamp) + "plot_train.png ...");
-			GeneratesPlot.create(results.get(0), arff_dir, "sound_IS2011" + sdf.format(timestamp) + "plot_train"+attr, xLabel, yLabel);
-			
-			System.out.println("Creating chart " + arff_dir + "sound_IS2011" + sdf.format(timestamp) + "plot_dev.png ...");
-			GeneratesPlot.create(results.get(1), arff_dir,"sound_IS2011" + sdf.format(timestamp) + "plot_dev"+attr, xLabel, yLabel);
-			
-			System.out.println("Creating chart " + arff_dir + "sound_IS2011" + sdf.format(timestamp) + "plot_test"+attr+".png ...");
-			GeneratesPlot.create(results.get(2), arff_dir, "sound_IS2011" +sdf.format(timestamp) + "plot_test"+attr, xLabel, yLabel);
-			
-			System.out.println("Finished operations");
-			
+			WekaMagic.printHashMap(results, header, outputFolder + "sound_IS2011"+attr+sdf.format(timestamp) + ".csv");
+						
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 	
-	private List<List<List<Double>>> runTestUAR(Instances [] sets, Boolean withAttributeSelection) throws Exception {
+	private List<List<Double>> runTestUAR(Instances [] sets, Boolean withAttributeSelection) throws Exception {
 		
 		/* Runs 10 times logistic to regularize and stores results in list */
 		
-		List<List<List<Double>>> values = new ArrayList<List<List<Double>>>();
+		List<List<Double>> values = new ArrayList<List<Double>>();
 		
 		double stdRidge = 0.00000001; //10^-8
 		double currentRidge = stdRidge;
-		
-		//create 3 lists storing data for 3 sets
-		List<List<Double>> listTrain = new ArrayList<List<Double>>();
-		List<List<Double>> listDev = new ArrayList<List<Double>>();
-		List<List<Double>> listTest = new ArrayList<List<Double>>();
-		
+				
 		ArrayList<Double> threshold = new ArrayList<Double>();
 		threshold.add(0.0);
 
@@ -135,8 +118,6 @@ public class SoundOnlyIS2011 {
 			{
 				currentRidge = stdRidge * (Math.pow(10, u));
 				
-				System.out.println("Cross validation for ridge = " + currentRidge);
-				
 				MyOutput filtered = null;
 				ArrayList<MyOutput> filters = null;
 				
@@ -152,24 +133,15 @@ public class SoundOnlyIS2011 {
 				MyClassificationOutput [] output = WekaMagic.validationIS2011(sets, filters, currentRidge);
 	
 				// Result processing to lists
-				List<Double> exTrain = new ArrayList<Double>();
-				List<Double> exDev = new ArrayList<Double>();
-				List<Double> exTest = new ArrayList<Double>();
+				List<Double> listRun = new ArrayList<Double>();
 				
-				exTrain.add(0, currentRidge);
-				exTrain.add(1, output[SetType.TRAIN.ordinal()].getUAR());
-				exTrain.add(2, output[SetType.TRAIN.ordinal()].getF1Score());
-				listTrain.add(exTrain);
-				
-				exDev.add(0, currentRidge);
-				exDev.add(1, output[SetType.DEV.ordinal()].getUAR());
-				exDev.add(2, output[SetType.DEV.ordinal()].getF1Score());
-				listDev.add(exDev);
-				
-				exTest.add(0, currentRidge);
-				exTest.add(1, output[SetType.TEST.ordinal()].getUAR());
-				exTest.add(2, output[SetType.TEST.ordinal()].getF1Score());
-				listTest.add(exTest);
+				listRun.add(0, threshold.get(i));
+				listRun.add(1, currentRidge);
+				listRun.add(2, output[SetType.TRAIN.ordinal()].getUAR());
+				listRun.add(3, output[SetType.DEV.ordinal()].getUAR());
+				listRun.add(4, output[SetType.TEST.ordinal()].getUAR());
+
+				values.add(listRun);
 				
 				// print all information about the result
 				System.out.print("ridge:" + currentRidge + " threshold:" + threshold.get(i)
@@ -179,9 +151,6 @@ public class SoundOnlyIS2011 {
 			}
 		}
 		
-		values.add(listTrain);
-		values.add(listDev);
-		values.add(listTest);
 		
 		return values;
 				
