@@ -633,6 +633,46 @@ public class WekaMagic {
 	}
 	
 	/**
+	 * print results to csv file
+	 * 
+	 * @param m    =  List of List of double numbers
+	 * @param header = list containing the column titels
+	 * @param path =  path to csv file
+	 * @throws Exception
+	 */
+	public static void printHashMap(List<List<Double>> m, String[] header, String path)
+			throws Exception {
+		FileWriter fstream;
+		BufferedWriter out;
+		int i;
+
+		fstream = new FileWriter(path);
+		out = new BufferedWriter(fstream);
+
+
+		// Write header
+		i=0;
+		for(String h: header){
+			if(i>0) out.write(",");
+			out.write("\"" + h + "\"");
+			i++;
+		}
+		out.write("\n");	
+		
+		// Write dataset
+		for (List<Double> dataset : m) {
+			i=0;
+			for(Double d : dataset){
+				if(i>0) out.write(",");
+				out.write("\"" + String.format(Locale.US, "%1$.10f", d)
+					+ "\"");
+				i++;
+			}
+			out.write("\n");			
+		}
+		out.close();
+	}
+	/**
 	 * @param a - Text feature instances 
 	 * @param b - Sound feature instances
 	 * @param AttributeName - Attribute name for the key column - name of the wav file for each instance
