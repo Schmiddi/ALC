@@ -5,7 +5,7 @@ import java.util.List;
 import team2014.weka.WekaMagic;
 import weka.core.Instances;
 
-public class TextIS2011 {
+public class AllIS2011 {
 
 	/**
 	 * Runs several tests to determine the impact of all sound features
@@ -22,22 +22,25 @@ public class TextIS2011 {
 			System.out.println("To less parameters");
 		}
 		
-		try {
-			Instances data = null;
-			
+		try {			
 			String arff_dir = args[0];
 			String dirInterspeech = args[1];
 			String outputFolder = args[2] + fileSep;
 			String csv_dir = WekaMagic.getParent(arff_dir);
 
-			data = WekaMagic.textCSVToInstances(csv_dir + "output.csv", "file");
+			Instances dataText = WekaMagic.textCSVToInstances(csv_dir + "output.csv", "file");
+			Instances dataGrammar = WekaMagic.getGrammarInstancesWithFile(csv_dir + "output.csv", true);
+			Instances dataSound = WekaMagic.getSoundInstancesWithFile(arff_dir, csv_dir + "output.csv");
+			
+			// Process Text
+			int class_index = WekaMagic.setClassIndex(dataText);
+			dataText.renameAttribute(class_index, "_unique_class_name_");
+			WekaMagic.setClassIndex(dataText);
 
-			int class_index = WekaMagic.setClassIndex(data);
-			data.renameAttribute(class_index, "_unique_class_name_");
-			WekaMagic.setClassIndex(data);
-
-			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
-
+			// Merge datasets
+			Instances dataTextGrammar = WekaMagic.mergeInstancesBy(dataText, dataGrammar, "file");
+			Instances data = WekaMagic.mergeInstancesBy(dataTextGrammar, dataSound, "file"); 
+			
 			Boolean withAttributeSelection = false;
 
 			if (args.length >= 4) {
@@ -49,7 +52,7 @@ public class TextIS2011 {
 
 			List<List<Double>> results = WekaMagic.runTestUARIS2011(sets, withAttributeSelection, true);
 
-			WekaMagic.saveResultIS2011(results, outputFolder, withAttributeSelection, "text");
+			WekaMagic.saveResultIS2011(results, outputFolder, withAttributeSelection, "all");
 
 		} catch (Exception e) {
 			e.printStackTrace();
