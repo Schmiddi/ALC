@@ -9,6 +9,7 @@ PATH_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS13_ComParE
 PATH_IS2011_SETS := /home/bas-alc/corpus/DOC/IS2011CHALLENGE
 XMX := -Xmx38g
 NOW := date +"%Y_%m_%d"
+OUTPUT_DIR := /home/alc/workspace/ALC/output
 
 # Build all targets of team2014
 all: andi weka test
@@ -26,20 +27,29 @@ weka: src/team2014/weka/*.java
 	javac -classpath $(JARS):$(JARS_WEKA) -d bin src/team2014/weka/*.java
 
 
+runAISwAttr:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr"
+
+runAIS:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
+
 runGISwAttr:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) "attr"
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr"
+
+runGIS:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
 
 runTISwAttr:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) "attr"
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
 
 runTIS:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS)
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr"
 	
-runSOIS2011wAttr:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) "attr"
-	
-runSOIS2011:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS)
+runSOISwAttr:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr"
+
+runSOIS:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
 
 runSASwoTT:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundAttributeSelection $(PATH_SOUND_WO_TT)
