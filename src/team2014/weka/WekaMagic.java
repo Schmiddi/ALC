@@ -1,5 +1,6 @@
 package team2014.weka;
 
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -36,6 +37,8 @@ import weka.classifiers.Classifier;
 import org.languagetool.JLanguageTool;
 import org.languagetool.rules.RuleMatch;
 import org.languagetool.language.*;
+
+import com.sun.org.apache.xpath.internal.operations.Mult;
 
 /**
  * @author Felix Neutatz
@@ -950,7 +953,7 @@ public class WekaMagic {
 	 */
 	public static MyClassificationOutput[] validationIS2011(Instances[] sets, ArrayList<MyOutput> filters, double currentRidge) throws Exception{
 		
-		MyClassificationOutput [] output = new MyClassificationOutput[3];
+		MyClassificationOutput [] output = new MyClassificationOutput[5];
 		
 		sets = applyFilters(sets,filters);
 
@@ -959,6 +962,16 @@ public class WekaMagic {
 		output[SetType.TRAIN.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TRAIN.ordinal()], currentResult);
 		output[SetType.DEV.ordinal()] = WekaMagic.applyLogistic(sets[SetType.DEV.ordinal()], currentResult);
 		output[SetType.TEST.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TEST.ordinal()],  currentResult);
+		
+		
+		//create model on test + training set
+		Instances trainDev = sets[SetType.TRAIN.ordinal()];
+		trainDev.addAll(sets[SetType.DEV.ordinal()]);
+		
+		currentResult = WekaMagic.runLogistic(trainDev, currentRidge, 5);
+		
+		output[SetType.TRAINDEV.ordinal()] = WekaMagic.applyLogistic(trainDev, currentResult);
+		output[SetType.TRAINDEVTEST.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TEST.ordinal()],  currentResult);
 		
 		return output;
 	}
@@ -1067,49 +1080,50 @@ public class WekaMagic {
 		
 		System.out.println("Running tests for train, dev and test set...");
 		
+		int cores = Runtime.getRuntime().availableProcessors();
+		MultiWeka [] threads = new MultiWeka[cores];
+		
 		//Iterate through different ridge values
 		for (int i = 0; i < threshold.size(); i++) {
 			for (int u=0;u<15;u++)
 			{
-				currentRidge = stdRidge * (Math.pow(10, u));
-				
-				MyOutput filtered = null;
-				ArrayList<MyOutput> filters = null;
-				
-				if(isText || withAttributeSelection)
-					filters = new ArrayList<MyOutput>();
-				
-				if(isText)
-					filters.add(featuresGen);
-				
-				if (withAttributeSelection) {
-					// true binarizeNumericAttributes is important
-					Boolean binarizeNumericAttributes = true;
-					filtered = WekaMagic.selectionByInfo(null, binarizeNumericAttributes,
-							(Double) threshold.get(i));
-					filters.add(filtered);
-				}
-				
-				MyClassificationOutput [] output = WekaMagic.validationIS2011(sets, filters, currentRidge);
-	
-				// Result processing to lists
-				List<Double> listRun = new ArrayList<Double>();
-				
-				listRun.add(0, threshold.get(i));
-				listRun.add(1, currentRidge);
-				listRun.add(2, output[SetType.TRAIN.ordinal()].getUAR());
-				listRun.add(3, output[SetType.DEV.ordinal()].getUAR());
-				listRun.add(4, output[SetType.TEST.ordinal()].getUAR());
-
-				values.add(listRun);
-				
-				// print all information about the result
-				System.out.print("ridge:" + currentRidge + " threshold:" + threshold.get(i)
-						+ "Train UAR: " + output[SetType.TRAIN.ordinal()].getUAR() + " Dev UAR:"
-						+ output[SetType.DEV.ordinal()].getUAR() + " Test UAR:"
-						+ output[SetType.TEST.ordinal()].getUAR() + "\n");
+				Boolean task2Thread = false;
+				do{
+					for(MultiWeka R:threads){
+						if(R==null){ //assign task to thread
+							currentRidge = stdRidge * (Math.pow(10, u));
+							R = new MultiWeka(sets,withAttributeSelection,isText,currentRidge,threshold.get(i));
+						    R.start();
+						    task2Thread = true;
+						    break;
+						}
+						else{ 
+							List<Double> list = R.getResult();
+							if(list!=null){ //check whether thread is dead and has a result
+								values.add(list);
+								R = null;
+							}
+						}
+					}
+				}while(!task2Thread);
 			}
 		}
+		
+		//get last couple of results
+		Boolean threadFound;
+		do{
+			threadFound = false;
+			for(MultiWeka R:threads){
+				if(R!=null){
+					threadFound = true;
+					List<Double> list = R.getResult();
+					if(list!=null){
+						values.add(list);
+						R = null;						
+					}
+				}
+			}
+		}while(threadFound);
 		
 		
 		return values;
