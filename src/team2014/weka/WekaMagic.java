@@ -736,8 +736,11 @@ public class WekaMagic {
 		//merged.deleteAttributeAt(merged.attribute(AttributeName).index());
 		merged.deleteAttributeAt(merged.attribute("bfile").index());
 		
-		merged.setClass(merged.attribute("class"));
-		setClassIndex(merged);
+		if(merged.attribute("class") != null){
+			merged.setClass(merged.attribute("class"));
+		}else{
+			setClassIndex(merged);
+		}
 		/*
 		//if the attribute only has one value -> this column doesn't make any sense at all
 		for(i=0;i<merged.numAttributes();i++){

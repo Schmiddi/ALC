@@ -28,13 +28,12 @@ public class AllIS2011 {
 			String outputFolder = args[2] + fileSep;
 			String csv_dir = WekaMagic.getParent(arff_dir);
 
-			Instances dataText = WekaMagic.textCSVToInstances(csv_dir + "output.csv", "file");
+			Instances dataText    = WekaMagic.textCSVToInstances(csv_dir + "output.csv", "file");
 			Instances dataGrammar = WekaMagic.getGrammarInstancesWithFile(csv_dir + "output.csv", true);
-			Instances dataSound = WekaMagic.getSoundInstancesWithFile(arff_dir, csv_dir + "output.csv");
+			Instances dataSound   = WekaMagic.soundArffToInstances(arff_dir); //without class column
 			
 			//delete class column to prevent issues during merging
 			dataGrammar.renameAttribute(dataGrammar.classIndex(), "classGrammar");
-			dataSound.renameAttribute(dataSound.classIndex(),"classSound");
 			
 			// Process Text
 			int class_index = WekaMagic.setClassIndex(dataText);
@@ -46,7 +45,6 @@ public class AllIS2011 {
 			Instances dataTextGrammar = WekaMagic.mergeInstancesBy(dataText, dataGrammar, "file");
 			Instances data = WekaMagic.mergeInstancesBy(dataTextGrammar, dataSound, "file"); 
 			System.out.println("Merge done!");
-			data.deleteAttributeAt(data.attribute("classSound").index());
 			data.deleteAttributeAt(data.attribute("classGrammar").index());
 			
 			Boolean withAttributeSelection = false;
