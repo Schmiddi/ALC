@@ -32,6 +32,9 @@ public class AllIS2011 {
 			Instances dataGrammar = WekaMagic.getGrammarInstancesWithFile(csv_dir + "output.csv", true);
 			Instances dataSound = WekaMagic.getSoundInstancesWithFile(arff_dir, csv_dir + "output.csv");
 			
+			//delete class column to prevent issues during merging
+			dataSound.deleteAttributeAt(dataSound.classIndex());
+			
 			// Process Text
 			int class_index = WekaMagic.setClassIndex(dataText);
 			dataText.renameAttribute(class_index, "_unique_class_name_");
