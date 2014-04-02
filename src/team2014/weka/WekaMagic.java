@@ -952,6 +952,35 @@ public class WekaMagic {
 		
 		MyClassificationOutput [] output = new MyClassificationOutput[3];
 		
+		sets = applyFilters(sets,filters);
+
+		MyClassificationOutput currentResult = WekaMagic.runLogistic(sets[SetType.TRAIN.ordinal()], currentRidge, 5);
+		
+		output[SetType.TRAIN.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TRAIN.ordinal()], currentResult);
+		output[SetType.DEV.ordinal()] = WekaMagic.applyLogistic(sets[SetType.DEV.ordinal()], currentResult);
+		output[SetType.TEST.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TEST.ordinal()],  currentResult);
+		
+		return output;
+	}
+	
+	/*
+	public static MyClassificationOutput[] validationSVM(Instances[] sets, ArrayList<MyOutput> filters, double currentRidge) throws Exception{
+		
+		MyClassificationOutput [] output = new MyClassificationOutput[3];
+		
+		sets = applyFilters(sets,filters);
+
+		//MyClassificationOutput currentResult = WekaMagic.runSVM(train, C, epsilon)
+		//	WekaMagic.runLogistic(sets[SetType.TRAIN.ordinal()], currentRidge, 5);
+		
+		output[SetType.TRAIN.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TRAIN.ordinal()], currentResult);
+		output[SetType.DEV.ordinal()] = WekaMagic.applyLogistic(sets[SetType.DEV.ordinal()], currentResult);
+		output[SetType.TEST.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TEST.ordinal()],  currentResult);
+		
+		return output;
+	}*/
+	
+	public static Instances [] applyFilters(Instances [] sets, ArrayList<MyOutput> filters) throws Exception{
 		if(filters != null){
 			//apply all filters
 		    for(MyOutput m : filters){
@@ -969,14 +998,8 @@ public class WekaMagic {
 			    sets[SetType.TEST.ordinal()] = Filter.useFilter(sets[SetType.TEST.ordinal()], f); //use filter on the test data
 		    }
 		}
-
-		MyClassificationOutput currentResult = WekaMagic.runLogistic(sets[SetType.TRAIN.ordinal()], currentRidge, 5);
 		
-		output[SetType.TRAIN.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TRAIN.ordinal()], currentResult);
-		output[SetType.DEV.ordinal()] = WekaMagic.applyLogistic(sets[SetType.DEV.ordinal()], currentResult);
-		output[SetType.TEST.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TEST.ordinal()],  currentResult);
-		
-		return output;
+		return sets;
 	}
 	
 	public static List<List<Double>> runTestUARIS2011(Instances [] sets, Boolean withAttributeSelection) throws Exception {
