@@ -1416,7 +1416,7 @@ public class WekaMagic {
 			s = setRightUmlauts(s);
 			s = s.toLowerCase();
 		    
-			System.out.println("Sample " + i + "\n" + s);
+			//System.out.println("Sample " + i + "\n" + s);
 			
 			List<RuleMatch> matches = langTool.check(s);
 			
