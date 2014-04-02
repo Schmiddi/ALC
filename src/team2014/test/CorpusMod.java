@@ -27,15 +27,15 @@ public class CorpusMod {
 				
 				String arff_dir = args[0];
 				String csv_dir = WekaMagic.getParent(arff_dir);
+				String dirInterspeech = args[1];
 				
-				Instances sound = WekaMagic.soundArffToInstances(arff_dir);		
-				Instances text = WekaMagic.textCSVToInstances(csv_dir + "output.csv",s_key);
+
+				data = WekaMagic.textCSVToInstances(csv_dir + "output.csv", "file");
 				
-				data = WekaMagic.mergeInstancesBy(sound, text, s_key);
+				Instances[] sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
+
+				Instances train = sets[0];
 				
-				CrossValidationOutput cvo = new CrossValidationOutput(data,s_key);
-				
-				Instances train = cvo.getTrainSet(0);
 				
 				Instances filtered_train = WekaMagic.cleanCorpus(train, s_key);
 				
