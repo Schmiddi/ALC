@@ -127,4 +127,8 @@ public class MultiWeka implements Runnable {
 		   return false;
 	   }
 
+		public void join() throws InterruptedException {
+			t.join();
+		}
+
 	}

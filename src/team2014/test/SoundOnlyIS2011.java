@@ -46,7 +46,9 @@ public class SoundOnlyIS2011 {
 					withAttributeSelection = true;
 			}
 			
-			List<List<Double>> results = WekaMagic.runTestUARIS2011(sets, withAttributeSelection);
+			//List<List<Double>> results = WekaMagic.runTestUARIS2011(sets, withAttributeSelection);
+			
+			List<List<Double>> results = WekaMagic.runTestUARIS2011Threads(sets, withAttributeSelection);
 			
 			WekaMagic.saveResultIS2011(results, outputFolder, withAttributeSelection, "sound");
 						

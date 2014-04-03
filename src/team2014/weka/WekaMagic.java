@@ -1169,77 +1169,38 @@ public class WekaMagic {
 			threshold.add(0.008);
 			threshold.add(0.01);
 		}
-		
-		MyOutput featuresGen = null;
-		
-		if(isText){
-			// perfect configuration
-			Boolean Ngram = true;
-			int ngram_min = 1;
-			int ngram_max = 3;
-			Boolean LowerCase = true;
-			Boolean IDFTransform = false;
-			Boolean TFTransform = false;
-			Boolean Stopword = true;
-			String list1 = "resources\\germanST.txt";
-			int wordsToKeep = 1000000;
-			Boolean NormalizeDocLength = true;
-			Boolean OutputWordCounts = true;
-			Boolean Stemming = true;
-			int minTermFrequency = 2;
-			featuresGen = WekaMagic.generateFeatures(null, wordsToKeep, Ngram,
-					ngram_min, ngram_max, LowerCase, NormalizeDocLength, Stemming,
-					OutputWordCounts, IDFTransform, TFTransform, Stopword, list1,
-					minTermFrequency);
-		}
-		
+				
 		System.out.println("Running tests for train, dev and test set...");
 		
 		int cores = Runtime.getRuntime().availableProcessors();
 		MultiWeka [] threads = new MultiWeka[cores];
 		
 		//Iterate through different ridge values
+		int uMax = 15;
+		int maxIter = threshold.size() * uMax;
+		
+		int count = 0;
+		
 		for (int i = 0; i < threshold.size(); i++) {
-			for (int u=0;u<15;u++)
+			for (int u=0;u<uMax;u++)
 			{
-				Boolean task2Thread = false;
-				do{
-					for(MultiWeka R:threads){
-						if(R==null){ //assign task to thread
-							currentRidge = stdRidge * (Math.pow(10, u));
-							R = new MultiWeka(sets,withAttributeSelection,isText,currentRidge,threshold.get(i));
-						    R.start();
-						    task2Thread = true;
-						    break;
-						}
-						else{ 
-							List<Double> list = R.getResult();
-							if(list!=null){ //check whether thread is dead and has a result
-								values.add(list);
-								R = null;
-							}
-						}
+				
+				currentRidge = stdRidge * (Math.pow(10, u));
+				
+				// Start all threads
+				threads[count%cores] = new MultiWeka(sets,withAttributeSelection,isText,currentRidge,threshold.get(i)); 
+				threads[count%cores].start();
+				
+				// If all threads are up and running
+				if(count % cores == cores-1 || count == maxIter - 1){
+					for(MultiWeka r: threads){
+						r.join();
+						values.add(r.getResult());
 					}
-				}while(!task2Thread);
+				}			
+				count++;
 			}
 		}
-		
-		//get last couple of results
-		Boolean threadFound;
-		do{
-			threadFound = false;
-			for(MultiWeka R:threads){
-				if(R!=null){
-					threadFound = true;
-					List<Double> list = R.getResult();
-					if(list!=null){
-						values.add(list);
-						R = null;						
-					}
-				}
-			}
-		}while(threadFound);
-		
 		
 		return values;
 	}
