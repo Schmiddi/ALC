@@ -1083,6 +1083,118 @@ public class WekaMagic {
 		
 		System.out.println("Running tests for train, dev and test set...");
 		
+		//Iterate through different ridge values
+		for (int i = 0; i < threshold.size(); i++) {
+			for (int u=0;u<15;u++)
+			{
+				currentRidge = stdRidge * (Math.pow(10, u));
+				
+				MyOutput filtered = null;
+				ArrayList<MyOutput> filters = null;
+				
+				if(isText || withAttributeSelection)
+					filters = new ArrayList<MyOutput>();
+				
+				if(isText)
+					filters.add(featuresGen);
+				
+				if (withAttributeSelection) {
+					// true binarizeNumericAttributes is important
+					Boolean binarizeNumericAttributes = true;
+					filtered = WekaMagic.selectionByInfo(null, binarizeNumericAttributes,
+							(Double) threshold.get(i));
+					filters.add(filtered);
+				}
+				
+				MyClassificationOutput [] output = WekaMagic.validationIS2011(sets, filters, currentRidge);
+	
+				// Result processing to lists
+				List<Double> listRun = new ArrayList<Double>();
+				
+				listRun.add(0, threshold.get(i));
+				listRun.add(1, currentRidge);
+				listRun.add(2, output[SetType.TRAIN.ordinal()].getUAR());
+				listRun.add(3, output[SetType.DEV.ordinal()].getUAR());
+				listRun.add(4, output[SetType.TEST.ordinal()].getUAR());
+
+				values.add(listRun);
+				
+				// print all information about the result
+				System.out.print("ridge:" + currentRidge + " threshold:" + threshold.get(i)
+						+ "Train UAR: " + output[SetType.TRAIN.ordinal()].getUAR() + " Dev UAR:"
+						+ output[SetType.DEV.ordinal()].getUAR() + " Test UAR:"
+						+ output[SetType.TEST.ordinal()].getUAR() + "\n");
+			}
+		}
+		
+		return values;
+	}
+	
+	public static List<List<Double>> runTestUARIS2011Threads(Instances [] sets, Boolean withAttributeSelection) throws Exception {
+		return WekaMagic.runTestUARIS2011Threads(sets, withAttributeSelection, false);
+	}
+	
+	/**
+	 * Run the test for the IS dataset.
+	 * 
+	 * @param sets Datasets, train - dev test
+	 * @param withAttributeSelection If using attribute selection
+	 * @param isText If feature generation is necessary
+	 * @return Results of each loop iteration (test)
+	 * @throws Exception
+	 */
+	public static List<List<Double>> runTestUARIS2011Threads(Instances [] sets, Boolean withAttributeSelection, Boolean isText) throws Exception {
+		List<List<Double>> values = new ArrayList<List<Double>>();
+		
+		double stdRidge = 0.00000001; //10^-8
+		double currentRidge = stdRidge;
+				
+		ArrayList<Double> threshold = new ArrayList<Double>();
+		threshold.add(0.0);
+
+		if (withAttributeSelection) {
+			threshold.add(0.00000001);
+			threshold.add(0.0001);
+			threshold.add(0.0003);
+			threshold.add(0.0006);
+			threshold.add(0.001);
+			threshold.add(0.002);
+			threshold.add(0.0025);
+			threshold.add(0.0030);
+			threshold.add(0.0035);
+			threshold.add(0.004);
+			threshold.add(0.005);
+			threshold.add(0.006);
+			threshold.add(0.007);
+			threshold.add(0.008);
+			threshold.add(0.01);
+		}
+		
+		MyOutput featuresGen = null;
+		
+		if(isText){
+			// perfect configuration
+			Boolean Ngram = true;
+			int ngram_min = 1;
+			int ngram_max = 3;
+			Boolean LowerCase = true;
+			Boolean IDFTransform = false;
+			Boolean TFTransform = false;
+			Boolean Stopword = true;
+			String list1 = "resources\\germanST.txt";
+			int wordsToKeep = 1000000;
+			Boolean NormalizeDocLength = true;
+			Boolean OutputWordCounts = true;
+			Boolean Stemming = true;
+			int minTermFrequency = 2;
+			featuresGen = WekaMagic.generateFeatures(null, wordsToKeep, Ngram,
+					ngram_min, ngram_max, LowerCase, NormalizeDocLength, Stemming,
+					OutputWordCounts, IDFTransform, TFTransform, Stopword, list1,
+					minTermFrequency);
+		}
+		
+		System.out.println("Running tests for train, dev and test set...");
+		
 		int cores = Runtime.getRuntime().availableProcessors();
 		MultiWeka [] threads = new MultiWeka[cores];
 		
@@ -1144,7 +1256,7 @@ public class WekaMagic {
 		
 		
 		// CSV Header
-		String[] header = {"Threshold","Ridge","Train UAR", "Dev UAR", "Test UAR"};
+		String[] header = {"Threshold","Ridge","Train UAR", "Dev UAR", "Test UAR", "Train+Dev UAR", "Train+Dev vs Test UAR"};
 		//save to CSV
 		WekaMagic.printHashMap(results, header, outputFolder + type + "_IS2011"+attr+sdf.format(timestamp) + ".csv");
 	}
