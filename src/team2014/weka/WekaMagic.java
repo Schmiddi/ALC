@@ -958,23 +958,31 @@ public class WekaMagic {
 		
 		MyClassificationOutput [] output = new MyClassificationOutput[5];
 		
-		sets = applyFilters(sets,filters);
+		Instances [] sets1 = new Instances[3];
+		sets1 = applyFilters(sets,filters);
 
-		MyClassificationOutput currentResult = WekaMagic.runLogistic(sets[SetType.TRAIN.ordinal()], currentRidge, 5);
+		MyClassificationOutput currentResult = WekaMagic.runLogistic(sets1[SetType.TRAIN.ordinal()], currentRidge, 5);
 		
-		output[SetType.TRAIN.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TRAIN.ordinal()], currentResult);
-		output[SetType.DEV.ordinal()] = WekaMagic.applyLogistic(sets[SetType.DEV.ordinal()], currentResult);
-		output[SetType.TEST.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TEST.ordinal()],  currentResult);
+		output[SetType.TRAIN.ordinal()] = WekaMagic.applyLogistic(sets1[SetType.TRAIN.ordinal()], currentResult);
+		output[SetType.DEV.ordinal()] = WekaMagic.applyLogistic(sets1[SetType.DEV.ordinal()], currentResult);
+		output[SetType.TEST.ordinal()] = WekaMagic.applyLogistic(sets1[SetType.TEST.ordinal()],  currentResult);
 		
 		
 		//create model on test + training set
-		Instances trainDev = sets[SetType.TRAIN.ordinal()];
+		Instances trainDev = new Instances(sets[SetType.TRAIN.ordinal()]);
 		trainDev.addAll(sets[SetType.DEV.ordinal()]);
 		
-		currentResult = WekaMagic.runLogistic(trainDev, currentRidge, 5);
+		Instances [] sets2 = new Instances[2];
+		sets2[0] = trainDev;
+		sets2[1] = new Instances(sets[SetType.TEST.ordinal()]);
 		
-		output[SetType.TRAINDEV.ordinal()] = WekaMagic.applyLogistic(trainDev, currentResult);
-		output[SetType.TRAINDEVTEST.ordinal()] = WekaMagic.applyLogistic(sets[SetType.TEST.ordinal()],  currentResult);
+		//the instances have to be filtered again since attribute selection makes things different
+		sets2 = applyFilters(sets2,filters);
+		
+		currentResult = WekaMagic.runLogistic(sets2[0], currentRidge, 5);
+		
+		output[SetType.TRAINDEV.ordinal()] = WekaMagic.applyLogistic(sets2[0], currentResult);
+		output[SetType.TRAINDEVTEST.ordinal()] = WekaMagic.applyLogistic(sets2[1],  currentResult);
 		
 		return output;
 	}
@@ -997,6 +1005,7 @@ public class WekaMagic {
 	}*/
 	
 	public static Instances [] applyFilters(Instances [] sets, ArrayList<MyOutput> filters) throws Exception{
+		Instances [] retsets = new Instances [sets.length];
 		if(filters != null){
 			//apply all filters
 		    for(MyOutput m : filters){
@@ -1009,14 +1018,13 @@ public class WekaMagic {
 			    	((StringToWordVector)f).setAttributeIndicesArray(attributes);						   
 			    }
 			    
-			   
-			    sets[SetType.TRAIN.ordinal()] = Filter.useFilter(sets[SetType.TRAIN.ordinal()], f); //use filter on the training data
-			    sets[SetType.DEV.ordinal()] = Filter.useFilter(sets[SetType.DEV.ordinal()], f); //use filter on the dev data
-			    sets[SetType.TEST.ordinal()] = Filter.useFilter(sets[SetType.TEST.ordinal()], f); //use filter on the test data
+			    for(int i=0;i<sets.length;i++){
+			    	retsets[i] = new Instances(Filter.useFilter(new Instances(sets[i]), f)); //use filter on the training data
+				}
 		    }
 		}
 		
-		return sets;
+		return retsets;
 	}
 	
 	public static List<List<Double>> runTestUARIS2011(Instances [] sets, Boolean withAttributeSelection) throws Exception {
