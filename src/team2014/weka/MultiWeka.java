@@ -105,8 +105,8 @@ public class MultiWeka implements Runnable {
 						+ " Train UAR: " + output[SetType.TRAIN.ordinal()].getUAR() + " Dev UAR:"
 						+ output[SetType.DEV.ordinal()].getUAR() + " Test UAR:"
 						+ output[SetType.TEST.ordinal()].getUAR() 
-						+ "Train DEV - UAR: " + output[SetType.TRAINDEV.ordinal()].getUAR() 
-						+ "TRAINDEVTEST - UAR: " + output[SetType.TRAINDEVTEST.ordinal()].getUAR() +
+						+ " Train DEV - UAR: " + output[SetType.TRAINDEV.ordinal()].getUAR() 
+						+ " TRAINDEVTEST - UAR: " + output[SetType.TRAINDEVTEST.ordinal()].getUAR() +
 						"\n");
 			
 		   } catch (Exception e) {
