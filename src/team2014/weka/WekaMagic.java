@@ -959,7 +959,8 @@ public class WekaMagic {
 		MyClassificationOutput [] output = new MyClassificationOutput[5];
 		
 		Instances [] sets1 = new Instances[3];
-		sets1 = applyFilters(sets,filters);	
+		
+		sets1 = applyFilters(sets,filters);	//something went wrong here
 		
 
 		MyClassificationOutput currentResult = WekaMagic.runLogistic(sets1[SetType.TRAIN.ordinal()], currentRidge, 5);
@@ -1021,9 +1022,12 @@ public class WekaMagic {
 			    }
 			    
 			    for(int i=0;i<sets.length;i++){
-			    	retsets[i] = new Instances(Filter.useFilter(new Instances(sets[i]), f)); //use filter on the training data
+			    	retsets[i] = Filter.useFilter(new Instances(sets[i]), f); //use filter on the training data
 				}
 		    }
+		}
+		else{
+			retsets = WekaMagic.copyInstancesArray(sets);
 		}
 		
 		return retsets;
