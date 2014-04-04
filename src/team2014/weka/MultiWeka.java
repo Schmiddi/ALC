@@ -95,12 +95,19 @@ public class MultiWeka implements Runnable {
 				listRun.add(2, output[SetType.TRAIN.ordinal()].getUAR());
 				listRun.add(3, output[SetType.DEV.ordinal()].getUAR());
 				listRun.add(4, output[SetType.TEST.ordinal()].getUAR());
+				
+				listRun.add(5, output[SetType.TRAINDEV.ordinal()].getUAR());
+				listRun.add(6, output[SetType.TRAINDEVTEST.ordinal()].getUAR());
+				
 	
 				// print all information about the result
 				System.out.print("ridge:" + currentRidge + " threshold:" + threshold
-						+ "Train UAR: " + output[SetType.TRAIN.ordinal()].getUAR() + " Dev UAR:"
+						+ " Train UAR: " + output[SetType.TRAIN.ordinal()].getUAR() + " Dev UAR:"
 						+ output[SetType.DEV.ordinal()].getUAR() + " Test UAR:"
-						+ output[SetType.TEST.ordinal()].getUAR() + "\n");
+						+ output[SetType.TEST.ordinal()].getUAR() 
+						+ "Train DEV - UAR: " + output[SetType.TRAINDEV.ordinal()].getUAR() 
+						+ "TRAINDEVTEST - UAR: " + output[SetType.TRAINDEVTEST.ordinal()].getUAR() +
+						"\n");
 			
 		   } catch (Exception e) {
 				// TODO Auto-generated catch block
