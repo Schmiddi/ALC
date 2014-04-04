@@ -960,6 +960,9 @@ public class WekaMagic {
 		
 		Instances [] sets1 = new Instances[3];
 		
+		if(filters == null){
+			System.out.println("No filters!");
+		}
 		sets1 = applyFilters(sets,filters);	//something went wrong here
 		
 
@@ -1006,7 +1009,7 @@ public class WekaMagic {
 	}*/
 	
 	public static Instances [] applyFilters(Instances [] sets, ArrayList<MyOutput> filters) throws Exception{
-		Instances [] retsets = new Instances [sets.length];
+		Instances [] retsets = WekaMagic.copyInstancesArray(sets);
 		if(filters != null){
 			//apply all filters
 		    for(MyOutput m : filters){
@@ -1020,12 +1023,9 @@ public class WekaMagic {
 			    }
 			    
 			    for(int i=0;i<sets.length;i++){
-			    	retsets[i] = Filter.useFilter(new Instances(sets[i]), f); //use filter on the training data
+			    	retsets[i] = Filter.useFilter(retsets[i], f); //use filter on the training data
 				}
 		    }
-		}
-		else{
-			retsets = WekaMagic.copyInstancesArray(sets);
 		}
 		
 		return retsets;
