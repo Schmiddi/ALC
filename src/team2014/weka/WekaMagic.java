@@ -959,16 +959,18 @@ public class WekaMagic {
 		MyClassificationOutput [] output = new MyClassificationOutput[5];
 		
 		Instances [] sets1 = new Instances[3];
-		sets1 = applyFilters(sets,filters);
+		sets1 = applyFilters(sets,filters);	
+		
 
 		MyClassificationOutput currentResult = WekaMagic.runLogistic(sets1[SetType.TRAIN.ordinal()], currentRidge, 5);
 		
-		output[SetType.TRAIN.ordinal()] = WekaMagic.applyLogistic(sets1[SetType.TRAIN.ordinal()], currentResult);
-		output[SetType.DEV.ordinal()] = WekaMagic.applyLogistic(sets1[SetType.DEV.ordinal()], currentResult);
-		output[SetType.TEST.ordinal()] = WekaMagic.applyLogistic(sets1[SetType.TEST.ordinal()],  currentResult);
-		
+		for(int i=0;i<sets1.length;i++){
+			System.out.println("size: " + sets1[i].size());
+			output[i] = WekaMagic.applyLogistic(sets1[i], currentResult);
+		}
 		
 		//create model on test + training set
+		System.out.println("0 ==" + SetType.TRAIN.ordinal());
 		Instances trainDev = new Instances(sets[SetType.TRAIN.ordinal()]);
 		trainDev.addAll(sets[SetType.DEV.ordinal()]);
 		
