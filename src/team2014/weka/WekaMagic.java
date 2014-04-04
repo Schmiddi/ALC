@@ -1008,6 +1008,7 @@ public class WekaMagic {
 			    	attributes[0] =	sets[SetType.TRAIN.ordinal()].attribute("text").index(); //eventuell +1 ???
 			    	((StringToWordVector)f).setAttributeIndicesArray(attributes);						   
 			    }
+			    
 			   
 			    sets[SetType.TRAIN.ordinal()] = Filter.useFilter(sets[SetType.TRAIN.ordinal()], f); //use filter on the training data
 			    sets[SetType.DEV.ordinal()] = Filter.useFilter(sets[SetType.DEV.ordinal()], f); //use filter on the dev data
@@ -1151,7 +1152,7 @@ public class WekaMagic {
 				
 		ArrayList<Double> threshold = new ArrayList<Double>();
 		threshold.add(0.0);
-
+		
 		if (withAttributeSelection) {
 			threshold.add(0.00000001);
 			threshold.add(0.0001);
@@ -1173,6 +1174,8 @@ public class WekaMagic {
 		System.out.println("Running tests for train, dev and test set...");
 		
 		int cores = Runtime.getRuntime().availableProcessors();
+		System.out.println("Number of cores: " + cores);
+		
 		MultiWeka [] threads = new MultiWeka[cores];
 		
 		//Iterate through different ridge values
@@ -1188,7 +1191,7 @@ public class WekaMagic {
 				currentRidge = stdRidge * (Math.pow(10, u));
 				
 				// Start all threads
-				threads[count%cores] = new MultiWeka(sets,withAttributeSelection,isText,currentRidge,threshold.get(i)); 
+				threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,currentRidge,threshold.get(i)); 
 				threads[count%cores].start();
 				
 				// If all threads are up and running
@@ -1203,6 +1206,14 @@ public class WekaMagic {
 		}
 		
 		return values;
+	}
+	
+	public static Instances[] copyInstancesArray(Instances [] sets){
+		Instances [] copy = new Instances [sets.length];
+		for(int i=0;i<sets.length;i++){
+			copy[i] = new Instances(sets[i]);
+		}
+		return copy;
 	}
 	
 	public static void saveResultIS2011(List<List<Double>> results, String outputFolder, Boolean withAttributeSelection, String type) throws Exception{

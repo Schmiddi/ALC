@@ -29,6 +29,7 @@ public class MultiWeka implements Runnable {
 	   }
 	
 	   public void run() {
+		   System.out.println(t.getName() + " has been started!");
 		   listRun = null;
 		   MyOutput featuresGen = null;
 			

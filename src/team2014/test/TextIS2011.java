@@ -47,8 +47,8 @@ public class TextIS2011 {
 
 			Instances[] sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
 
-			List<List<Double>> results = WekaMagic.runTestUARIS2011(sets, withAttributeSelection, true);
-
+			//List<List<Double>> results = WekaMagic.runTestUARIS2011(sets, withAttributeSelection, true);
+			List<List<Double>> results = WekaMagic.runTestUARIS2011Threads(sets, withAttributeSelection, true);
 			WekaMagic.saveResultIS2011(results, outputFolder, withAttributeSelection, "text");
 
 		} catch (Exception e) {
