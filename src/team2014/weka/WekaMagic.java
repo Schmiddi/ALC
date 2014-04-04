@@ -966,12 +966,10 @@ public class WekaMagic {
 		MyClassificationOutput currentResult = WekaMagic.runLogistic(sets1[SetType.TRAIN.ordinal()], currentRidge, 5);
 		
 		for(int i=0;i<sets1.length;i++){
-			System.out.println("size: " + sets1[i].size());
 			output[i] = WekaMagic.applyLogistic(sets1[i], currentResult);
 		}
 		
 		//create model on test + training set
-		System.out.println("0 ==" + SetType.TRAIN.ordinal());
 		Instances trainDev = new Instances(sets[SetType.TRAIN.ordinal()]);
 		trainDev.addAll(sets[SetType.DEV.ordinal()]);
 		
