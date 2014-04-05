@@ -1014,11 +1014,19 @@ public class WekaMagic {
 			//apply all filters
 		    for(MyOutput m : filters){
 		    	Filter f = (Filter)m.getOperation();
-			    f.setInputFormat(new Instances(sets[SetType.TRAIN.ordinal()])); //use training data to build the filter
+		    	
+		    	//check here
+		    	/*
+		    	System.out.println("filter: " + f.getClass().getName());
+		    	for(int i =0;i<sets[0].numAttributes();i++) {
+		    		System.out.println(sets[0].attribute(i).name());
+		    	}*/
+		    	
+			    f.setInputFormat(retsets[SetType.TRAIN.ordinal()]); //use training data to build the filter
 			   
 			    if(f instanceof StringToWordVector){
 			    	int  [] attributes = new int[1];
-			    	attributes[0] =	sets[SetType.TRAIN.ordinal()].attribute("text").index(); //eventuell +1 ???
+			    	attributes[0] =	retsets[SetType.TRAIN.ordinal()].attribute("text").index(); //eventuell +1 ???
 			    	((StringToWordVector)f).setAttributeIndicesArray(attributes);						   
 			    }
 			    
