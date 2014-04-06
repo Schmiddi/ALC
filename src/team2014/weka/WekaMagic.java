@@ -1015,14 +1015,7 @@ public class WekaMagic {
 		    for(MyOutput m : filters){
 		    	Filter f = (Filter)m.getOperation();
 		    	
-		    	//check here
-		    	/*
-		    	System.out.println("filter: " + f.getClass().getName());
-		    	for(int i =0;i<sets[0].numAttributes();i++) {
-		    		System.out.println(sets[0].attribute(i).name());
-		    	}*/
-		    	
-			    f.setInputFormat(retsets[SetType.TRAIN.ordinal()]); //use training data to build the filter
+		    	f.setInputFormat(new Instances(retsets[SetType.TRAIN.ordinal()])); //use training data to build the filter
 			   
 			    if(f instanceof StringToWordVector){
 			    	int  [] attributes = new int[1];
