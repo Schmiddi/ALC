@@ -14,7 +14,7 @@ import java.util.Random;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-
+import weka.core.stemmers.SnowballStemmer;
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.attributeSelection.Ranker;
 import weka.core.FastVector;
@@ -38,7 +38,6 @@ import org.languagetool.JLanguageTool;
 import org.languagetool.rules.RuleMatch;
 import org.languagetool.language.*;
 
-import com.sun.org.apache.xpath.internal.operations.Mult;
 
 /**
  * @author Felix Neutatz
