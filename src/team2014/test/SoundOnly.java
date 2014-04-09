@@ -103,9 +103,9 @@ public class SoundOnly {
 			currentRidge = stdRidge * (Math.pow(10, i));
 			currentResult = WekaMagic.runLogistic(train, currentRidge, 5);
 			
-			logistic_train_eval = WekaMagic.applyLogistic(train, currentResult);
-			logistic_cross_eval = WekaMagic.applyLogistic(cross, currentResult);
-			logistic_test_eval  = WekaMagic.applyLogistic(test,  currentResult);
+			logistic_train_eval = WekaMagic.applyClassifier(train, currentResult);
+			logistic_cross_eval = WekaMagic.applyClassifier(cross, currentResult);
+			logistic_test_eval  = WekaMagic.applyClassifier(test,  currentResult);
 			
 			System.out.println("Fscore for ridge = " + currentRidge);
 			System.out.println("f1-score - training: " + logistic_train_eval.getF1Score());

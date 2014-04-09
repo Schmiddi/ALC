@@ -11,21 +11,22 @@ public class MultiWeka implements Runnable {
 	   private Instances [] sets;
 	   private Boolean withAttributeSelection;
 	   private Boolean isText;
-	   private double currentRidge;
+	   private Double [] parameters;
 	   private double threshold;	   
 	   private List<Double> listRun;
-	   
+	   private int classifier;
 	   
 	   public MultiWeka(Instances[] sets,
-			Boolean withAttributeSelection, Boolean isText, double ridge,
-			double threshold) {
+			Boolean withAttributeSelection, Boolean isText, Double [] parameters,
+			double threshold, int classifier) {
 			super();
 			this.t=null;
 			this.sets = sets;
 			this.withAttributeSelection = withAttributeSelection;
 			this.isText = isText;
-			this.currentRidge = ridge;
+			this.parameters = parameters;
 			this.threshold = threshold;
+			this.classifier = classifier;
 	   }
 	
 	   public void run() {
@@ -85,23 +86,32 @@ public class MultiWeka implements Runnable {
 			
 			MyClassificationOutput[] output;
 			try {
-				output = WekaMagic.validationIS2011(sets, filters, currentRidge);			
+				output = WekaMagic.validationIS2011(sets, filters, parameters, classifier);			
 
 				// Result processing to lists
 				listRun = new ArrayList<Double>();
 				
 				listRun.add(0, threshold);
-				listRun.add(1, currentRidge);
-				listRun.add(2, output[SetType.TRAIN.ordinal()].getUAR());
-				listRun.add(3, output[SetType.DEV.ordinal()].getUAR());
-				listRun.add(4, output[SetType.TEST.ordinal()].getUAR());
 				
-				listRun.add(5, output[SetType.TRAINDEV.ordinal()].getUAR());
-				listRun.add(6, output[SetType.TRAINDEVTEST.ordinal()].getUAR());
+				for(int i=0;i<parameters.length;i++){
+					listRun.add(1+i, parameters[i]);
+				}
+				
+				listRun.add(1 + parameters.length, output[SetType.TRAIN.ordinal()].getUAR());
+				listRun.add(2 + parameters.length, output[SetType.DEV.ordinal()].getUAR());
+				listRun.add(3 + parameters.length, output[SetType.TEST.ordinal()].getUAR());
+				
+				listRun.add(4 + parameters.length, output[SetType.TRAINDEV.ordinal()].getUAR());
+				listRun.add(5 + parameters.length, output[SetType.TRAINDEVTEST.ordinal()].getUAR());
 				
 	
 				// print all information about the result
-				System.out.print("ridge:" + currentRidge + " threshold:" + threshold
+				System.out.print(ClassifierE.toString(classifier) + " ");
+				for(int i=0;i<parameters.length;i++){
+					System.out.print(ClassifierE.getParameterNameByID(classifier, i) + ":" + parameters[i] + " ");
+				}
+				
+				System.out.print("threshold:" + threshold
 						+ " Train UAR: " + output[SetType.TRAIN.ordinal()].getUAR() + " Dev UAR:"
 						+ output[SetType.DEV.ordinal()].getUAR() + " Test UAR:"
 						+ output[SetType.TEST.ordinal()].getUAR() 
@@ -119,7 +129,7 @@ public class MultiWeka implements Runnable {
 	   {
 	      if (t == null)
 	      {
-	         t = new Thread (this, "ridge = " + currentRidge + " threshold = " + threshold);
+	         t = new Thread (this, " threshold = " + threshold);
 	         t.start ();
 	      }
 	   }
