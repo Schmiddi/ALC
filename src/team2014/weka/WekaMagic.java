@@ -995,7 +995,7 @@ public class WekaMagic {
 		if(filters == null){
 			System.out.println("No filters!");
 		}
-		if(classifier == ClassifierE.SVM.ordinal()){ //Classifier is a SVM
+		if(classifier == ClassifierE.SVM.getValue()){ //Classifier is a SVM
 			//so we need to apply normalization
 			MyOutput norm = normalize(null, null);
 			ArrayList<MyOutput> filtersN = new ArrayList<MyOutput>();
@@ -1010,7 +1010,6 @@ public class WekaMagic {
 		
 
 		MyClassificationOutput currentResult = null;
-		System.out.println("Classifier: " + classifier);
 		switch(classifier){
 			case 1: //Logistic regression
 					currentResult = WekaMagic.runLogistic(sets1[SetType.TRAIN.ordinal()], parameters[0], 5);
@@ -1246,7 +1245,7 @@ public class WekaMagic {
 				currentRidge = stdRidge * (Math.pow(10, u));
 				
 				// Start all threads
-				threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,new Double[]{currentRidge},threshold.get(i),ClassifierE.LOGISTIC.ordinal()); 
+				threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,new Double[]{currentRidge},threshold.get(i),ClassifierE.LOGISTIC.getValue()); 
 				threads[count%cores].start();
 				
 				// If all threads are up and running
@@ -1291,12 +1290,12 @@ public class WekaMagic {
 		ArrayList<Double> Gammaval = new ArrayList<Double>();
 		double currentC;
 		
-		if(kernelType == KernelType.RBF.ordinal()){
+		if(kernelType == KernelType.RBF.getValue()){
 			for(int i=0;i<8;i++){
 				Gammaval.add(Math.pow(2,-15+(i*2)));  //from 2^-15, 2^-13, ...
 			}
 		}
-		if(kernelType == KernelType.LINEAR.ordinal()){ // if the kernel is linear, we don't need gamma
+		if(kernelType == KernelType.LINEAR.getValue()){ // if the kernel is linear, we don't need gamma
 			Gammaval.add(null);
 		}
 				
@@ -1320,7 +1319,7 @@ public class WekaMagic {
 					
 					// Start all threads
 					threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
-															new Double[]{currentC, Gammaval.get(u)},threshold.get(i),ClassifierE.SVM.ordinal()); 
+															new Double[]{currentC, Gammaval.get(u)},threshold.get(i),ClassifierE.SVM.getValue()); 
 					threads[count%cores].start();
 					
 					// If all threads are up and running
