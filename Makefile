@@ -7,6 +7,7 @@ JARS_ALL := $(JARS):$(JARS_TEST):$(JARS_WEKA)
 PATH_SOUND_WO_TT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/myIS13_ComParE
 PATH_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS13_ComParE
 PATH_IS2011_SETS := /home/bas-alc/corpus/DOC/IS2011CHALLENGE
+PATH_SOUND_IS11 := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS11_speaker_state
 XMX := -Xmx38g
 NOW := date +"%Y_%m_%d"
 OUTPUT_DIR := /home/alc/workspace/ALC/output
@@ -50,6 +51,9 @@ runSOISwAttr:
 
 runSOIS:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
+
+runSOIS_sound11:
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND_IS11) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
 
 runSASwoTT:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundAttributeSelection $(PATH_SOUND_WO_TT)
