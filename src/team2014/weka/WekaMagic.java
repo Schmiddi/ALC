@@ -1000,7 +1000,9 @@ public class WekaMagic {
 			MyOutput norm = normalize(null, null);
 			ArrayList<MyOutput> filtersN = new ArrayList<MyOutput>();
 			filtersN.add(0,norm); //add normalization at the beginning of the filter process
-			filtersN.addAll(filters);
+			if(filters != null){
+				filtersN.addAll(filters);
+			}
 			filters = filtersN;
 		}
 		
