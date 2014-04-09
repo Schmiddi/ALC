@@ -1,6 +1,7 @@
 package team2014.test;
 import java.util.List;
 
+import team2014.weka.KernelType;
 import team2014.weka.WekaMagic;
 import weka.core.Instances;
 
@@ -48,7 +49,8 @@ public class SoundOnlyIS2011 {
 			
 			//List<List<Double>> results = WekaMagic.runTestUARIS2011(sets, withAttributeSelection);
 			
-			List<List<Double>> results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection);
+			//List<List<Double>> results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection);
+			List<List<Double>> results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, false, KernelType.RBF.ordinal());
 			
 			WekaMagic.saveResultIS2011(results, outputFolder, withAttributeSelection, "sound");
 						

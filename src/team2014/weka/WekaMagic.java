@@ -995,7 +995,7 @@ public class WekaMagic {
 		if(filters == null){
 			System.out.println("No filters!");
 		}
-		if(classifier == 2){ //Classifier is a SVM
+		if(classifier == ClassifierE.SVM.ordinal()){ //Classifier is a SVM
 			//so we need to apply normalization
 			MyOutput norm = normalize(null, null);
 			ArrayList<MyOutput> filtersN = new ArrayList<MyOutput>();
@@ -1272,6 +1272,81 @@ public class WekaMagic {
 					}
 				}			
 				count++;
+			}
+		}
+		
+		return values;
+	}
+	
+	
+	public static List<List<Double>> runTestUARIS2011SVMThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int kernelType) throws Exception {
+		List<List<Double>> values = new ArrayList<List<Double>>();
+		
+		ArrayList<Double> threshold = new ArrayList<Double>();
+		threshold.add(0.0);
+		
+		if (withAttributeSelection) {
+			threshold.add(0.00000001);
+			threshold.add(0.0001);
+			threshold.add(0.0003);
+			threshold.add(0.0006);
+			threshold.add(0.001);
+			threshold.add(0.002);
+			threshold.add(0.0025);
+			threshold.add(0.0030);
+			threshold.add(0.0035);
+			threshold.add(0.004);
+			threshold.add(0.005);
+			threshold.add(0.006);
+			threshold.add(0.007);
+			threshold.add(0.008);
+			threshold.add(0.01);
+		}
+		
+		ArrayList<Double> Gammaval = new ArrayList<Double>();
+		double currentC;
+		
+		if(kernelType == KernelType.RBF.ordinal()){
+			for(int i=0;i<8;i++){
+				Gammaval.add(Math.pow(2,-15+(i*2)));  //from 2^-15, 2^-13, ...
+			}
+		}
+		if(kernelType == KernelType.LINEAR.ordinal()){ // if the kernel is linear, we don't need gamma
+			Gammaval.add(null);
+		}
+				
+		System.out.println("Running tests for train, dev and test set...");
+		
+		int cores = Runtime.getRuntime().availableProcessors();
+		System.out.println("Number of cores: " + cores);
+		
+		MultiWeka [] threads = new MultiWeka[cores];
+		
+		int count = 0;
+		
+		int wMax = 10;
+		int maxIter = threshold.size() * wMax * Gammaval.size();
+		
+		for (int i=0; i<threshold.size(); i++) {		//iterating through Threshold values
+			for(int w=0; w<wMax; w++){  				//iterating through C values
+				for (int u=0; u<Gammaval.size(); u++)   //iterating through Gamma
+				{
+					currentC = Math.pow(2,-5+(w*2));
+					
+					// Start all threads
+					threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
+															new Double[]{currentC, Gammaval.get(u)},threshold.get(i),ClassifierE.SVM.ordinal()); 
+					threads[count%cores].start();
+					
+					// If all threads are up and running
+					if(count % cores == cores-1 || count == maxIter - 1){
+						for(MultiWeka r: threads){
+							r.join();
+							values.add(r.getResult());
+						}
+					}			
+					count++;
+				}
 			}
 		}
 		
