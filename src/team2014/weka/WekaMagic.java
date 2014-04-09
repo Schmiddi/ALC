@@ -34,7 +34,7 @@ import weka.core.Attribute;
 import weka.classifiers.Classifier;
 //import wlsvm.WLSVM;
 import weka.classifiers.functions.LibSVM;
-
+import weka.filters.unsupervised.attribute.Normalize;
 import org.languagetool.JLanguageTool;
 import org.languagetool.rules.RuleMatch;
 import org.languagetool.language.*;
@@ -348,6 +348,39 @@ public class WekaMagic {
 	}
 	
 	
+	public static MyOutput normalize(Instances train, Instances test)
+			throws Exception {
+		
+		Normalize filter = new Normalize();
+		
+		if(train != null){
+			filter.setInputFormat(train);
+		}
+
+		long startTime = System.currentTimeMillis();
+		Instances train_dataFiltered = null;
+		if(train != null){
+			train_dataFiltered = Filter.useFilter(train, filter); //run filter on training data
+		}
+		long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		
+		Instances test_dataFiltered;
+		if(test != null){
+			test_dataFiltered = Filter.useFilter(test, filter);   //run filter on test data
+			setClassIndex(test_dataFiltered);
+		}
+		else{
+			test_dataFiltered = null;
+		}
+	
+		
+		Instances [] dataFiltered = iToArray(train_dataFiltered,test_dataFiltered);
+
+		return new MyOutput(dataFiltered, filter, elapsedTime);
+	}
+	
+	
 	
 	/**
 	 * Apply filter on test instances
@@ -558,10 +591,9 @@ public class WekaMagic {
 	 * @return
 	 * @throws Exception
 	 */
-	public static MyClassificationOutput applyLogistic(Instances test, MyClassificationOutput classifier)
+	public static MyClassificationOutput applyClassifier(Instances test, MyClassificationOutput classifier)
 	throws Exception {
 
-		Logistic l = (Logistic) classifier.getClassifier();
 		Evaluation eval;
 		String options;
 		
@@ -569,9 +601,9 @@ public class WekaMagic {
 		
 		//evaluate how good it performes on the test set
 		eval = new Evaluation(test);
-		eval.evaluateModel(l,test);	
+		eval.evaluateModel((Classifier)classifier.getClassifier(),test);	
 				
-		return new MyClassificationOutput(l, eval, options, 0);
+		return new MyClassificationOutput(classifier.getClassifier(), eval, options, 0);
 	}
 	
 	
@@ -954,7 +986,7 @@ public class WekaMagic {
 	 * @return
 	 * @throws Exception
 	 */
-	public static MyClassificationOutput[] validationIS2011(Instances[] sets, ArrayList<MyOutput> filters, double currentRidge) throws Exception{
+	public static MyClassificationOutput[] validationIS2011(Instances[] sets, ArrayList<MyOutput> filters, Double [] parameters, int classifier) throws Exception{
 		
 		MyClassificationOutput [] output = new MyClassificationOutput[5];
 		
@@ -963,13 +995,31 @@ public class WekaMagic {
 		if(filters == null){
 			System.out.println("No filters!");
 		}
-		sets1 = applyFilters(sets,filters);	//something went wrong here
+		if(classifier == ClassifierE.SVM.ordinal()){ //Classifier is a SVM
+			//so we need to apply normalization
+			MyOutput norm = normalize(null, null);
+			ArrayList<MyOutput> filtersN = new ArrayList<MyOutput>();
+			filtersN.add(0,norm); //add normalization at the beginning of the filter process
+			filtersN.addAll(filters);
+			filters = filtersN;
+		}
+		
+		sets1 = applyFilters(sets,filters);
 		
 
-		MyClassificationOutput currentResult = WekaMagic.runLogistic(sets1[SetType.TRAIN.ordinal()], currentRidge, 5);
+		MyClassificationOutput currentResult = null;
+		
+		switch(classifier){
+			case 1: //Logistic regression
+					currentResult = WekaMagic.runLogistic(sets1[SetType.TRAIN.ordinal()], parameters[0], 5);
+					break;
+			case 2: //SVM
+					currentResult = WekaMagic.runSVM(sets1[SetType.TRAIN.ordinal()], parameters[0], parameters[1]);
+					break;
+		}
 		
 		for(int i=0;i<sets1.length;i++){
-			output[i] = WekaMagic.applyLogistic(sets1[i], currentResult);
+			output[i] = WekaMagic.applyClassifier(sets1[i], currentResult);
 		}
 		
 		//create model on test + training set
@@ -983,10 +1033,17 @@ public class WekaMagic {
 		//the instances have to be filtered again since attribute selection makes things different
 		sets2 = applyFilters(sets2,filters);
 		
-		currentResult = WekaMagic.runLogistic(sets2[0], currentRidge, 5);
+		switch(classifier){
+			case 1: //Logistic regression
+					currentResult = WekaMagic.runLogistic(sets2[0], parameters[0], 5);
+					break;
+			case 2: //SVM
+					currentResult = WekaMagic.runSVM(sets2[0], parameters[0], parameters[1]);
+					break;
+		}
 		
-		output[SetType.TRAINDEV.ordinal()] = WekaMagic.applyLogistic(sets2[0], currentResult);
-		output[SetType.TRAINDEVTEST.ordinal()] = WekaMagic.applyLogistic(sets2[1],  currentResult);
+		output[SetType.TRAINDEV.ordinal()] = WekaMagic.applyClassifier(sets2[0], currentResult);
+		output[SetType.TRAINDEVTEST.ordinal()] = WekaMagic.applyClassifier(sets2[1],  currentResult);
 		
 		return output;
 	}
@@ -1120,7 +1177,7 @@ public class WekaMagic {
 					filters.add(filtered);
 				}
 				
-				MyClassificationOutput [] output = WekaMagic.validationIS2011(sets, filters, currentRidge);
+				MyClassificationOutput [] output = WekaMagic.validationIS2011(sets, filters, new Double[]{currentRidge}, 1);
 	
 				// Result processing to lists
 				List<Double> listRun = new ArrayList<Double>();
@@ -1144,8 +1201,8 @@ public class WekaMagic {
 		return values;
 	}
 	
-	public static List<List<Double>> runTestUARIS2011Threads(Instances [] sets, Boolean withAttributeSelection) throws Exception {
-		return WekaMagic.runTestUARIS2011Threads(sets, withAttributeSelection, false);
+	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection) throws Exception {
+		return WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, false);
 	}
 	
 	/**
@@ -1157,7 +1214,7 @@ public class WekaMagic {
 	 * @return Results of each loop iteration (test)
 	 * @throws Exception
 	 */
-	public static List<List<Double>> runTestUARIS2011Threads(Instances [] sets, Boolean withAttributeSelection, Boolean isText) throws Exception {
+	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText) throws Exception {
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
 		double stdRidge = 0.00000001; //10^-8
@@ -1204,7 +1261,7 @@ public class WekaMagic {
 				currentRidge = stdRidge * (Math.pow(10, u));
 				
 				// Start all threads
-				threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,currentRidge,threshold.get(i)); 
+				threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,new Double[]{currentRidge},threshold.get(i),ClassifierE.LOGISTIC.ordinal()); 
 				threads[count%cores].start();
 				
 				// If all threads are up and running
@@ -1215,6 +1272,81 @@ public class WekaMagic {
 					}
 				}			
 				count++;
+			}
+		}
+		
+		return values;
+	}
+	
+	
+	public static List<List<Double>> runTestUARIS2011SVMThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int kernelType) throws Exception {
+		List<List<Double>> values = new ArrayList<List<Double>>();
+		
+		ArrayList<Double> threshold = new ArrayList<Double>();
+		threshold.add(0.0);
+		
+		if (withAttributeSelection) {
+			threshold.add(0.00000001);
+			threshold.add(0.0001);
+			threshold.add(0.0003);
+			threshold.add(0.0006);
+			threshold.add(0.001);
+			threshold.add(0.002);
+			threshold.add(0.0025);
+			threshold.add(0.0030);
+			threshold.add(0.0035);
+			threshold.add(0.004);
+			threshold.add(0.005);
+			threshold.add(0.006);
+			threshold.add(0.007);
+			threshold.add(0.008);
+			threshold.add(0.01);
+		}
+		
+		ArrayList<Double> Gammaval = new ArrayList<Double>();
+		double currentC;
+		
+		if(kernelType == KernelType.RBF.ordinal()){
+			for(int i=0;i<8;i++){
+				Gammaval.add(Math.pow(2,-15+(i*2)));  //from 2^-15, 2^-13, ...
+			}
+		}
+		if(kernelType == KernelType.LINEAR.ordinal()){ // if the kernel is linear, we don't need gamma
+			Gammaval.add(null);
+		}
+				
+		System.out.println("Running tests for train, dev and test set...");
+		
+		int cores = Runtime.getRuntime().availableProcessors();
+		System.out.println("Number of cores: " + cores);
+		
+		MultiWeka [] threads = new MultiWeka[cores];
+		
+		int count = 0;
+		
+		int wMax = 10;
+		int maxIter = threshold.size() * wMax * Gammaval.size();
+		
+		for (int i=0; i<threshold.size(); i++) {		//iterating through Threshold values
+			for(int w=0; w<wMax; w++){  				//iterating through C values
+				for (int u=0; u<Gammaval.size(); u++)   //iterating through Gamma
+				{
+					currentC = Math.pow(2,-5+(w*2));
+					
+					// Start all threads
+					threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
+															new Double[]{currentC, Gammaval.get(u)},threshold.get(i),ClassifierE.SVM.ordinal()); 
+					threads[count%cores].start();
+					
+					// If all threads are up and running
+					if(count % cores == cores-1 || count == maxIter - 1){
+						for(MultiWeka r: threads){
+							r.join();
+							values.add(r.getResult());
+						}
+					}			
+					count++;
+				}
 			}
 		}
 		
@@ -1492,7 +1624,7 @@ public class WekaMagic {
 		String options = "SVM: C = " + C + " gamma = " + gamma;
 		
 		//Set cache memory size in MB (default: 40)
-		svm.setCacheSize(20000.0); //speed up algorithm
+		svm.setCacheSize(20000.0); //speed up algorithm - try 20 GB
 		
 		//Set coef0 in kernel function (default: 0)
 		//svm.setCoef0(value); //only necessary for polynomial and sigmoid kernel ??

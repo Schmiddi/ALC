@@ -218,8 +218,8 @@ public class BiasVarianceEvaluation {
 					logistic = WekaMagic.runLogistic(selected_train, (Double)null, (Integer)null);
 					logistic.print();
 					
-					evaluation_cross = WekaMagic.applyLogistic(selected_cross_validation, logistic);
-					evaluation_test  = WekaMagic.applyLogistic(selected_test, logistic);
+					evaluation_cross = WekaMagic.applyClassifier(selected_cross_validation, logistic);
+					evaluation_test  = WekaMagic.applyClassifier(selected_test, logistic);
 					
 					//WekaMagic.saveToArff(null, outputFolder + title + "_" + currentThreshold + "_logistic_t", logistic);
 					
