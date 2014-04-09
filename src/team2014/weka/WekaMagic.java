@@ -1010,7 +1010,7 @@ public class WekaMagic {
 		
 
 		MyClassificationOutput currentResult = null;
-		
+		System.out.println("Classifier: " + classifier);
 		switch(classifier){
 			case 1: //Logistic regression
 					currentResult = WekaMagic.runLogistic(sets1[SetType.TRAIN.ordinal()], parameters[0], 5);
