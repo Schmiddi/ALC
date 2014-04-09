@@ -28,11 +28,12 @@ import weka.core.stemmers.*;
 import weka.core.tokenizers.*;
 import weka.core.SelectedTag;
 import weka.classifiers.functions.Logistic;
-import weka.classifiers.functions.SMO;
 import weka.classifiers.Evaluation;
 import weka.filters.Filter;
 import weka.core.Attribute;
 import weka.classifiers.Classifier;
+//import wlsvm.WLSVM;
+import weka.classifiers.functions.LibSVM;
 
 import org.languagetool.JLanguageTool;
 import org.languagetool.rules.RuleMatch;
@@ -1482,26 +1483,74 @@ public class WekaMagic {
 	
 	
 	
-	public static MyClassificationOutput runSVM(Instances train, Double C, Double epsilon)
+	public static MyClassificationOutput runSVM(Instances train, Double C, Double gamma)
 	throws Exception {
 
-		SMO svm = new SMO();
+		LibSVM svm = new LibSVM();
 		long elapsedTime;
 		Evaluation eval = null;
-		String options;
+		String options = "SVM: C = " + C + " gamma = " + gamma;
 		
-		//set regularization parameter
-		if(C != null){
-			svm.setC(C);
+		//Set cache memory size in MB (default: 40)
+		svm.setCacheSize(20000.0); //speed up algorithm
+		
+		//Set coef0 in kernel function (default: 0)
+		//svm.setCoef0(value); //only necessary for polynomial and sigmoid kernel ??
+		//we don't need it _ C-SVC
+		
+		//Set degree in kernel function (default: 3)
+		//svm.setDegree(value); //only necessary for polynomial kernel ??
+		//we don't need it _ C-SVC
+		
+		//Set the epsilon in loss function of epsilon-SVR (default: 0.1)
+		//svm.setEps(value); //we don't need it _ C-SVC
+		
+		//Set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default: 1)
+		svm.setCost(C);	  	
+		
+		/*
+		   Set type of kernel function (default: 2)
+			    0 = linear: u'*v
+			    1 = polynomial: (gamma*u'*v + coef0)^degree
+			    2 = radial basis function: exp(-gamma*|u-v|^2)
+			    3 = sigmoid: tanh(gamma*u'*v + coef0)
+		*/
+		if(gamma != null){			
+			svm.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_RBF, LibSVM.TAGS_KERNELTYPE));
+			
+			//Set gamma in kernel function (default: 1/k)
+			svm.setGamma(gamma); //not necessary when applying linear kernel
+		}else{
+			svm.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE));
 		}
-		if(epsilon != null){
-			svm.setEpsilon(epsilon);
-		}
 		
-		svm.setNumFolds(10);
-		svm.setRandomSeed(1);
+		// Turns on normalization of input data (default: off)
+		svm.setNormalize(false); //better normalize it beforehand
 		
-		options = "single run";	
+		//Set the epsilon in loss function of epsilon-SVR (default: 0.1)
+		//svm.setLoss(value); //we don't need it _ C-SVC
+		
+		//Set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default: 0.5)
+		//svm.setNu(value); //we don't need it _ C-SVC
+
+		/*
+		   Set type of SVM (default: 0)
+			    0 = C-SVC				//support vector classification
+			    1 = nu-SVC				//support vector classification
+			    2 = one-class SVM		//distribution estimation
+			    3 = epsilon-SVR			//regression
+			    4 = nu-SVR				//regression
+		*/
+		svm.setSVMType(new SelectedTag(LibSVM.SVMTYPE_C_SVC,LibSVM.TAGS_SVMTYPE));
+		
+		//Random seed (default = 1)
+		svm.setSeed(1);
+		
+		//Generate probability estimates for classification
+		svm.setProbabilityEstimates(true);
+		
+		//Turns the shrinking heuristics off (default: on)
+		svm.setShrinking(true);
 		
 		//build classifier
 		long startTime = System.currentTimeMillis();
