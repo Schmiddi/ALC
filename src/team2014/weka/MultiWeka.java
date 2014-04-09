@@ -106,9 +106,9 @@ public class MultiWeka implements Runnable {
 				
 	
 				// print all information about the result
-				System.out.print(ClassifierE.toString(classifier) + " ");
+				System.out.print(ClassifierE.toString(classifier) + ": ");
 				for(int i=0;i<parameters.length;i++){
-					System.out.print(ClassifierE.getParameterNameByID(classifier, i) + ":" + parameters[i] + " ");
+					System.out.print(ClassifierE.getParameterNameByID(classifier, i) + "=" + parameters[i] + " ");
 				}
 				
 				System.out.print("threshold:" + threshold

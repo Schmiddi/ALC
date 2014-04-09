@@ -15,10 +15,10 @@ public enum ClassifierE {
 	}
 
     public static String getParameterNameByID(int classifier, int id){
-    	if(classifier == 1){
+    	if(classifier == LOGISTIC.value){
     		return "ridge";
     	}
-    	if(classifier == 2){
+    	if(classifier == SVM.value){
     		switch(id){
     			case 0: return "C";
     			case 1: return "gamma";
