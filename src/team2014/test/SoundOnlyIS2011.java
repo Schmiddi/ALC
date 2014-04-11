@@ -46,12 +46,12 @@ public class SoundOnlyIS2011 {
 
 			if (args.length >= 4) {
 				for(int i=3;i<args.length;i++){
-					if (args[i].equals("attr"))
+					if(args[i].equals("attr"))
 							withAttributeSelection = true;	
 					if(args[i].equals("linear"))
 							Kernel = KernelType.LINEAR.getValue();
 					if(args[i].equals("logistic"))
-						logistic = true;
+							logistic = true;
 				}
 			}
 			
