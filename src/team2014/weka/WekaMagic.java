@@ -18,6 +18,7 @@ import team2014.weka.parallel.MultiWeka;
 import team2014.weka.parallel.SetType;
 import team2014.weka.speaker.Speaker;
 import team2014.weka.svm.KernelType;
+
 import weka.core.stemmers.SnowballStemmer;
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.attributeSelection.Ranker;
@@ -1010,7 +1011,8 @@ public class WekaMagic {
 		//weka.filters.supervised.instance.SMOTE
 		
 		if(classifier == ClassifierE.SVM.getValue()){ //Classifier is a SVM
-			//so we need to apply normalization
+			//Feature scaling / normalization 
+			//			as proposed by http://www.csie.ntu.edu.tw/~cjlin/papers/guide/guide.pdf
 			MyOutput norm = normalize(null, null);
 			ArrayList<MyOutput> filtersN = new ArrayList<MyOutput>();
 			filtersN.add(0,norm); //add normalization at the beginning of the filter process
