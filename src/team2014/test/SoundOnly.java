@@ -2,9 +2,9 @@ package team2014.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import team2014.weka.GeneratesPlot;
 import team2014.weka.MyClassificationOutput;
 import team2014.weka.WekaMagic;
+import team2014.weka.plot.GeneratesPlot;
 import weka.core.Instances;
 
 

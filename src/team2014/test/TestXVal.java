@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import team2014.weka.CrossValidationOutput;
-import team2014.weka.Speaker;
 import team2014.weka.WekaMagic;
+import team2014.weka.speaker.Speaker;
 import weka.core.Instances;
 
 public class TestXVal {

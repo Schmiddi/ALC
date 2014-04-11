@@ -14,6 +14,10 @@ import java.util.Random;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
+import team2014.weka.parallel.MultiWeka;
+import team2014.weka.parallel.SetType;
+import team2014.weka.speaker.Speaker;
+import team2014.weka.svm.KernelType;
 import weka.core.stemmers.SnowballStemmer;
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.attributeSelection.Ranker;

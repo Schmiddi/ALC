@@ -1,6 +1,7 @@
-package team2014.weka;
+package team2014.weka.speaker;
 
 import java.util.ArrayList;
+
 
 public class SpeakerSamples {
 	private ArrayList<Sample> files;

@@ -1,8 +1,12 @@
-package team2014.weka;
+package team2014.weka.parallel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import team2014.weka.ClassifierE;
+import team2014.weka.MyClassificationOutput;
+import team2014.weka.MyOutput;
+import team2014.weka.WekaMagic;
 import weka.core.Instances;
 
 

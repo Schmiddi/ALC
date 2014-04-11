@@ -1,4 +1,4 @@
-package team2014.weka;
+package team2014.weka.plot;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;

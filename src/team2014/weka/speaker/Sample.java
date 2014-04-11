@@ -1,4 +1,4 @@
-package team2014.weka;
+package team2014.weka.speaker;
 
 import weka.core.Attribute;
 import weka.core.Instance;

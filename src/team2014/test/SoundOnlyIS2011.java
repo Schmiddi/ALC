@@ -1,8 +1,8 @@
 package team2014.test;
 import java.util.List;
 
-import team2014.weka.KernelType;
 import team2014.weka.WekaMagic;
+import team2014.weka.svm.KernelType;
 import weka.core.Instances;
 
 

@@ -1,4 +1,4 @@
-package team2014.weka;
+package team2014.weka.svm;
 
 public enum KernelType {
 	LINEAR(1), RBF(2);

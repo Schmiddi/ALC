@@ -5,10 +5,10 @@ import java.util.List;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import team2014.weka.CrossValidationOutput;
-import team2014.weka.GeneratesPlot;
 import team2014.weka.MyClassificationOutput;
 import team2014.weka.MyOutput;
 import team2014.weka.WekaMagic;
+import team2014.weka.plot.GeneratesPlot;
 import weka.core.Instances;
 
 
