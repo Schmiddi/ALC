@@ -79,7 +79,7 @@ public class SoundOnlyIS2011 {
 				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, false, Kernel);
 			}
 			
-			WekaMagic.saveResultIS2011(results, outputFolder, filenameExtension, "sound", args, );
+			WekaMagic.saveResultIS2011(results, outputFolder, filenameExtension, "sound", args, headerType);
 						
 		} catch (Exception e) {
 			e.printStackTrace();
