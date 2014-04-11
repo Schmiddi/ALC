@@ -30,8 +30,9 @@ public class SoundOnlyIS2011 {
 			String arff_dir = args[0];
 			String dirInterspeech = args[1];
 			String outputFolder = args[2] + fileSep;
-			
+			String filenameExtension = "";
 			String csv_dir = WekaMagic.getParent(arff_dir);
+			String headerType = "";
 			
 			// Get all Instances
 			data = WekaMagic.getSoundInstancesWithFile(arff_dir, csv_dir + "output.csv");
@@ -48,13 +49,28 @@ public class SoundOnlyIS2011 {
 				for(int i=3;i<args.length;i++){
 					if(args[i].equals("attr"))
 							withAttributeSelection = true;	
-					if(args[i].equals("linear"))
+					else if(args[i].equals("linear"))
 							Kernel = KernelType.LINEAR.getValue();
-					if(args[i].equals("logistic"))
+					else if(args[i].equals("logistic")){
 							logistic = true;
+					}
 				}
 			}
 			
+			if(logistic){
+				filenameExtension += "logistic";
+				headerType = "logistic";
+			}
+			else{
+				filenameExtension += "svm";	
+				
+				if(Kernel == KernelType.LINEAR.getValue()){
+					headerType = "lin";
+					filenameExtension += "_lin";
+				}
+				else
+					filenameExtension += "_rbf";
+			}
 			//List<List<Double>> results = WekaMagic.runTestUARIS2011(sets, withAttributeSelection);
 			List<List<Double>> results = null;
 			if(logistic){
@@ -62,7 +78,8 @@ public class SoundOnlyIS2011 {
 			}else{
 				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, false, Kernel);
 			}
-			WekaMagic.saveResultIS2011(results, outputFolder, withAttributeSelection, "sound");
+			
+			WekaMagic.saveResultIS2011(results, outputFolder, filenameExtension, "sound", args, );
 						
 		} catch (Exception e) {
 			e.printStackTrace();

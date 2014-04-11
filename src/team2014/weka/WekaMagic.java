@@ -681,7 +681,7 @@ public class WekaMagic {
 	 * @param path =  path to csv file
 	 * @throws Exception
 	 */
-	public static void printHashMap(List<List<Double>> m, String[] header, String path)
+	public static void printHashMap(List<List<Double>> m, List<String> header, String path, String [] intro)
 			throws Exception {
 		FileWriter fstream;
 		BufferedWriter out;
@@ -691,6 +691,11 @@ public class WekaMagic {
 		out = new BufferedWriter(fstream);
 
 
+		// Write intro
+		i=0;
+		for(String h: intro)
+			out.write(h + "\n");	
+				
 		// Write header
 		i=0;
 		for(String h: header){
@@ -1354,21 +1359,33 @@ public class WekaMagic {
 		return copy;
 	}
 	
-	public static void saveResultIS2011(List<List<Double>> results, String outputFolder, Boolean withAttributeSelection, String type) throws Exception{
+	public static void saveResultIS2011(List<List<Double>> results, String outputFolder, String fileNameExtension, String type, String [] intro, String headerType) throws Exception{
 		// Create timestamp
 		Date timestamp = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
-		
-		// Create attr string if with attribute selection
-		String attr = "";
-		if(withAttributeSelection)
-			attr = "attr";
-		
-		
+				
 		// CSV Header
-		String[] header = {"Threshold","Ridge","Train UAR", "Dev UAR", "Test UAR", "Train+Dev UAR", "Train+Dev vs Test UAR"};
-		//save to CSV
-		WekaMagic.printHashMap(results, header, outputFolder + type + "_IS2011"+attr+sdf.format(timestamp) + ".csv");
+		List<String> header = new ArrayList<String>();
+		header.add("Threshold");
+		
+		if(headerType.equals("logistic"))
+			header.add("Ridge");
+		else if(headerType.equals("lin"))
+			header.add("C");
+		else{
+			header.add("C");
+			header.add("gamma");
+		}
+			 
+		
+	    header.add("Train UAR");
+	    header.add("Dev UAR");
+	    header.add("Test UAR");
+	    header.add("Train+Dev UAR");
+	    header.add("Train+Dev vs Test UAR");
+		
+	    //save to CSV
+		WekaMagic.printHashMap(results, header, outputFolder + type + "_IS2011"+fileNameExtension+sdf.format(timestamp) + ".csv", intro);
 	}
 	
 	/**
