@@ -999,6 +999,11 @@ public class WekaMagic {
 		if(filters == null){
 			System.out.println("No filters!");
 		}
+		
+		//TODO: perhaps introduce here standarized + smote
+		//weka.filters.unsupervised.attribute.Standardize
+		//weka.filters.supervised.instance.SMOTE
+		
 		if(classifier == ClassifierE.SVM.getValue()){ //Classifier is a SVM
 			//so we need to apply normalization
 			MyOutput norm = normalize(null, null);
