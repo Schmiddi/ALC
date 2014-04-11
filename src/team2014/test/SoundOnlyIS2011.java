@@ -41,17 +41,27 @@ public class SoundOnlyIS2011 {
 			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
 			
 			Boolean withAttributeSelection = false;
+			Boolean logistic = false;
+			int Kernel = KernelType.RBF.getValue();
 
 			if (args.length >= 4) {
-				if (args[3].equals("attr"))
-					withAttributeSelection = true;
+				for(int i=3;i<args.length;i++){
+					if (args[i].equals("attr"))
+							withAttributeSelection = true;	
+					if(args[i].equals("linear"))
+							Kernel = KernelType.LINEAR.getValue();
+					if(args[i].equals("logistic"))
+						logistic = true;
+				}
 			}
 			
 			//List<List<Double>> results = WekaMagic.runTestUARIS2011(sets, withAttributeSelection);
-			
-			//List<List<Double>> results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection);
-			List<List<Double>> results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, false, KernelType.RBF.ordinal());
-			
+			List<List<Double>> results = null;
+			if(logistic){
+				results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection);
+			}else{
+				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, false, Kernel);
+			}
 			WekaMagic.saveResultIS2011(results, outputFolder, withAttributeSelection, "sound");
 						
 		} catch (Exception e) {
