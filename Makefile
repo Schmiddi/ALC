@@ -13,7 +13,7 @@ NOW := date +"%Y_%m_%d"
 OUTPUT_DIR := /home/alc/workspace/ALC/output
 
 # Build all targets of team2014
-all: andi weka test
+all: clean andi wekaSpeaker wekaPlot wekaSVM weka test
 
 # Build classes from package andi
 andi: src/andi/*.java
@@ -25,8 +25,19 @@ test: src/team2014/test/*.java
 
 
 weka: src/team2014/weka/*.java
-	javac -classpath $(JARS):$(JARS_WEKA) -d bin src/team2014/weka/*.java
+	javac -classpath $(JARS_ALL) -d bin src/team2014/weka/*.java
 
+wekaParallel: src/team2014/weka/parallel/*.java
+	javac -classpath $(JARS_ALL) -d bin src/team2014/weka/parallel/*.java
+
+wekaSpeaker: src/team2014/weka/speaker/*.java
+	javac -classpath $(JARS_ALL) -d bin src/team2014/weka/speaker/*.java
+
+wekaPlot: src/team2014/weka/plot/*.java
+	javac -classpath $(JARS_ALL) -d bin src/team2014/weka/plot/*.java
+
+wekaSVM: src/team2014/weka/svm/*.java
+	javac -classpath $(JARS_ALL) -d bin src/team2014/weka/svm/*.java
 
 runSOIS_sound11:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND_IS11) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
@@ -102,4 +113,8 @@ clean:
 	rm -f bin/andi/*.class
 	rm -f bin/team2014/test/*.class
 	rm -f bin/team2014/weka/*.class
+	rm -f bin/team2014/weka/parallel/*.class
+	rm -f bin/team2014/weka/plot/*.class
+	rm -f bin/team2014/weka/speaker/*.class
+	rm -f bin/team2014/weka/svm/*.class
 	rm -f bin/*.class
