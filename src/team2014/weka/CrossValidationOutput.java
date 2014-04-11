@@ -3,6 +3,9 @@ package team2014.weka;
 import java.util.ArrayList;
 import java.util.Random;
 
+import team2014.weka.speaker.Sample;
+import team2014.weka.speaker.Speaker;
+import team2014.weka.speaker.SpeakerSamples;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
 import weka.core.Instances;
