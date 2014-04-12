@@ -1657,12 +1657,13 @@ public class WekaMagic {
 			    0 = linear: u'*v
 			    1 = polynomial: (gamma*u'*v + coef0)^degree
 			    2 = radial basis function: exp(-gamma*|u-v|^2)
-			    3 = sigmoid: tanh(gamma*u'*v + coef0)
+			    3 = sigmoid: tanh(gamma*u'*v + coef0)	    
+			    
 		*/
 		if(gamma != null){			
 			svm.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_RBF, LibSVM.TAGS_KERNELTYPE));
 			
-			//Set gamma in kernel function (default: 1/k)
+			//Set gamma in kernel function (default:  (1 / number_of_features) )
 			svm.setGamma(gamma); //not necessary when applying linear kernel
 		}else{
 			svm.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE));
