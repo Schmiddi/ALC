@@ -1324,14 +1324,14 @@ public class WekaMagic {
 		
 		int count = 0;
 		
-		int wMax = 10;
+		int wMax = 15;
 		int maxIter = threshold.size() * wMax * Gammaval.size();
 		
 		for (int i=0; i<threshold.size(); i++) {		//iterating through Threshold values
 			for(int w=0; w<wMax; w++){  				//iterating through C values
 				for (int u=0; u<Gammaval.size(); u++)   //iterating through Gamma
 				{
-					currentC = Math.pow(2,-5+(w*2));
+					currentC = Math.pow(2,-8+(w*2));	// 2^-8, 2^-7 - range of C
 					
 					// Start all threads
 					threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
