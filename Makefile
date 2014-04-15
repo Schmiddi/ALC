@@ -15,14 +15,16 @@ OUTPUT_DIR := /home/alc/workspace/ALC/output
 # Build all targets of team2014
 all: clean andi wekaSpeaker wekaPlot wekaSVM weka test
 
-# Build classes from package andi
+
+#####################################
+##   Build classes from packages   ##
+#####################################
+
 andi: src/andi/*.java
 	javac -classpath $(JARS) -d bin src/andi/*.java
 
-
 test: src/team2014/test/*.java
 	javac -classpath $(JARS_ALL) -d bin src/team2014/test/*.java
-
 
 weka: src/team2014/weka/*.java
 	javac -classpath $(JARS_ALL) -d bin src/team2014/weka/*.java
@@ -39,76 +41,103 @@ wekaPlot: src/team2014/weka/plot/*.java
 wekaSVM: src/team2014/weka/svm/*.java
 	javac -classpath $(JARS_ALL) -d bin src/team2014/weka/svm/*.java
 
+
+###################
+##   Run tests   ##
+###################
+
 runSOIS_sound11:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND_IS11) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
+	echo "runSOIS_sound11" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND_IS11) $(PATH_IS2011_SETS) $(OUTPUT_DIR) | ./log.sh
 
 runAISwAttr:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr"
+	echo "runAISwAttr" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr" | ./log.sh
 
 runAIS:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
+	echo "runAIS" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) | ./log.sh
 
 runGISwAttr:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr"
+	echo "runGISwAttr" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr" | ./log.sh
 
 runGIS:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
+	echo "runGIS" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) | ./log.sh
 
 runTISwAttr:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
+	echo "runTISwAttr" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) | ./log.sh
 
 runTIS:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr"
+	echo "runTIS" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr" | ./log.sh
 	
 runSOISwAttr:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr"
+	echo "runSOISwAttr" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr" | ./log.sh
 
 runSOIS:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
-
-runSOIS_sound11:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND_IS11) $(PATH_IS2011_SETS) $(OUTPUT_DIR)
+	echo "runSOIS" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) | ./log.sh
 
 runSASwoTT:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundAttributeSelection $(PATH_SOUND_WO_TT)
+	echo "runSASwoTT" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundAttributeSelection $(PATH_SOUND_WO_TT) | ./log.sh
 
 runSAS:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundAttributeSelection $(PATH_SOUND)
+	echo "runSAS" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundAttributeSelection $(PATH_SOUND) | ./log.sh
 
 runGASwoTT:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarAttributeSelection $(PATH_SOUND_WO_TT)
+	echo "runGASwoTT" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarAttributeSelection $(PATH_SOUND_WO_TT) | ./log.sh
 
 runGAS:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarAttributeSelection $(PATH_SOUND)
+	echo "runGAS" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarAttributeSelection $(PATH_SOUND) | ./log.sh
 
 runSCV:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyCrossValidation $(PATH_SOUND)
+	echo "runSCV" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyCrossValidation $(PATH_SOUND) | ./log.sh
 
 runSCVwoTT:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyCrossValidation $(PATH_SOUND_WO_TT)
+	echo "runSCVwoTT" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyCrossValidation $(PATH_SOUND_WO_TT) | ./log.sh
 
 runTAS:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND)
+	echo "runTAS" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND) | ./log.sh
 
 runTASwoTT:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND_WO_TT)
+	echo "runTASwoTT" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND_WO_TT) | ./log.sh
 
 runTASfalse:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND) "false"
+	echo "runTASfalse" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND) "false" | ./log.sh
 
 runTASfalsewoTT:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND_WO_TT) "false"
+	echo "runTASfalsewoTT" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND_WO_TT) "false" | ./log.sh
 
 runTCV:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextCrossValidation $(PATH_SOUND)
+	echo "runTCV" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextCrossValidation $(PATH_SOUND) | ./log.sh
 
 runTCVwoTT:
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextCrossValidation $(PATH_SOUND_WO_TT)
+	echo "runTCVwoTT" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextCrossValidation $(PATH_SOUND_WO_TT) | ./log.sh
 
 my:
 	echo $(NOW)
 
-# Clean all
+
+###################
+##   Clean all   ##
+###################
+
 clean:
 	rm -f bin/andi/*.class
 	rm -f bin/team2014/test/*.class
