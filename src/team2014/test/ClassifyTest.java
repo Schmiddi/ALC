@@ -7,9 +7,7 @@ import team2014.weka.WekaMagic;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instances;
-import weka.classifiers.Classifier;
 import weka.classifiers.misc.SerializedClassifier;
-import weka.core.Debug;
 import weka.core.converters.ConverterUtils.DataSource;
 
 
