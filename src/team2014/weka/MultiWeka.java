@@ -1,4 +1,4 @@
-package team2014.weka.parallel;
+package team2014.weka;
 
 import java.util.ArrayList;
 import java.util.List;

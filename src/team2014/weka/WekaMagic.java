@@ -14,8 +14,6 @@ import java.util.Random;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-import team2014.weka.parallel.MultiWeka;
-import team2014.weka.parallel.SetType;
 import team2014.weka.speaker.Speaker;
 import team2014.weka.svm.KernelType;
 
@@ -1303,6 +1301,22 @@ public class WekaMagic {
 			threshold.add(0.01);
 		}
 		
+		ArrayList<Double> Cval = new ArrayList<Double>();
+		
+		Cval.add(0.00001);
+		Cval.add(0.0001);
+		Cval.add(0.0005);
+		Cval.add(0.001);
+		Cval.add(0.005);
+		Cval.add(0.01);
+		Cval.add(0.02);
+		Cval.add(0.03); //probably best
+		Cval.add(0.04);
+		Cval.add(0.06);
+		Cval.add(0.08);
+		Cval.add(0.1);
+		
+		
 		ArrayList<Double> Gammaval = new ArrayList<Double>();
 		double currentC;
 		
@@ -1324,14 +1338,14 @@ public class WekaMagic {
 		
 		int count = 0;
 		
-		int wMax = 15;
+		int wMax = Cval.size();
 		int maxIter = threshold.size() * wMax * Gammaval.size();
 		
 		for (int i=0; i<threshold.size(); i++) {		//iterating through Threshold values
 			for(int w=0; w<wMax; w++){  				//iterating through C values
 				for (int u=0; u<Gammaval.size(); u++)   //iterating through Gamma
 				{
-					currentC = Math.pow(2,-8+(w*2));	// 2^-8, 2^-7 - range of C
+					currentC = Cval.get(w);	// range of C
 					
 					// Start all threads
 					threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
