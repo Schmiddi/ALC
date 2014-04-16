@@ -1991,5 +1991,26 @@ public class WekaMagic {
 		return outOfSets;
 	}
 
+	public static Instances [] deleteFromSets(Instances[] sets,
+			Instances notInSets, String s_key) {
+		
+		Instances [] setsWO = new Instances [sets.length];
+		for(int i=0;i<sets.length;i++){
+			setsWO[i] = new Instances(sets[i]);
+			
+			for(int u=0;u<setsWO[i].size();u++){
+				for(int t=0;t<notInSets.size();t++){
+					if(setsWO[i].get(u).stringValue(setsWO[i].attribute(s_key).index()).equals(notInSets.get(t).stringValue(notInSets.attribute(s_key).index()))){
+						setsWO[i].delete(u);
+						u--;
+						break;
+					}
+				}
+			}
+		}
+		
+		return setsWO;
+	}
+
 	
 }
