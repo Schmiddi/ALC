@@ -34,7 +34,7 @@ public class SoundOnlyIS2011 {
 			String csv_dir = WekaMagic.getParent(arff_dir);
 			String headerType = "";
 			
-			String dir_wott = args[3];
+			String dir_wott = "";
 			
 			// Get all Instances
 			data = WekaMagic.getSoundInstancesWithFile(arff_dir, csv_dir + "output.csv");
@@ -48,7 +48,7 @@ public class SoundOnlyIS2011 {
 			Boolean wott = false;  // without tongue twisters
 			int Kernel = KernelType.RBF.getValue();
 
-			if (args.length >= 5) {
+			if (args.length >= 4) {
 				for(int i=3;i<args.length;i++){
 					if(args[i].equals("attr"))
 							withAttributeSelection = true;	
@@ -58,7 +58,11 @@ public class SoundOnlyIS2011 {
 							logistic = true;
 					}
 					else if(args[i].equals("wott")){
+						if(args.length > i+1){
 							wott = true;
+							i++;
+							dir_wott = args[i];
+						}
 					}
 				}
 			}
