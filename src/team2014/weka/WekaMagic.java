@@ -52,6 +52,10 @@ import org.languagetool.language.*;
  * @author Felix Neutatz
  *
  */
+/**
+ * @author Felix Neutatz
+ *
+ */
 public class WekaMagic {
 	
 	/**
@@ -351,6 +355,14 @@ public class WekaMagic {
 	}
 	
 	
+	/**
+	 * this function normalize data in a range from [0,1]
+	 * 
+	 * @param train
+	 * @param test
+	 * @return
+	 * @throws Exception
+	 */
 	public static MyOutput normalize(Instances train, Instances test)
 			throws Exception {
 		
@@ -1063,6 +1075,15 @@ public class WekaMagic {
 		return output;
 	}
 	
+	
+	/**
+	 * apply filters to a set of instances
+	 * 
+	 * @param sets - array of instances
+	 * @param filters - ArrayList of filters which will be applied in ascending order
+	 * @return
+	 * @throws Exception
+	 */
 	public static Instances [] applyFilters(Instances [] sets, ArrayList<MyOutput> filters) throws Exception{
 		Instances [] retsets = WekaMagic.copyInstancesArray(sets);
 		if(filters != null){
@@ -1087,6 +1108,16 @@ public class WekaMagic {
 		return retsets;
 	}
 	
+	
+	/**
+	 * run classifier for sound features with Interspeech 2011 data sets
+	 * - only sequential processing!
+	 * 
+	 * @param sets
+	 * @param withAttributeSelection - whether to use attribute selection or not
+	 * @return
+	 * @throws Exception
+	 */
 	public static List<List<Double>> runTestUARIS2011(Instances [] sets, Boolean withAttributeSelection) throws Exception {
 		return WekaMagic.runTestUARIS2011(sets, withAttributeSelection, false);
 	}
@@ -1199,6 +1230,15 @@ public class WekaMagic {
 		return values;
 	}
 	
+	/**
+	 * run classifier for sound features with Interspeech 2011 data sets
+	 * - parallel processing!
+	 * 
+	 * @param sets
+	 * @param withAttributeSelection - whether to use attribute selection or not
+	 * @return
+	 * @throws Exception
+	 */
 	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection) throws Exception {
 		return WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, false);
 	}
@@ -1276,7 +1316,16 @@ public class WekaMagic {
 		return values;
 	}
 	
-	
+	/**
+	 * Run the test for the IS dataset.
+	 * 
+	 * @param sets Datasets, train - dev test
+	 * @param withAttributeSelection If using attribute selection
+	 * @param isText If feature generation is necessary
+	 * @param kernelType - int number of Kernel type defined in team2014.weka.svm
+	 * @return Results of each loop iteration (test)
+	 * @throws Exception
+	 */
 	public static List<List<Double>> runTestUARIS2011SVMThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int kernelType) throws Exception {
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
@@ -1367,6 +1416,13 @@ public class WekaMagic {
 		return values;
 	}
 	
+	
+	/**
+	 * copy array of instances - similar to clone
+	 * 
+	 * @param sets
+	 * @return
+	 */
 	public static Instances[] copyInstancesArray(Instances [] sets){
 		Instances [] copy = new Instances [sets.length];
 		for(int i=0;i<sets.length;i++){
@@ -1375,6 +1431,18 @@ public class WekaMagic {
 		return copy;
 	}
 	
+	
+	/**
+	 * save results of the classifiers to file
+	 * 
+	 * @param results
+	 * @param outputFolder - in which directory to store results
+	 * @param fileNameExtension - extension
+	 * @param type
+	 * @param intro
+	 * @param headerType
+	 * @throws Exception
+	 */
 	public static void saveResultIS2011(List<List<Double>> results, String outputFolder, String fileNameExtension, String type, String [] intro, String headerType) throws Exception{
 		// Create timestamp
 		Date timestamp = new Date();
@@ -1436,7 +1504,7 @@ public class WekaMagic {
 		
 		String tb_removed = ".*~+_-/\\";
 		
-		//remove chararacters
+		//remove characters
 		for(int i=0;i<tb_removed.length();i++){
 			String character = "" + tb_removed.charAt(i);
 			str = str.replace(character, "");
@@ -1619,6 +1687,14 @@ public class WekaMagic {
 	}
 	
 	
+	/**
+	 * get grammar instances without file column
+	 * 
+	 * @param csv_file
+	 * @param normalizeSentenceLength
+	 * @return
+	 * @throws Exception
+	 */
 	public static Instances getGrammarInstances(String csv_file, Boolean normalizeSentenceLength) throws Exception{
 		Instances text = textCSVToInstances(csv_file,"file"); //get text features
 		Instances grammar = checkGrammar(text, normalizeSentenceLength); //get grammar features
@@ -1630,6 +1706,14 @@ public class WekaMagic {
 		return grammar;
 	}
 	
+	/**
+	 * get grammar instances with file column
+	 * 
+	 * @param csv_file
+	 * @param normalizeSentenceLength
+	 * @return
+	 * @throws Exception
+	 */
 	public static Instances getGrammarInstancesWithFile(String csv_file, Boolean normalizeSentenceLength) throws Exception{
 		Instances text = textCSVToInstances(csv_file,"file"); //get text features
 		Instances grammar = checkGrammar(text, normalizeSentenceLength); //get grammar features
@@ -1641,6 +1725,15 @@ public class WekaMagic {
 	
 	
 	
+	/**
+	 * run Support vector machine SVM of libsvm
+	 * 
+	 * @param train - data set 
+	 * @param C - regularization constant
+	 * @param gamma - null for linear kernel, Double for RBF
+	 * @return
+	 * @throws Exception
+	 */
 	public static MyClassificationOutput runSVM(Instances train, Double C, Double gamma)
 	throws Exception {
 
@@ -1728,6 +1821,13 @@ public class WekaMagic {
 		return new MyClassificationOutput(svm, eval, options, elapsedTime);
 	}
 	
+	
+	/**
+	 * translate umlauts into real format
+	 * 
+	 * @param str
+	 * @return
+	 */
 	private static String setRightUmlauts(String str){
 		str = str.replace("\\", "");
 		
@@ -1744,6 +1844,15 @@ public class WekaMagic {
 		return str;
 	}
 	
+	
+	/**
+	 * generate grammar features
+	 * 
+	 * @param text
+	 * @param normalizeSentenceLength
+	 * @return
+	 * @throws IOException
+	 */
 	public static Instances checkGrammar(Instances text, Boolean normalizeSentenceLength) throws IOException{
 		Instances grammar = new Instances(text);
 		
@@ -1800,6 +1909,14 @@ public class WekaMagic {
 		return grammar;
 	}
 	
+	
+	/**
+	 * count words of a string
+	 * - used for normalization
+	 * 
+	 * @param in
+	 * @return
+	 */
 	public static int CountWords (String in) {
 	   String trim = in.trim();
 	   if (trim.isEmpty()) return 0;
@@ -2010,6 +2127,28 @@ public class WekaMagic {
 		}
 		
 		return setsWO;
+	}
+
+	public static Instances[] getInterspeech11wott(String dirInterspeech,
+			Instances data, String s_key, String dir_wott) throws Exception {
+		
+		Instances [] sets = WekaMagic.getInterspeech2011SetsWithFile(dirInterspeech, data, s_key);
+		
+		//difference between all instances and the set without tongue twisters
+		Instances text_wott = WekaMagic.textCSVToInstances(dir_wott + "output.csv",s_key);
+		
+		Instances notInSets = WekaMagic.getOutOfSets(new Instances [] { text_wott }, data, s_key);				
+		
+		
+		//delete all tongue twisters in the Interspeech 2011 set
+		Instances [] is11wott = WekaMagic.deleteFromSets(sets, notInSets, s_key);
+		
+		//delete corresponding file column
+		for(int i=0;i<is11wott.length;i++){
+			is11wott[i].deleteAttributeAt(is11wott[i].attribute(s_key).index());
+		}
+		
+		return is11wott;
 	}
 
 	
