@@ -20,7 +20,7 @@ public class SoundOnlyIS2011 {
 		String fileSep = isWindows?"\\":"/";
 		String s_key="file";
 		
-		if(args.length < 3){
+		if(args.length < 4){
 			System.out.println("To less parameters");
 		}
 		
@@ -34,18 +34,21 @@ public class SoundOnlyIS2011 {
 			String csv_dir = WekaMagic.getParent(arff_dir);
 			String headerType = "";
 			
+			String dir_wott = args[3];
+			
 			// Get all Instances
 			data = WekaMagic.getSoundInstancesWithFile(arff_dir, csv_dir + "output.csv");
 			// Split Instances
-			Instances [] sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
+			Instances [] sets = null;
 
 			System.out.println("Instances read from " + arff_dir + ": " + data.numInstances());
 			
 			Boolean withAttributeSelection = false;
 			Boolean logistic = false;
+			Boolean wott = false;  // without tongue twisters
 			int Kernel = KernelType.RBF.getValue();
 
-			if (args.length >= 4) {
+			if (args.length >= 5) {
 				for(int i=3;i<args.length;i++){
 					if(args[i].equals("attr"))
 							withAttributeSelection = true;	
@@ -54,7 +57,16 @@ public class SoundOnlyIS2011 {
 					else if(args[i].equals("logistic")){
 							logistic = true;
 					}
+					else if(args[i].equals("wott")){
+							wott = true;
+					}
 				}
+			}
+			
+			if(wott){
+				sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott);
+			}else{
+				sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
 			}
 			
 			if(logistic){
