@@ -46,6 +46,10 @@ wekaSVM: src/team2014/weka/svm/*.java
 ###################
 ##   Run tests   ##
 ###################
+runAllIS_wott_linear_is13:
+	echo "runAllIS_wott_linear_is13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 $(PATH_SOUND_IS11) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "linear" "wott" $(PATH_SET_WO_TT)| ./log.sh
+
 runSOIS_wott_linear_is13:
 	echo "runSOIS_wott_linear_is13" | ./log.sh
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND_IS11) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "linear" "wott" $(PATH_SET_WO_TT)| ./log.sh
