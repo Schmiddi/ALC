@@ -3,6 +3,10 @@ package team2014.test;
 import java.util.List;
 
 
+
+
+
+
 import team2014.weka.svm.KernelType;
 import team2014.weka.WekaMagic;
 import weka.core.Instances;
@@ -20,7 +24,7 @@ public class AllIS2011 {
 		String fileSep = isWindows ? "\\" : "/";
 		String s_key = "file";
 		
-		if(args.length < 3){
+		if(args.length < 4){
 			System.out.println("To less parameters");
 		}
 		
@@ -29,7 +33,12 @@ public class AllIS2011 {
 			String dirInterspeech = args[1];
 			String outputFolder = args[2] + fileSep;
 			String csv_dir = WekaMagic.getParent(arff_dir);
+			
+			String filenameExtension = "";
+			String headerType = "";
+			String dir_wott = "";
 
+			//Get all Instances of Text, Grammar and Sound
 			Instances dataText    = WekaMagic.textCSVToInstances(csv_dir + "output.csv", "file");
 			Instances dataGrammar = WekaMagic.getGrammarInstancesWithFile(csv_dir + "output.csv", true);
 			Instances dataSound   = WekaMagic.soundArffToInstances(arff_dir); //without class column
@@ -49,14 +58,13 @@ public class AllIS2011 {
 			System.out.println("Merge done!");
 			data.deleteAttributeAt(data.attribute("classGrammar").index());
 			
-			Instances[] sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
+			
 			
             Boolean withAttributeSelection = false;			
 			Boolean logistic = false;
+			Boolean wott = false;  // without tongue twisters
 			int Kernel = KernelType.RBF.getValue();
-            String filenameExtension = "";
-            String headerType = "";
-
+			
 			if (args.length >= 4) {
 				for(int i=3;i<args.length;i++){
 					if(args[i].equals("attr"))
@@ -66,8 +74,23 @@ public class AllIS2011 {
 					else if(args[i].equals("logistic")){
 							logistic = true;
 					}
+					else if(args[i].equals("wott")){
+						if(args.length > i+1){
+							wott = true;
+							i++;
+							dir_wott = args[i];
+						}
+					}
 				}
 			}
+			
+			Instances[] sets;
+			
+			if(wott)
+				sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott);
+			else
+				sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
+			
 			
 			if(logistic){
 				filenameExtension += "logistic";
@@ -83,7 +106,7 @@ public class AllIS2011 {
 				else
 					filenameExtension += "_rbf";
 			}
-			//List<List<Double>> results = WekaMagic.runTestUARIS2011(sets, withAttributeSelection);
+
 			List<List<Double>> results = null;
 			if(logistic){
 				results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, true);
