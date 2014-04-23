@@ -32,6 +32,7 @@ public class TextIS2011 {
 			String csv_dir = WekaMagic.getParent(arff_dir);
 			String filenameExtension = "";
 			String headerType = "";
+			String dir_wott = "";
 
 			data = WekaMagic.textCSVToInstances(csv_dir + "output.csv", "file");
 
@@ -43,6 +44,7 @@ public class TextIS2011 {
 
 			Boolean withAttributeSelection = false;
 			Boolean logistic = false;
+			Boolean wott = false;  // without tongue twisters
 			int Kernel = KernelType.RBF.getValue();
 
 			if (args.length >= 4) {
@@ -51,10 +53,24 @@ public class TextIS2011 {
 							withAttributeSelection = true;	
 					else if(args[i].equals("linear"))
 							Kernel = KernelType.LINEAR.getValue();
-					else if(args[i].equals("logistic")){
+					else if(args[i].equals("logistic"))
 							logistic = true;
+					else if(args[i].equals("wott")){
+						if(args.length > i+1){
+							wott = true;
+							i++;
+							dir_wott = args[i];
+						}
 					}
 				}
+			}
+
+			Instances[] sets;
+
+			if(wott){
+				sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott);
+			}else{
+				sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
 			}
 			
 			if(logistic){
@@ -71,8 +87,6 @@ public class TextIS2011 {
 				else
 					filenameExtension += "_rbf";
 			}
-
-			Instances[] sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
 
 			//List<List<Double>> results = WekaMagic.runTestUARIS2011(sets, withAttributeSelection, true);
 			
