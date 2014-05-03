@@ -42,16 +42,6 @@ import org.languagetool.JLanguageTool;
 import org.languagetool.rules.RuleMatch;
 import org.languagetool.language.*;
 
-
-/**
- * @author Felix Neutatz
- *
- */
-
-/**
- * @author Felix Neutatz
- *
- */
 /**
  * @author Felix Neutatz
  *
@@ -737,6 +727,22 @@ public class WekaMagic {
 	 * @throws Exception
 	 */
 	public static Instances mergeInstancesBy(Instances a, Instances b, String AttributeName) throws Exception{
+		
+		//prevent null pointer exceptions when one or more of the merging sets are null
+		if(a == null){
+			if(b == null){ //both are null
+				return null;
+			}
+			else{ //only a is null
+				return b;
+			}
+		}
+		else{
+			if(b==null){ //only b is null
+				return a;
+			}
+		}
+		
 		Instances merged = new Instances(a);
 		Instances a_new,b_new;
 		int i,o,u;
@@ -788,11 +794,100 @@ public class WekaMagic {
 		//merged.deleteAttributeAt(merged.attribute(AttributeName).index());
 		merged.deleteAttributeAt(merged.attribute("bfile").index());
 		
-		if(merged.attribute("class") != null){
-			merged.setClass(merged.attribute("class"));
-		}else{
-			setClassIndex(merged);
+		setClassIndex(merged);
+		
+		/*
+		//if the attribute only has one value -> this column doesn't make any sense at all
+		for(i=0;i<merged.numAttributes();i++){
+			if(merged.numDistinctValues(i) == 1){
+				merged.deleteAttributeAt(i);
+			}
 		}
+		*/
+		
+		
+		return merged;
+	}
+	
+	
+public static Instances fastmergeInstancesBy(Instances a, Instances b, String AttributeName) throws Exception{
+		
+		//prevent null pointer exceptions when one or more of the merging sets are null
+		if(a == null){
+			if(b == null){ //both are null
+				return null;
+			}
+			else{ //only a is null
+				return b;
+			}
+		}
+		else{
+			if(b==null){ //only b is null
+				return a;
+			}
+		}
+		
+		Instances merged = null;
+		Instances a_new,b_new;
+		int i,u,o;
+		Attribute akey=null,bkey=null;
+		
+		
+		if(a.numAttributes()>=b.numAttributes()){
+			a_new = new Instances(a);
+			b_new = new Instances(b);
+		}else{
+			a_new = new Instances(b);
+			b_new = new Instances(a);
+		}
+		
+		akey = a_new.attribute(AttributeName);
+		bkey = b_new.attribute(AttributeName);
+		
+		b_new.renameAttribute(bkey, "bfile");
+		
+		
+		for(i=0;i<b_new.numAttributes();i++){
+			a_new.insertAttributeAt(b_new.attribute(i), a_new.numAttributes());
+		}
+		
+		a_new.sort(akey);
+		b_new.sort(bkey);
+		//System.out.println("attributes were added - total: " + a_new.numAttributes());
+		
+		
+		for(i=0;i<a_new.size();i++){
+			Boolean found = false;
+			for(o=0;o<b_new.size();o++){
+				if(a_new.get(i).stringValue(akey).equals(b_new.get(o).stringValue(b_new.attribute("bfile")))){
+					for(u=0;u<b_new.numAttributes();u++){
+						if(b_new.attribute(u).isNominal() || b_new.attribute(u).isString()){
+							a_new.get(i).setValue(a_new.attribute(b_new.attribute(u).name()),
+								b_new.get(o).stringValue(b_new.attribute(b_new.attribute(u).name())));
+						}else{
+							a_new.get(i).setValue(a_new.attribute(b_new.attribute(u).name()),
+									b_new.get(o).value(b_new.attribute(b_new.attribute(u).name())));
+						}
+					}
+					found = true;
+					b_new.remove(o);
+					break;
+				}
+			}
+			if(!found){
+				System.out.println("One file id is only present in one set: " + a_new.get(i).stringValue(akey));
+				throw new Exception();
+			}
+			//System.out.println("cur: " + (i+1) + ":" + a_new.size());
+		}	
+		
+		merged = a_new;
+		
+		//merged.deleteAttributeAt(merged.attribute(AttributeName).index());
+		merged.deleteAttributeAt(merged.attribute("bfile").index());
+		
+		setClassIndex(merged);
+		
 		/*
 		//if the attribute only has one value -> this column doesn't make any sense at all
 		for(i=0;i<merged.numAttributes();i++){
@@ -1240,7 +1335,7 @@ public class WekaMagic {
 	 * @throws Exception
 	 */
 	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection) throws Exception {
-		return WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, false);
+		return WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, false,-1);
 	}
 	
 	/**
@@ -1249,10 +1344,11 @@ public class WekaMagic {
 	 * @param sets Datasets, train - dev test
 	 * @param withAttributeSelection If using attribute selection
 	 * @param isText If feature generation is necessary
+	 * @param maxThreads 
 	 * @return Results of each loop iteration (test)
 	 * @throws Exception
 	 */
-	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText) throws Exception {
+	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int maxThreads) throws Exception {
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
 		double stdRidge = 0.00000001; //10^-8
@@ -1281,10 +1377,17 @@ public class WekaMagic {
 				
 		System.out.println("Running tests for train, dev and test set...");
 		
-		int cores = Runtime.getRuntime().availableProcessors();
-		System.out.println("Number of cores: " + cores);
+		int nrThreads = 1;
 		
-		MultiWeka [] threads = new MultiWeka[cores];
+		if(maxThreads <= 0 ){
+			nrThreads = Runtime.getRuntime().availableProcessors();
+			System.out.println("Number of cores: " + nrThreads);
+		}else{
+			nrThreads = maxThreads;
+			System.out.println("Running " + nrThreads + " Threads");
+		}
+		
+		MultiWeka [] threads = new MultiWeka[nrThreads];
 		
 		//Iterate through different ridge values
 		int uMax = 15;
@@ -1299,11 +1402,11 @@ public class WekaMagic {
 				currentRidge = stdRidge * (Math.pow(10, u));
 				
 				// Start all threads
-				threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,new Double[]{currentRidge},threshold.get(i),ClassifierE.LOGISTIC.getValue()); 
-				threads[count%cores].start();
+				threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,new Double[]{currentRidge},threshold.get(i),ClassifierE.LOGISTIC.getValue()); 
+				threads[count%nrThreads].start();
 				
 				// If all threads are up and running
-				if(count % cores == cores-1 || count == maxIter - 1){
+				if(count % nrThreads == nrThreads-1 || count == maxIter - 1){
 					for(MultiWeka r: threads){
 						r.join();
 						values.add(r.getResult());
@@ -1323,10 +1426,11 @@ public class WekaMagic {
 	 * @param withAttributeSelection If using attribute selection
 	 * @param isText If feature generation is necessary
 	 * @param kernelType - int number of Kernel type defined in team2014.weka.svm
+	 * @param maxThreads 
 	 * @return Results of each loop iteration (test)
 	 * @throws Exception
 	 */
-	public static List<List<Double>> runTestUARIS2011SVMThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int kernelType) throws Exception {
+	public static List<List<Double>> runTestUARIS2011SVMThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int kernelType, int maxThreads) throws Exception {
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
 		ArrayList<Double> threshold = new ArrayList<Double>();
@@ -1380,10 +1484,17 @@ public class WekaMagic {
 				
 		System.out.println("Running tests for train, dev and test set...");
 		
-		int cores = Runtime.getRuntime().availableProcessors();
-		System.out.println("Number of cores: " + cores);
+		int nrThreads=1;
 		
-		MultiWeka [] threads = new MultiWeka[cores];
+		if(maxThreads <= 0){
+			nrThreads = Runtime.getRuntime().availableProcessors();
+			System.out.println("Number of cores: " + nrThreads);
+		}else{
+			nrThreads = maxThreads;
+			System.out.println("Running " + nrThreads + " Threads");
+		}
+		
+		MultiWeka [] threads = new MultiWeka[nrThreads];
 		
 		int count = 0;
 		
@@ -1397,12 +1508,12 @@ public class WekaMagic {
 					currentC = Cval.get(w);	// range of C
 					
 					// Start all threads
-					threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
+					threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
 															new Double[]{currentC, Gammaval.get(u)},threshold.get(i),ClassifierE.SVM.getValue()); 
-					threads[count%cores].start();
+					threads[count%nrThreads].start();
 					
 					// If all threads are up and running
-					if(count % cores == cores-1 || count == maxIter - 1){
+					if(count % nrThreads == nrThreads-1 || count == maxIter - 1){
 						for(MultiWeka r: threads){
 							r.join();
 							values.add(r.getResult());
