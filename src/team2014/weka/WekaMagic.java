@@ -293,6 +293,9 @@ public class WekaMagic {
 
 		if (Stemming) {
 			SnowballStemmer st = new SnowballStemmer();
+			do{
+				//wait
+			}while(!st.stemmerTipText().contains("german"));
 			st.setStemmer("german");
 			filter.setStemmer(st);
 		}
@@ -1128,6 +1131,8 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		}
 		
 		sets1 = applyFilters(sets,filters);
+		
+		System.out.println("Number of attributes: " + sets1[0].numAttributes());
 		
 
 		MyClassificationOutput currentResult = null;
