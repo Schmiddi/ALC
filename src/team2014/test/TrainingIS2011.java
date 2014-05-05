@@ -68,11 +68,8 @@ public class TrainingIS2011 {
 				//delete all tongue twisters in the Interspeech 2011 set
 				
 				Instances [] is11wott = WekaMagic.deleteFromSets(sets, notInSets, s_key);
-				System.out.println("train size: " + is11wott[0].size());
-				System.out.println("dev size: " + is11wott[1].size());
-				System.out.println("test size: " + is11wott[2].size());
-					
 				
+				System.out.println();
 				for(int i=0;i<3;i++){
 					SpeakerSet speakerData = WekaMagic.matchSpeakerToInstances(speakerTable, is11wott[i], s_key);
 				
