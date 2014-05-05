@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -294,7 +295,7 @@ public class WekaMagic {
 		if (Stemming) {
 			SnowballStemmer st = new SnowballStemmer();
 			do{
-				//wait
+				//wait until the German stemmer is initialized
 			}while(!st.stemmerTipText().contains("german"));
 			st.setStemmer("german");
 			filter.setStemmer(st);
