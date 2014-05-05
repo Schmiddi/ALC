@@ -1,6 +1,11 @@
 package team2014.test;
+import java.util.ArrayList;
+
 import team2014.weka.CrossValidationOutput;
 import team2014.weka.WekaMagic;
+import team2014.weka.speaker.Speaker;
+import team2014.weka.speaker.SpeakerSamples;
+import team2014.weka.speaker.SpeakerSet;
 import weka.core.Instances;
 
 
@@ -13,11 +18,15 @@ public class TrainingIS2011 {
 			
 			String s_key="file";
 			
+			String [] name ={ "training", "dev", "test" };
+			
 			try {
 				Instances data = null;
 				
 				String arff_dir = args[0];
 				String csv_dir = WekaMagic.getParent(arff_dir);
+				
+				String speakerTable = args[2];
 				
 				//Instances sound = WekaMagic.soundArffToInstances(arff_dir);		
 				Instances text = WekaMagic.textCSVToInstances(csv_dir + "output.csv",s_key);
@@ -31,13 +40,19 @@ public class TrainingIS2011 {
 				Instances dev   = sets[1];
 				Instances test  = sets[2];
 				
-				System.out.println("train size: " + train.size());
-				System.out.println("dev size: " + dev.size());
-				System.out.println("test size: " + test.size());
 				
 				
 				//difference between all instances and the instances selected by interspeech 2011
 				sets = WekaMagic.getInterspeech2011SetsWithFile(args[1], text, s_key);
+
+				for(int i=0;i<3;i++){
+					SpeakerSet speakerData = WekaMagic.matchSpeakerToInstances(speakerTable, sets[i], s_key);
+				
+					System.out.println("Details on " + name[i] + " set in the original version");
+					speakerData.printInfo();
+					System.out.println();
+				}
+				System.out.println();
 				
 				Instances notInSets = WekaMagic.getOutOfSets(sets, text, s_key);				
 				//System.out.println("out of interspeech sets - size: " + notInSets.size());
@@ -56,6 +71,17 @@ public class TrainingIS2011 {
 				System.out.println("train size: " + is11wott[0].size());
 				System.out.println("dev size: " + is11wott[1].size());
 				System.out.println("test size: " + is11wott[2].size());
+					
+				
+				for(int i=0;i<3;i++){
+					SpeakerSet speakerData = WekaMagic.matchSpeakerToInstances(speakerTable, is11wott[i], s_key);
+				
+					System.out.println("Details on " + name[i] + "set without tongue twisters:");
+					speakerData.printInfo();
+					System.out.println();
+				}
+				System.out.println();
+				
 				
 				
 			} catch (Exception e) {
