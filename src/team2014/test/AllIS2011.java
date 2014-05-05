@@ -215,6 +215,7 @@ public class AllIS2011 {
 			}
 						
 			
+			System.out.println("Total number of Instances: " + (sets[0].size() + sets[1].size() + sets[2].size()));
 			
 			List<List<Double>> results = null;
 			if(logistic){
