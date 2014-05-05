@@ -65,6 +65,10 @@ public class AllIS2011 {
 			System.out.println("-wott <path>, -without_tongue_twisters <path>");
 			System.out.println("Example: -wott /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/");
 			System.out.println("Focus on ending with a file separator!\n");
+				
+			System.out.println("\tDo not exclude the tongue twisters from the test set");
+			System.out.println("\ttwtt, test_with_tongue_twisters");
+			System.out.println("\tDefault: false");
 			
 			System.out.println("Use attribute/feature selection");
 			System.out.println("attr, attribute_selection (default: not used)\n");
@@ -166,7 +170,9 @@ public class AllIS2011 {
 			if(Utils.isFlag(new String[]{"-wott","-without_tongue_twisters"},args))
 			{
 				String dir_wott = Utils.getFlag(new String[]{"-wott","-without_tongue_twisters"},args);
-				sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott);
+				Boolean applyOnTest = !Utils.isFlag(new String[]{"twtt","test_with_tongue_twisters"},args);
+				
+				sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott, applyOnTest);
 			}else{
 				sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
 			}

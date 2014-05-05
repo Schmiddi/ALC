@@ -15,7 +15,10 @@ import java.util.Random;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
+import team2014.weka.speaker.Sample;
 import team2014.weka.speaker.Speaker;
+import team2014.weka.speaker.SpeakerSamples;
+import team2014.weka.speaker.SpeakerSet;
 import team2014.weka.svm.KernelType;
 
 import weka.core.stemmers.SnowballStemmer;
@@ -2243,9 +2246,42 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		
 		return setsWO;
 	}
+	
+	public static SpeakerSet matchSpeakerToInstances(String speakerTable, Instances data, String fileAttribute) throws IOException{
+		ArrayList<Speaker> speakers = WekaMagic.loadSpeakerInfo(speakerTable);
+		
+		Attribute key = data.attribute(fileAttribute);
+		
+		ArrayList<SpeakerSamples> table_speaker_samples = new ArrayList<SpeakerSamples>();
+	    for(int i=0;i<data.size();i++){
+	    	Sample current = new Sample(data.get(i),key);
+	    	
+	    	int found = 0;
+	 		for(int l=0;l<table_speaker_samples.size();l++){
+	    		if( current.getUser_id() == table_speaker_samples.get(l).getSpeaker().getId()){
+	    			table_speaker_samples.get(l).addFile(current);
+	    			found = 1;
+	    			break;
+	    		}
+    		}
+	    	if(found == 0){
+		    	for(int u=0;u<speakers.size();u++){
+		    		if( current.getUser_id() == speakers.get(u).getId()){
+		    			table_speaker_samples.add(new SpeakerSamples(speakers.get(u),current));
+		    			found = 1;
+		    			break;
+		    		}
+		    	}
+	    	}
+	    	if(found==0){
+	    		System.out.println("No fitting speaker found for: \"" + data.get(i).stringValue(key) + "\"");
+	    	}
+	    }
+	    return new SpeakerSet(table_speaker_samples);
+	}
 
 	public static Instances[] getInterspeech11wott(String dirInterspeech,
-			Instances data, String s_key, String dir_wott) throws Exception {
+			Instances data, String s_key, String dir_wott, Boolean applyOnTest) throws Exception {
 		
 		Instances [] sets = WekaMagic.getInterspeech2011SetsWithFile(dirInterspeech, data, s_key);
 		
@@ -2261,6 +2297,12 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		//delete corresponding file column
 		for(int i=0;i<is11wott.length;i++){
 			is11wott[i].deleteAttributeAt(is11wott[i].attribute(s_key).index());
+		}
+		
+		//if the tongue twisters in the test set should stay:
+		if(!applyOnTest){
+			sets[2].deleteAttributeAt(sets[2].attribute(s_key).index());
+			is11wott[2] = sets[2];
 		}
 		
 		return is11wott;

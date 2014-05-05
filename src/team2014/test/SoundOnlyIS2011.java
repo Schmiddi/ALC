@@ -68,7 +68,7 @@ public class SoundOnlyIS2011 {
 			}
 			
 			if(wott){
-				sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott);
+				sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott,true);
 			}else{
 				sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
 			}
