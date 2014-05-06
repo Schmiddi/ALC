@@ -1374,34 +1374,12 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		threshold.add(0.0);
 		
 		if (withAttributeSelection) {
-			threshold.add(0.00000001);
-			threshold.add(0.0001);
-			threshold.add(0.0003);
-			threshold.add(0.0006);
-			threshold.add(0.001);
-			threshold.add(0.002);
-			threshold.add(0.0025);
-			threshold.add(0.0030);
-			threshold.add(0.0035);
-			threshold.add(0.004);
-			threshold.add(0.005);
-			threshold.add(0.006);
-			threshold.add(0.007);
-			threshold.add(0.008);
-			threshold.add(0.01);
+			addThreshold(threshold);
 		}
 				
 		System.out.println("Running tests for train, dev and test set...");
 		
-		int nrThreads = 1;
-		
-		if(maxThreads <= 0 ){
-			nrThreads = Runtime.getRuntime().availableProcessors();
-			System.out.println("Number of cores: " + nrThreads);
-		}else{
-			nrThreads = maxThreads;
-			System.out.println("Running " + nrThreads + " Threads");
-		}
+		int nrThreads=getNumberOfThreads(maxThreads);
 		
 		MultiWeka [] threads = new MultiWeka[nrThreads];
 		
@@ -1453,21 +1431,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		threshold.add(0.0);
 		
 		if (withAttributeSelection) {
-			threshold.add(0.00000001);
-			threshold.add(0.0001);
-			threshold.add(0.0003);
-			threshold.add(0.0006);
-			threshold.add(0.001);
-			threshold.add(0.002);
-			threshold.add(0.0025);
-			threshold.add(0.0030);
-			threshold.add(0.0035);
-			threshold.add(0.004);
-			threshold.add(0.005);
-			threshold.add(0.006);
-			threshold.add(0.007);
-			threshold.add(0.008);
-			threshold.add(0.01);
+			addThreshold(threshold);
 		}
 		
 		ArrayList<Double> Cval = new ArrayList<Double>();
@@ -1501,15 +1465,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 				
 		System.out.println("Running tests for train, dev and test set...");
 		
-		int nrThreads=1;
-		
-		if(maxThreads <= 0){
-			nrThreads = Runtime.getRuntime().availableProcessors();
-			System.out.println("Number of cores: " + nrThreads);
-		}else{
-			nrThreads = maxThreads;
-			System.out.println("Running " + nrThreads + " Threads");
-		}
+		int nrThreads=getNumberOfThreads(maxThreads);
 		
 		MultiWeka [] threads = new MultiWeka[nrThreads];
 		
@@ -2342,6 +2298,36 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		
 		return is11wott;
 	}
+	
+	public static void addThreshold(ArrayList<Double> threshold){
+		threshold.add(0.00000001);
+		threshold.add(0.0001);
+		threshold.add(0.0003);
+		threshold.add(0.0006);
+		threshold.add(0.001);
+		threshold.add(0.002);
+		threshold.add(0.0025);
+		threshold.add(0.0030);
+		threshold.add(0.0035);
+		threshold.add(0.004);
+		threshold.add(0.005);
+		threshold.add(0.006);
+		threshold.add(0.007);
+		threshold.add(0.008);
+		threshold.add(0.01);
+	}
+	
+	public static int getNumberOfThreads(int maxThreads){
+		int nrThreads=1;
+		if(maxThreads <= 0){
+			nrThreads = Runtime.getRuntime().availableProcessors();
+			System.out.println("Number of cores: " + nrThreads);
+		}else{
+			nrThreads = maxThreads;
+			System.out.println("Running " + nrThreads + " Threads");
+		}
+		return nrThreads;
+	}
 
 	public static List<List<Double>> runTestUARIS2011KNNThreads(
 			Instances[] sets, Boolean withAttributeSelection, Boolean isText,
@@ -2353,21 +2339,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		threshold.add(0.0);
 		
 		if (withAttributeSelection) {
-			threshold.add(0.00000001);
-			threshold.add(0.0001);
-			threshold.add(0.0003);
-			threshold.add(0.0006);
-			threshold.add(0.001);
-			threshold.add(0.002);
-			threshold.add(0.0025);
-			threshold.add(0.0030);
-			threshold.add(0.0035);
-			threshold.add(0.004);
-			threshold.add(0.005);
-			threshold.add(0.006);
-			threshold.add(0.007);
-			threshold.add(0.008);
-			threshold.add(0.01);
+			addThreshold(threshold);
 		}
 		
 		ArrayList<Integer> Kval = new ArrayList<Integer>();
@@ -2382,15 +2354,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		System.out.println("Running tests for train, dev and test set...");
 		
 		double currentK;
-		int nrThreads=1;
-		
-		if(maxThreads <= 0){
-			nrThreads = Runtime.getRuntime().availableProcessors();
-			System.out.println("Number of cores: " + nrThreads);
-		}else{
-			nrThreads = maxThreads;
-			System.out.println("Running " + nrThreads + " Threads");
-		}
+		int nrThreads=getNumberOfThreads(maxThreads);
 		
 		MultiWeka [] threads = new MultiWeka[nrThreads];
 		
