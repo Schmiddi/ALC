@@ -41,6 +41,7 @@ import weka.core.Attribute;
 import weka.classifiers.Classifier;
 //import wlsvm.WLSVM;
 import weka.classifiers.functions.LibSVM;
+import weka.classifiers.lazy.IBk;
 import weka.filters.unsupervised.attribute.Normalize;
 import org.languagetool.JLanguageTool;
 import org.languagetool.rules.RuleMatch;
@@ -1147,6 +1148,9 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 			case 2: //SVM
 					currentResult = WekaMagic.runSVM(sets1[SetType.TRAIN.ordinal()], parameters[0], parameters[1]);
 					break;
+			case 3: //KNN
+					currentResult = WekaMagic.runKNN(sets1[SetType.TRAIN.ordinal()], parameters[0].intValue());
+					break;
 		}
 		
 		for(int i=0;i<sets1.length;i++){
@@ -1170,6 +1174,9 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 					break;
 			case 2: //SVM
 					currentResult = WekaMagic.runSVM(sets2[0], parameters[0], parameters[1]);
+					break;
+			case 3: //KNN
+					currentResult = WekaMagic.runKNN(sets2[0], parameters[0].intValue());
 					break;
 		}
 		
@@ -1942,6 +1949,33 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		return new MyClassificationOutput(svm, eval, options, elapsedTime);
 	}
 	
+	public static MyClassificationOutput runKNN(Instances train, int k)
+	throws Exception {
+
+		IBk knn = new IBk();
+		long elapsedTime;
+		Evaluation eval = null;
+		String options = "KNN: k = " + k;
+		
+		knn.setKNN(k);
+		
+		//build classifier
+		long startTime = System.currentTimeMillis();
+		if(train != null){
+			knn.buildClassifier(train);
+		}
+		long stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		
+		//evaluate how good it performes on the training set
+		if(train != null){
+			eval = new Evaluation(train);
+			eval.evaluateModel(knn,train);
+		}
+				
+		return new MyClassificationOutput(knn, eval, options, elapsedTime);
+	}
+	
 	
 	/**
 	 * translate umlauts into real format
@@ -2307,6 +2341,86 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		}
 		
 		return is11wott;
+	}
+
+	public static List<List<Double>> runTestUARIS2011KNNThreads(
+			Instances[] sets, Boolean withAttributeSelection, Boolean isText,
+			int maxThreads) throws InterruptedException {
+		
+		List<List<Double>> values = new ArrayList<List<Double>>();
+		
+		ArrayList<Double> threshold = new ArrayList<Double>();
+		threshold.add(0.0);
+		
+		if (withAttributeSelection) {
+			threshold.add(0.00000001);
+			threshold.add(0.0001);
+			threshold.add(0.0003);
+			threshold.add(0.0006);
+			threshold.add(0.001);
+			threshold.add(0.002);
+			threshold.add(0.0025);
+			threshold.add(0.0030);
+			threshold.add(0.0035);
+			threshold.add(0.004);
+			threshold.add(0.005);
+			threshold.add(0.006);
+			threshold.add(0.007);
+			threshold.add(0.008);
+			threshold.add(0.01);
+		}
+		
+		ArrayList<Integer> Kval = new ArrayList<Integer>();
+		
+		Kval.add(1);
+		Kval.add(3);
+		Kval.add(5);
+		Kval.add(7);
+		Kval.add(9);
+		Kval.add(11);
+		
+		System.out.println("Running tests for train, dev and test set...");
+		
+		double currentK;
+		int nrThreads=1;
+		
+		if(maxThreads <= 0){
+			nrThreads = Runtime.getRuntime().availableProcessors();
+			System.out.println("Number of cores: " + nrThreads);
+		}else{
+			nrThreads = maxThreads;
+			System.out.println("Running " + nrThreads + " Threads");
+		}
+		
+		MultiWeka [] threads = new MultiWeka[nrThreads];
+		
+		int count = 0;
+		
+		int wMax = Kval.size();
+		int maxIter = threshold.size() * wMax;
+		
+		for (int i=0; i<threshold.size(); i++) {		//iterating through Threshold values
+			for(int w=0; w<wMax; w++){  				//iterating through K values
+					
+				currentK = Kval.get(w);	// range of C
+				
+				// Start all threads
+				threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
+														new Double[]{currentK},threshold.get(i),ClassifierE.KNN.getValue()); 
+				threads[count%nrThreads].start();
+				
+				// If all threads are up and running
+				if(count % nrThreads == nrThreads-1 || count == maxIter - 1){
+					for(MultiWeka r: threads){
+						r.join();
+						values.add(r.getResult());
+					}
+				}			
+				count++;
+			}
+		}
+		
+		return values;
 	}
 
 	
