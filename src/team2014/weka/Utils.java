@@ -51,6 +51,8 @@ public class Utils {
 			}
 		}
 		
+		if(ret == null) return false;
+		
 		for(String val: values){
 			if(ret.equals(val)){
 				return true;
