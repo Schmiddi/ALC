@@ -92,9 +92,9 @@ public class TextIS2011 {
 			
 			List<List<Double>> results = null;
 			if(logistic){
-				results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, true);
+				results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, true, -1);
 			}else{
-				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, true, Kernel);
+				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, true, Kernel,-1);
 			}			
 
 			WekaMagic.saveResultIS2011(results, outputFolder, filenameExtension, "text", args, headerType);

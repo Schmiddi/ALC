@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +15,10 @@ import java.util.Random;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
+import team2014.weka.speaker.Sample;
 import team2014.weka.speaker.Speaker;
+import team2014.weka.speaker.SpeakerSamples;
+import team2014.weka.speaker.SpeakerSet;
 import team2014.weka.svm.KernelType;
 
 import weka.core.stemmers.SnowballStemmer;
@@ -42,16 +46,6 @@ import org.languagetool.JLanguageTool;
 import org.languagetool.rules.RuleMatch;
 import org.languagetool.language.*;
 
-
-/**
- * @author Felix Neutatz
- *
- */
-
-/**
- * @author Felix Neutatz
- *
- */
 /**
  * @author Felix Neutatz
  *
@@ -303,6 +297,9 @@ public class WekaMagic {
 
 		if (Stemming) {
 			SnowballStemmer st = new SnowballStemmer();
+			do{
+				//wait until the German stemmer is initialized
+			}while(!st.stemmerTipText().contains("german"));
 			st.setStemmer("german");
 			filter.setStemmer(st);
 		}
@@ -737,6 +734,22 @@ public class WekaMagic {
 	 * @throws Exception
 	 */
 	public static Instances mergeInstancesBy(Instances a, Instances b, String AttributeName) throws Exception{
+		
+		//prevent null pointer exceptions when one or more of the merging sets are null
+		if(a == null){
+			if(b == null){ //both are null
+				return null;
+			}
+			else{ //only a is null
+				return b;
+			}
+		}
+		else{
+			if(b==null){ //only b is null
+				return a;
+			}
+		}
+		
 		Instances merged = new Instances(a);
 		Instances a_new,b_new;
 		int i,o,u;
@@ -788,11 +801,100 @@ public class WekaMagic {
 		//merged.deleteAttributeAt(merged.attribute(AttributeName).index());
 		merged.deleteAttributeAt(merged.attribute("bfile").index());
 		
-		if(merged.attribute("class") != null){
-			merged.setClass(merged.attribute("class"));
-		}else{
-			setClassIndex(merged);
+		setClassIndex(merged);
+		
+		/*
+		//if the attribute only has one value -> this column doesn't make any sense at all
+		for(i=0;i<merged.numAttributes();i++){
+			if(merged.numDistinctValues(i) == 1){
+				merged.deleteAttributeAt(i);
+			}
 		}
+		*/
+		
+		
+		return merged;
+	}
+	
+	
+public static Instances fastmergeInstancesBy(Instances a, Instances b, String AttributeName) throws Exception{
+		
+		//prevent null pointer exceptions when one or more of the merging sets are null
+		if(a == null){
+			if(b == null){ //both are null
+				return null;
+			}
+			else{ //only a is null
+				return b;
+			}
+		}
+		else{
+			if(b==null){ //only b is null
+				return a;
+			}
+		}
+		
+		Instances merged = null;
+		Instances a_new,b_new;
+		int i,u,o;
+		Attribute akey=null,bkey=null;
+		
+		
+		if(a.numAttributes()>=b.numAttributes()){
+			a_new = new Instances(a);
+			b_new = new Instances(b);
+		}else{
+			a_new = new Instances(b);
+			b_new = new Instances(a);
+		}
+		
+		akey = a_new.attribute(AttributeName);
+		bkey = b_new.attribute(AttributeName);
+		
+		b_new.renameAttribute(bkey, "bfile");
+		
+		
+		for(i=0;i<b_new.numAttributes();i++){
+			a_new.insertAttributeAt(b_new.attribute(i), a_new.numAttributes());
+		}
+		
+		a_new.sort(akey);
+		b_new.sort(bkey);
+		//System.out.println("attributes were added - total: " + a_new.numAttributes());
+		
+		
+		for(i=0;i<a_new.size();i++){
+			Boolean found = false;
+			for(o=0;o<b_new.size();o++){
+				if(a_new.get(i).stringValue(akey).equals(b_new.get(o).stringValue(b_new.attribute("bfile")))){
+					for(u=0;u<b_new.numAttributes();u++){
+						if(b_new.attribute(u).isNominal() || b_new.attribute(u).isString()){
+							a_new.get(i).setValue(a_new.attribute(b_new.attribute(u).name()),
+								b_new.get(o).stringValue(b_new.attribute(b_new.attribute(u).name())));
+						}else{
+							a_new.get(i).setValue(a_new.attribute(b_new.attribute(u).name()),
+									b_new.get(o).value(b_new.attribute(b_new.attribute(u).name())));
+						}
+					}
+					found = true;
+					b_new.remove(o);
+					break;
+				}
+			}
+			if(!found){
+				System.out.println("One file id is only present in one set: " + a_new.get(i).stringValue(akey));
+				throw new Exception();
+			}
+			//System.out.println("cur: " + (i+1) + ":" + a_new.size());
+		}	
+		
+		merged = a_new;
+		
+		//merged.deleteAttributeAt(merged.attribute(AttributeName).index());
+		merged.deleteAttributeAt(merged.attribute("bfile").index());
+		
+		setClassIndex(merged);
+		
 		/*
 		//if the attribute only has one value -> this column doesn't make any sense at all
 		for(i=0;i<merged.numAttributes();i++){
@@ -1034,6 +1136,8 @@ public class WekaMagic {
 		
 		sets1 = applyFilters(sets,filters);
 		
+		System.out.println("Number of attributes: " + sets1[0].numAttributes());
+		
 
 		MyClassificationOutput currentResult = null;
 		switch(classifier){
@@ -1240,7 +1344,7 @@ public class WekaMagic {
 	 * @throws Exception
 	 */
 	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection) throws Exception {
-		return WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, false);
+		return WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, false,-1);
 	}
 	
 	/**
@@ -1249,10 +1353,11 @@ public class WekaMagic {
 	 * @param sets Datasets, train - dev test
 	 * @param withAttributeSelection If using attribute selection
 	 * @param isText If feature generation is necessary
+	 * @param maxThreads 
 	 * @return Results of each loop iteration (test)
 	 * @throws Exception
 	 */
-	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText) throws Exception {
+	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int maxThreads) throws Exception {
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
 		double stdRidge = 0.00000001; //10^-8
@@ -1281,10 +1386,17 @@ public class WekaMagic {
 				
 		System.out.println("Running tests for train, dev and test set...");
 		
-		int cores = Runtime.getRuntime().availableProcessors();
-		System.out.println("Number of cores: " + cores);
+		int nrThreads = 1;
 		
-		MultiWeka [] threads = new MultiWeka[cores];
+		if(maxThreads <= 0 ){
+			nrThreads = Runtime.getRuntime().availableProcessors();
+			System.out.println("Number of cores: " + nrThreads);
+		}else{
+			nrThreads = maxThreads;
+			System.out.println("Running " + nrThreads + " Threads");
+		}
+		
+		MultiWeka [] threads = new MultiWeka[nrThreads];
 		
 		//Iterate through different ridge values
 		int uMax = 15;
@@ -1299,11 +1411,11 @@ public class WekaMagic {
 				currentRidge = stdRidge * (Math.pow(10, u));
 				
 				// Start all threads
-				threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,new Double[]{currentRidge},threshold.get(i),ClassifierE.LOGISTIC.getValue()); 
-				threads[count%cores].start();
+				threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,new Double[]{currentRidge},threshold.get(i),ClassifierE.LOGISTIC.getValue()); 
+				threads[count%nrThreads].start();
 				
 				// If all threads are up and running
-				if(count % cores == cores-1 || count == maxIter - 1){
+				if(count % nrThreads == nrThreads-1 || count == maxIter - 1){
 					for(MultiWeka r: threads){
 						r.join();
 						values.add(r.getResult());
@@ -1323,10 +1435,11 @@ public class WekaMagic {
 	 * @param withAttributeSelection If using attribute selection
 	 * @param isText If feature generation is necessary
 	 * @param kernelType - int number of Kernel type defined in team2014.weka.svm
+	 * @param maxThreads 
 	 * @return Results of each loop iteration (test)
 	 * @throws Exception
 	 */
-	public static List<List<Double>> runTestUARIS2011SVMThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int kernelType) throws Exception {
+	public static List<List<Double>> runTestUARIS2011SVMThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int kernelType, int maxThreads) throws Exception {
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
 		ArrayList<Double> threshold = new ArrayList<Double>();
@@ -1352,8 +1465,6 @@ public class WekaMagic {
 		
 		ArrayList<Double> Cval = new ArrayList<Double>();
 		
-		Cval.add(0.00001);
-		Cval.add(0.0001);
 		Cval.add(0.0005);
 		Cval.add(0.001);
 		Cval.add(0.005);
@@ -1364,7 +1475,9 @@ public class WekaMagic {
 		Cval.add(0.06);
 		Cval.add(0.08);
 		Cval.add(0.1);
-		
+		Cval.add(0.2);
+		Cval.add(0.5);
+		Cval.add(1.0);
 		
 		ArrayList<Double> Gammaval = new ArrayList<Double>();
 		double currentC;
@@ -1380,10 +1493,17 @@ public class WekaMagic {
 				
 		System.out.println("Running tests for train, dev and test set...");
 		
-		int cores = Runtime.getRuntime().availableProcessors();
-		System.out.println("Number of cores: " + cores);
+		int nrThreads=1;
 		
-		MultiWeka [] threads = new MultiWeka[cores];
+		if(maxThreads <= 0){
+			nrThreads = Runtime.getRuntime().availableProcessors();
+			System.out.println("Number of cores: " + nrThreads);
+		}else{
+			nrThreads = maxThreads;
+			System.out.println("Running " + nrThreads + " Threads");
+		}
+		
+		MultiWeka [] threads = new MultiWeka[nrThreads];
 		
 		int count = 0;
 		
@@ -1397,12 +1517,12 @@ public class WekaMagic {
 					currentC = Cval.get(w);	// range of C
 					
 					// Start all threads
-					threads[count%cores] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
+					threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
 															new Double[]{currentC, Gammaval.get(u)},threshold.get(i),ClassifierE.SVM.getValue()); 
-					threads[count%cores].start();
+					threads[count%nrThreads].start();
 					
 					// If all threads are up and running
-					if(count % cores == cores-1 || count == maxIter - 1){
+					if(count % nrThreads == nrThreads-1 || count == maxIter - 1){
 						for(MultiWeka r: threads){
 							r.join();
 							values.add(r.getResult());
@@ -2078,8 +2198,6 @@ public class WekaMagic {
 			merged.addAll(sets[i]);
 		}
 		
-		System.out.println("size merged: " + merged.size());
-		
 		Instances a = null;
 		Instances b = null;
 		if(merged.size() > allInstances.size()){
@@ -2128,9 +2246,42 @@ public class WekaMagic {
 		
 		return setsWO;
 	}
+	
+	public static SpeakerSet matchSpeakerToInstances(String speakerTable, Instances data, String fileAttribute) throws IOException{
+		ArrayList<Speaker> speakers = WekaMagic.loadSpeakerInfo(speakerTable);
+		
+		Attribute key = data.attribute(fileAttribute);
+		
+		ArrayList<SpeakerSamples> table_speaker_samples = new ArrayList<SpeakerSamples>();
+	    for(int i=0;i<data.size();i++){
+	    	Sample current = new Sample(data.get(i),key);
+	    	
+	    	int found = 0;
+	 		for(int l=0;l<table_speaker_samples.size();l++){
+	    		if( current.getUser_id() == table_speaker_samples.get(l).getSpeaker().getId()){
+	    			table_speaker_samples.get(l).addFile(current);
+	    			found = 1;
+	    			break;
+	    		}
+    		}
+	    	if(found == 0){
+		    	for(int u=0;u<speakers.size();u++){
+		    		if( current.getUser_id() == speakers.get(u).getId()){
+		    			table_speaker_samples.add(new SpeakerSamples(speakers.get(u),current));
+		    			found = 1;
+		    			break;
+		    		}
+		    	}
+	    	}
+	    	if(found==0){
+	    		System.out.println("No fitting speaker found for: \"" + data.get(i).stringValue(key) + "\"");
+	    	}
+	    }
+	    return new SpeakerSet(table_speaker_samples);
+	}
 
 	public static Instances[] getInterspeech11wott(String dirInterspeech,
-			Instances data, String s_key, String dir_wott) throws Exception {
+			Instances data, String s_key, String dir_wott, Boolean applyOnTest) throws Exception {
 		
 		Instances [] sets = WekaMagic.getInterspeech2011SetsWithFile(dirInterspeech, data, s_key);
 		
@@ -2146,6 +2297,12 @@ public class WekaMagic {
 		//delete corresponding file column
 		for(int i=0;i<is11wott.length;i++){
 			is11wott[i].deleteAttributeAt(is11wott[i].attribute(s_key).index());
+		}
+		
+		//if the tongue twisters in the test set should stay:
+		if(!applyOnTest){
+			sets[2].deleteAttributeAt(sets[2].attribute(s_key).index());
+			is11wott[2] = sets[2];
 		}
 		
 		return is11wott;

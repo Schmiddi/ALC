@@ -68,7 +68,7 @@ public class SoundOnlyIS2011 {
 			}
 			
 			if(wott){
-				sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott);
+				sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott,true);
 			}else{
 				sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
 			}
@@ -92,7 +92,7 @@ public class SoundOnlyIS2011 {
 			if(logistic){
 				results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection);
 			}else{
-				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, false, Kernel);
+				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, false, Kernel,-1);
 			}
 			
 			WekaMagic.saveResultIS2011(results, outputFolder, filenameExtension, "sound", args, headerType);
