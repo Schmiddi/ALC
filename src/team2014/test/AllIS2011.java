@@ -4,10 +4,6 @@ import java.util.List;
 
 import weka.core.Instances;
 
-
-
-
-
 import team2014.weka.svm.KernelType;
 import team2014.weka.WekaMagic;
 import team2014.weka.Utils;
@@ -72,7 +68,7 @@ public class AllIS2011 {
 				
 			System.out.println("\tDo not exclude the tongue twisters from the test set");
 			System.out.println("\ttwtt, test_with_tongue_twisters");
-			System.out.println("\tDefault: false\n");
+			System.out.println("\tDefault: false");
 			
 			System.out.println("Use attribute/feature selection");
 			System.out.println("attr, attribute_selection (default: not used)\n");
@@ -116,6 +112,9 @@ public class AllIS2011 {
 		}
 		
 		
+		
+		
+		
 		if(args.length < 3){
 			System.out.println("Too few parameters");
 		}
@@ -147,6 +146,7 @@ public class AllIS2011 {
 				dataSound.setClassIndex(-1);
 				System.out.println("Sound features loaded.");
 			}		
+			
 			
 			// Merge datasets
 			System.out.println("Merge started!");
@@ -180,7 +180,6 @@ public class AllIS2011 {
 			//get classification algorithm configurations
             Boolean withAttributeSelection = false;			
 			Boolean logistic = false;
-
 			int Kernel = KernelType.LINEAR.getValue();
             String filenameExtension = "";
             String headerType = "";
@@ -200,14 +199,6 @@ public class AllIS2011 {
 									Kernel = KernelType.RBF.getValue();
 					}
 			}
-			
-			Instances[] sets;
-			
-			if(wott)
-				sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott);
-			else
-				sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
-			
 			
 			if(logistic){
 				filenameExtension += "logistic";
