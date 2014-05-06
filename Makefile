@@ -5,16 +5,99 @@ JARS_WEKA := $(HOMELIB)/jcommon-1.0.20.jar:$(HOMELIB)/commons-lang-2.6.jar:$(HOM
 JARS_TEST := $(HOME)bin
 JARS_ALL := $(JARS):$(JARS_TEST):$(JARS_WEKA)
 PATH_SOUND_WO_TT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/myIS13_ComParE
-PATH_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS13_ComParE
+PATH_CONFIG_13_TT_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS13_ComParE
 PATH_IS2011_SETS := /home/bas-alc/corpus/DOC/IS2011CHALLENGE
-PATH_SOUND_IS11 := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS11_speaker_state
-PATH_SET_WO_TT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/
+PATH_CONFIG_11_TT_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS11_speaker_state
+PATH_SET_WOTT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/
 XMX := -Xmx38g
 NOW := date +"%Y_%m_%d"
 OUTPUT_DIR := /home/alc/workspace/ALC/output
 
-# Build all targets of team2014
+#####################################
+##  Build all targets of team2014  ##
+#####################################
 all: clean andi wekaSpeaker wekaPlot wekaSVM weka test
+
+###################
+##   Run tests   ##
+###################
+all_tt_config13:
+	echo "all_tt_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) | ./log.sh
+
+all_wott_config13:
+	echo "all_wott_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) | ./log.sh
+
+all_wott_twtt_config13:
+	echo "all_wott_twtt_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) twtt | ./log.sh
+
+
+sound_tt_config13:
+	echo "sound_tt_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) | ./log.sh
+
+sound_wott_config13:
+	echo "sound_wott_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) | ./log.sh
+
+sound_wott_twtt_config13:
+	echo "sound_wott_twtt_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) twtt | ./log.sh
+
+
+grammar_tt_config13:
+	echo "grammar_tt_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 grammar -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) | ./log.sh
+
+grammar_wott_config13:
+	echo "grammar_wott_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 grammar -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) | ./log.sh
+
+grammar_wott_twtt_config13:
+	echo "grammar_wott_twtt_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 grammar -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) twtt | ./log.sh
+
+
+text_tt_config13:
+	echo "text_tt_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) | ./log.sh
+
+text_wott_config13:
+	echo "text_wott_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) | ./log.sh
+
+text_wott_twtt_config13:
+	echo "text_wott_twtt_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) twtt | ./log.sh
+
+## 2011 Configs
+
+all_tt_config11:
+	echo "all_tt_config11" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) | ./log.sh
+
+all_wott_config11:
+	echo "all_wott_config11" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) | ./log.sh
+
+all_wott_twtt_config11:
+	echo "all_wott_twtt_config11" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) twtt | ./log.sh
+
+
+sound_tt_config11:
+	echo "sound_tt_config11" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) | ./log.sh
+
+sound_wott_config11:
+	echo "sound_wott_config11" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) | ./log.sh
+
+sound_wott_twtt_config11:
+	echo "sound_wott_twtt_config11" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) twtt | ./log.sh
 
 
 #####################################
@@ -41,113 +124,6 @@ wekaPlot: src/team2014/weka/plot/*.java
 
 wekaSVM: src/team2014/weka/svm/*.java
 	javac -classpath $(JARS_ALL) -d bin src/team2014/weka/svm/*.java
-
-
-###################
-##   Run tests   ##
-###################
-runSOIS_attr_linear_is13:
-	echo "runSOIS_attr_linear_is11" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr" "linear"| ./log.sh
-
-runAllIS_wott_linear_is13:
-	echo "runAllIS_wott_linear_is13" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "linear" "wott" $(PATH_SET_WO_TT)| ./log.sh
-
-runSOIS_wott_linear_is13:
-	echo "runSOIS_wott_linear_is13" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "linear" "wott" $(PATH_SET_WO_TT)| ./log.sh
-
-runSOIS_attr_is11:
-	echo "runSOIS_attr_is11" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND_IS11) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr" "linear"| ./log.sh
-
-runSOIS_sound11:
-	echo "runSOIS_sound11" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND_IS11) $(PATH_IS2011_SETS) $(OUTPUT_DIR) | ./log.sh
-
-runAISwAttr:
-	echo "runAISwAttr" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr" | ./log.sh
-
-runAIS:
-	echo "runAIS" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) | ./log.sh
-
-runGISwAttr:
-	echo "runGISwAttr" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr" | ./log.sh
-
-runGIS:
-	echo "runGIS" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) | ./log.sh
-
-runTISwAttr:
-	echo "runTISwAttr" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) | ./log.sh
-
-runTIS:
-	echo "runTIS" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr" | ./log.sh
-	
-runSOISwAttr:
-	echo "runSOISwAttr" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) "attr" | ./log.sh
-
-runSOIS:
-	echo "runSOIS" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyIS2011 $(PATH_SOUND) $(PATH_IS2011_SETS) $(OUTPUT_DIR) $(arg)| ./log.sh
-
-runSASwoTT:
-	echo "runSASwoTT" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundAttributeSelection $(PATH_SOUND_WO_TT) | ./log.sh
-
-runSAS:
-	echo "runSAS" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundAttributeSelection $(PATH_SOUND) | ./log.sh
-
-runGASwoTT:
-	echo "runGASwoTT" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarAttributeSelection $(PATH_SOUND_WO_TT) | ./log.sh
-
-runGAS:
-	echo "runGAS" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.GrammarAttributeSelection $(PATH_SOUND) | ./log.sh
-
-runSCV:
-	echo "runSCV" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyCrossValidation $(PATH_SOUND) | ./log.sh
-
-runSCVwoTT:
-	echo "runSCVwoTT" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.SoundOnlyCrossValidation $(PATH_SOUND_WO_TT) | ./log.sh
-
-runTAS:
-	echo "runTAS" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND) | ./log.sh
-
-runTASwoTT:
-	echo "runTASwoTT" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND_WO_TT) | ./log.sh
-
-runTASfalse:
-	echo "runTASfalse" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND) "false" | ./log.sh
-
-runTASfalsewoTT:
-	echo "runTASfalsewoTT" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextAttributeSelection $(PATH_SOUND_WO_TT) "false" | ./log.sh
-
-runTCV:
-	echo "runTCV" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextCrossValidation $(PATH_SOUND) | ./log.sh
-
-runTCVwoTT:
-	echo "runTCVwoTT" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.TextCrossValidation $(PATH_SOUND_WO_TT) | ./log.sh
-
-my:
-	echo $(NOW)
 
 
 ###################
