@@ -1478,6 +1478,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		Cval.add(0.2);
 		Cval.add(0.5);
 		Cval.add(1.0);
+		Cval.add(2.0);
 		
 		ArrayList<Double> Gammaval = new ArrayList<Double>();
 		double currentC;

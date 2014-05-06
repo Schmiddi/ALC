@@ -68,7 +68,7 @@ public class AllIS2011 {
 				
 			System.out.println("\tDo not exclude the tongue twisters from the test set");
 			System.out.println("\ttwtt, test_with_tongue_twisters");
-			System.out.println("\tDefault: false");
+			System.out.println("\tDefault: false\n");
 			
 			System.out.println("Use attribute/feature selection");
 			System.out.println("attr, attribute_selection (default: not used)\n");
