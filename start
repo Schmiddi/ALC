@@ -1,1 +1,0 @@
- /usr/lib/jvm/java-6-openjdk-amd64/bin/java -Xmx37000m -Dfile.encoding=UTF-8 -classpath /home/alc/workspace/ALC/bin:/home/alc/workspace/ALC/lib/javacsv.jar:/home/alc/workspace/ALC/lib/snowball-20051019.jar:/home/alc/workspace/ALC/lib/jfreechart-1.0.16.jar:/home/alc/workspace/ALC/lib/jcommon-1.0.20.jar:/home/alc/workspace/ALC/lib/weka.jar Sample
