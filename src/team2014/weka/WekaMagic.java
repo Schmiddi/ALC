@@ -1158,6 +1158,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		}
 		
 		//create model on test + training set
+		//here we have to load the training set which was produced by second language model
 		Instances trainDev = new Instances(sets[SetType.TRAIN.ordinal()]);
 		trainDev.addAll(sets[SetType.DEV.ordinal()]);
 		
@@ -1436,12 +1437,13 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		
 		ArrayList<Double> Cval = new ArrayList<Double>();
 		
+		/*
 		Cval.add(0.0005);
 		Cval.add(0.001);
 		Cval.add(0.005);
 		Cval.add(0.01);
 		Cval.add(0.02);
-		Cval.add(0.03); //probably best
+		Cval.add(0.03);
 		Cval.add(0.04);
 		Cval.add(0.06);
 		Cval.add(0.08);
@@ -1450,6 +1452,16 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		Cval.add(0.5);
 		Cval.add(1.0);
 		Cval.add(2.0);
+		*/
+		
+		Cval.add(0.0075);
+		Cval.add(0.009);
+		Cval.add(0.01);
+		Cval.add(0.011);
+		Cval.add(0.0125);
+		Cval.add(0.015);
+		Cval.add(0.0175);
+		Cval.add(0.019);
 		
 		ArrayList<Double> Gammaval = new ArrayList<Double>();
 		double currentC;
