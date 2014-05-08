@@ -68,7 +68,7 @@ public class AllIS2011 {
 				
 			System.out.println("\tDo not exclude the tongue twisters from the test set");
 			System.out.println("\ttwtt, test_with_tongue_twisters");
-			System.out.println("\tDefault: false");
+			System.out.println("\tDefault: false\n");
 			
 			System.out.println("Use attribute/feature selection");
 			System.out.println("attr, attribute_selection (default: not used)\n");
@@ -78,6 +78,9 @@ public class AllIS2011 {
 			
 			System.out.println("\tRun logistic regression");
 			System.out.println("\t-m log, -m logistic_regression\n");	
+			
+			System.out.println("\tRun k-nearest neighbors");
+			System.out.println("\t-m knn, -m k_nearest_neighbors\n");	
 			
 			System.out.println("\tRun support vector machine (default algorithm)");
 			System.out.println("\t-m svm, -m support_vector_machine\n");
@@ -179,7 +182,7 @@ public class AllIS2011 {
 			
 			//get classification algorithm configurations
             Boolean withAttributeSelection = false;			
-			Boolean logistic = false;
+			String method = null;
 			int Kernel = KernelType.LINEAR.getValue();
             String filenameExtension = "";
             String headerType = "";
@@ -189,9 +192,11 @@ public class AllIS2011 {
 							withAttributeSelection = true;	
 					
 					if(Utils.isFlag(new String[]{"-m","-method"},new String[]{"log","logistic_regression"},args))	
-							logistic = true;
-					if(Utils.isFlag(new String[]{"-m","-method"},new String[]{"svm","support_vector_machine"},args) || logistic == false){	
-							logistic = false;
+							method = "log";
+					if(Utils.isFlag(new String[]{"-m","-method"},new String[]{"knn","k_nearest_neighbors"},args))	
+							method = "knn";
+					if(Utils.isFlag(new String[]{"-m","-method"},new String[]{"svm","support_vector_machine"},args) || method == null){	
+							method = "svm";
 							
 							if(Utils.isFlag(new String[]{"-k","-kernel"},new String[]{"lin","linear"},args))	
 									Kernel = KernelType.LINEAR.getValue();
@@ -200,9 +205,13 @@ public class AllIS2011 {
 					}
 			}
 			
-			if(logistic){
+			if(method.equals("log")){
 				filenameExtension += "logistic";
 				headerType = "logistic";
+			}
+			else if(method.equals("knn")){
+				filenameExtension += "knn";
+				headerType = "knn";
 			}
 			else{
 				filenameExtension += "svm";	
@@ -224,9 +233,14 @@ public class AllIS2011 {
 			System.out.println("Total number of Instances: " + (sets[0].size() + sets[1].size() + sets[2].size()));
 			
 			List<List<Double>> results = null;
-			if(logistic){
+			
+			if(method.equals("log")){
 				results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, text, maxThreads);
-			}else{
+			}
+			else if(method.equals("knn")){
+				results = WekaMagic.runTestUARIS2011KNNThreads(sets, withAttributeSelection, text, maxThreads);
+			}
+			else{
 				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, text, Kernel, maxThreads);
 			}
 			
