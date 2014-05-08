@@ -72,6 +72,10 @@ text_wott_twtt_config13:
 	echo "text_wott_twtt_config13" | ./log.sh
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) twtt | ./log.sh
 
+sound_text_wott_config13:
+	echo "sound_text_wott_config13" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound text -config $(PATH_CONFIG_13_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) | ./log.sh
+
 ## 2011 Configs
 
 all_tt_config11:
