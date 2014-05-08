@@ -40,19 +40,19 @@ public class MultiWeka implements Runnable {
 			
 			if(isText){
 				// perfect configuration
-				Boolean Ngram = true; //default:true
+				Boolean Ngram = true; //default:true - best: true
 				int ngram_min = 1;
 				int ngram_max = 3;
-				Boolean LowerCase = true; //default:true
-				Boolean IDFTransform = false; //default:false
-				Boolean TFTransform = false; //default:false
-				Boolean Stopword = true; //default:true
+				Boolean LowerCase = true; //default:true - best: true
+				Boolean IDFTransform = true; //default:false - best: true
+				Boolean TFTransform = true; //default:false - best: true
+				Boolean Stopword = true; //default:true - best: true
 				String list1 = "resources\\germanST.txt";
 				int wordsToKeep = 1000000;
-				Boolean NormalizeDocLength = true; //default:true
-				Boolean OutputWordCounts = true; //default:true
-				Boolean Stemming = true; 		//default:true - false performs better
-				int minTermFrequency = 2; //default:2
+				Boolean NormalizeDocLength = true; //default:true - best: true
+				Boolean OutputWordCounts = true; //default:true - best true
+				Boolean Stemming = false; 		//default:true - best: false
+				int minTermFrequency = 2; //default:2 - best: 2
 				try {
 					featuresGen = WekaMagic.generateFeatures(null, wordsToKeep, Ngram,
 							ngram_min, ngram_max, LowerCase, NormalizeDocLength, Stemming,
