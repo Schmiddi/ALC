@@ -59,13 +59,17 @@ public class AllIS2011 {
 			
 			System.out.println("Specify number of threads running parallel");
 			System.out.println("-mT <number>, -maxThreads <number>");
-			System.out.println("Default: -1 (use as many threads as cores)");
+			System.out.println("Default: -1 (use as many threads as cores)\n");
 			
 			System.out.println("Classify only instances without tongue twisters / name the folder which contains only arff files without tongue twisters");
 			System.out.println("-wott <path>, -without_tongue_twisters <path>");
 			System.out.println("Example: -wott /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/");
 			System.out.println("Focus on ending with a file separator!\n");
-				
+			
+			System.out.println("Classify only instances of a certain category");
+			System.out.println("-sc <file>, -select_category <file>");
+			System.out.println("Example: -sc /import/scratch/tjr/tjr40/sound/tests/separate_all/output_DP.csv\n");	
+			
 			System.out.println("\tDo not exclude the tongue twisters from the test set");
 			System.out.println("\ttwtt, test_with_tongue_twisters");
 			System.out.println("\tDefault: false\n");
@@ -170,14 +174,19 @@ public class AllIS2011 {
 			//get data set distribution
 			Instances[] sets = null;
 			
+			String category_file = null;
+			if(Utils.isFlag(new String[]{"-sc","-select_category"},args)){
+				category_file = Utils.getFlag(new String[]{"-sc","-select_category"},args);
+			}
+			
 			if(Utils.isFlag(new String[]{"-wott","-without_tongue_twisters"},args))
 			{
 				String dir_wott = Utils.getFlag(new String[]{"-wott","-without_tongue_twisters"},args);
 				Boolean applyOnTest = !Utils.isFlag(new String[]{"twtt","test_with_tongue_twisters"},args);
 				
-				sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott, applyOnTest);
+				sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott, applyOnTest, category_file);
 			}else{
-				sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
+				sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key, category_file);
 			}
 			
 			//get classification algorithm configurations
@@ -227,8 +236,7 @@ public class AllIS2011 {
 			int maxThreads = -1;
 			if(Utils.isFlag(new String[]{"-mT","-maxThreads"},args)){
 				maxThreads = Integer.parseInt(Utils.getFlag(new String[]{"-mT","-maxThreads"},args));
-			}
-						
+			}		
 			
 			System.out.println("Total number of Instances: " + (sets[0].size() + sets[1].size() + sets[2].size()));
 			

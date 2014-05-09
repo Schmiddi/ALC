@@ -2198,10 +2198,13 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		return sets;
 	}
 	
-	public static Instances[] getInterspeech2011Sets(String dir, Instances allInstances, String fileAttribute) throws Exception{
+	public static Instances[] getInterspeech2011Sets(String dir, Instances allInstances, String fileAttribute, String category_file) throws Exception{
 		Instances [] sets = new Instances [3];
 		
 		sets = getInterspeech2011SetsWithFile(dir, allInstances, fileAttribute);
+		
+		//filter by category if necessary
+		sets = getInterspeech11ByCategory(sets,fileAttribute,category_file);
 		
 		for(int i=0;i<sets.length;i++){
 			sets[i].deleteAttributeAt(sets[i].attribute(fileAttribute).index());
@@ -2300,7 +2303,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	}
 
 	public static Instances[] getInterspeech11wott(String dirInterspeech,
-			Instances data, String s_key, String dir_wott, Boolean applyOnTest) throws Exception {
+			Instances data, String s_key, String dir_wott, Boolean applyOnTest, String category_file) throws Exception {
 		
 		Instances [] sets = WekaMagic.getInterspeech2011SetsWithFile(dirInterspeech, data, s_key);
 		
@@ -2312,6 +2315,10 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		
 		//delete all tongue twisters in the Interspeech 2011 set
 		Instances [] is11wott = WekaMagic.deleteFromSets(sets, notInSets, s_key);
+		
+		//filter by category if necessary
+		is11wott = getInterspeech11ByCategory(is11wott,s_key,category_file);
+		
 		
 		//delete corresponding file column
 		for(int i=0;i<is11wott.length;i++){
@@ -2325,6 +2332,29 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		}
 		
 		return is11wott;
+	}
+	
+	
+	public static Instances[] getInterspeech11ByCategory(Instances[] sets, String s_key, String category_file) throws Exception {
+		
+		if(category_file == null) return sets;
+		
+		//difference between all instances and the category set 
+		Instances text_category = WekaMagic.textCSVToInstances(category_file,s_key);
+		
+		Instances data = new Instances(sets[0]);
+		data.addAll(sets[1]);
+		data.addAll(sets[2]);
+		
+		//get all instances which are not in the category set
+		Instances notInSets = WekaMagic.getOutOfSets(new Instances [] { text_category }, data, s_key);				
+		
+		
+		//delete all non category instances in the Interspeech 2011 set
+		Instances [] is11category = WekaMagic.deleteFromSets(sets, notInSets, s_key);
+		
+		
+		return is11category;
 	}
 	
 	public static void addThreshold(ArrayList<Double> threshold){

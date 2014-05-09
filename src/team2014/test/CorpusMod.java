@@ -32,7 +32,7 @@ public class CorpusMod {
 
 				data = WekaMagic.textCSVToInstances(csv_dir + "output.csv", "file");
 				
-				Instances[] sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key);
+				Instances[] sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key, null);
 
 				Instances train = sets[0];			
 				Instances filtered_train = WekaMagic.cleanCorpus(train, s_key);

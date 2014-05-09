@@ -34,7 +34,7 @@ public class TrainingIS2011 {
 				//data = WekaMagic.mergeInstancesBy(sound, text, s_key);
 				
 				System.out.println("whole data size: " + text.size());
-				Instances [] sets = WekaMagic.getInterspeech2011Sets(args[1], text, s_key);
+				Instances [] sets = WekaMagic.getInterspeech2011Sets(args[1], text, s_key, null);
 				
 				Instances train = sets[0];
 				Instances dev   = sets[1];
