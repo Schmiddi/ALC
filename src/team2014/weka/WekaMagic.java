@@ -1785,17 +1785,39 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	 */
 	public static Instances getSoundInstancesWithFile(String arffdir, String csv_file) throws Exception
 	{
-		Instances sound = WekaMagic.soundArffToInstances(arffdir);		  //get sound data
-		Instances text = WekaMagic.textCSVToInstances(csv_file,"file");   //get text data (with class)
+		//first check whether aggregated arff file exists
+		boolean isWindows = ((System.getProperty("os.name").contains("Windows"))) ? true : false;
+		String fileSep = isWindows ? "\\" : "/";
 		
-		Instances data = WekaMagic.mergeInstancesBy(sound, text, "file"); //merge text and sound data by using the key fileid
-				
-		//delete unnecessary attributes
-		data.deleteAttributeAt(data.attribute("text").index()); 		  //remove text attribute
-		//data.deleteAttributeAt(data.attribute("file").index());		//remove key(file id) attribute
-		//data.deleteAttributeAt(data.attribute("numeric_class").index());
-    	
-    	return data;
+		String allfolder = arffdir + fileSep + "all";	
+		String arfffile = allfolder + fileSep + "sound_all.arff";
+		File f = new File(arfffile);
+		
+		Instances data = null;
+		
+		if(f.exists()){
+			DataSource source = new DataSource(arfffile); //load ARFF file
+			data = source.getDataSet();
+			System.out.println("fast sound loader");
+		}
+		else{	
+			Instances sound = WekaMagic.soundArffToInstances(arffdir);		  //get sound data
+			Instances text = WekaMagic.textCSVToInstances(csv_file,"file");   //get text data (with class)
+			
+			data = WekaMagic.mergeInstancesBy(sound, text, "file"); //merge text and sound data by using the key fileid
+			//delete unnecessary attributes
+			data.deleteAttributeAt(data.attribute("text").index()); 		  //remove text attribute
+			//data.deleteAttributeAt(data.attribute("file").index());		//remove key(file id) attribute
+			//data.deleteAttributeAt(data.attribute("numeric_class").index());
+			
+			//aggregate data to one arff file
+			Boolean success = (new File(allfolder)).mkdirs();
+			if (success) {
+				WekaMagic.saveToArff(data,arfffile.split("\\.")[0], null);
+			}
+		}
+		
+		return data;
 	}
 	
 	
