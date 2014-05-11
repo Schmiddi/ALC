@@ -34,6 +34,7 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 import weka.core.stemmers.*;
 import weka.core.tokenizers.*;
 import weka.core.SelectedTag;
+import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.Evaluation;
 import weka.filters.Filter;
@@ -1151,6 +1152,9 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 			case 3: //KNN
 					currentResult = WekaMagic.runKNN(sets1[SetType.TRAIN.ordinal()], parameters[0].intValue());
 					break;
+			case 4:	//Naive Bayes
+					currentResult = WekaMagic.runNaiveBayes(sets1[SetType.TRAIN.ordinal()], parameters[0]==1.0, parameters[1]==1.0);
+					break;
 		}
 		
 		for(int i=0;i<sets1.length;i++){
@@ -1178,6 +1182,9 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 					break;
 			case 3: //KNN
 					currentResult = WekaMagic.runKNN(sets2[0], parameters[0].intValue());
+					break;
+			case 4:	//Naive Bayes
+					currentResult = WekaMagic.runNaiveBayes(sets2[0], parameters[0]==1.0, parameters[1]==1.0);
 					break;
 		}
 		
@@ -1982,6 +1989,34 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		return new MyClassificationOutput(knn, eval, options, elapsedTime);
 	}
 	
+	public static MyClassificationOutput runNaiveBayes(Instances train, Boolean UseKernelEstimator, Boolean UseSupervisedDiscretization)
+	throws Exception {
+
+		NaiveBayes naive = new NaiveBayes();
+		long elapsedTime;
+		Evaluation eval = null;
+		String options = "Naive Bayes: UseKernelEstimator = " + UseKernelEstimator + " UseSupervisedDiscretization = " + UseSupervisedDiscretization;
+		
+		naive.setUseKernelEstimator(UseKernelEstimator);
+		naive.setUseSupervisedDiscretization(UseSupervisedDiscretization);
+		
+		//build classifier
+		long startTime = System.currentTimeMillis();
+		if(train != null){
+			naive.buildClassifier(train);
+		}
+		long stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		
+		//evaluate how good it performes on the training set
+		if(train != null){
+			eval = new Evaluation(train);
+			eval.evaluateModel(naive,train);
+		}
+				
+		return new MyClassificationOutput(naive, eval, options, elapsedTime);
+	}
+	
 	
 	/**
 	 * translate umlauts into real format
@@ -2467,5 +2502,52 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		return values;
 	}
 
+	public static List<List<Double>> runTestUARIS2011NBThreads(
+			Instances[] sets, Boolean withAttributeSelection, Boolean isText,
+			int maxThreads) throws InterruptedException {
+		
+		List<List<Double>> values = new ArrayList<List<Double>>();
+		
+		ArrayList<Double> threshold = new ArrayList<Double>();
+		threshold.add(0.0);
+		
+		if (withAttributeSelection) {
+			addThreshold(threshold);
+		}
+		
+		
+		System.out.println("Running tests for train, dev and test set...");
+		
+		int nrThreads=getNumberOfThreads(maxThreads);
+		
+		MultiWeka [] threads = new MultiWeka[nrThreads];
+		
+		int count = 0;
+		
+		int maxIter = threshold.size() * 4;
+		
+		for (int i=0; i<threshold.size(); i++) {		//iterating through Threshold values
+			for(int kernel=0;kernel<=1;kernel++){
+				for(int discret=0;discret<=1;discret++){
+				
+					// Start all threads
+					threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
+															new Double[]{(double)kernel,(double)discret},threshold.get(i),ClassifierE.NB.getValue()); 
+					threads[count%nrThreads].start();
+					
+					// If all threads are up and running
+					if(count % nrThreads == nrThreads-1 || count == maxIter - 1){
+						for(MultiWeka r: threads){
+							r.join();
+							values.add(r.getResult());
+						}
+					}			
+					count++;
+				}
+			}
+		}
+		
+		return values;
+	}
 	
 }

@@ -84,7 +84,10 @@ public class AllIS2011 {
 			System.out.println("\t-m log, -m logistic_regression\n");	
 			
 			System.out.println("\tRun k-nearest neighbors");
-			System.out.println("\t-m knn, -m k_nearest_neighbors\n");	
+			System.out.println("\t-m knn, -m k_nearest_neighbors\n");
+			
+			System.out.println("\tRun Naive Bayes");
+			System.out.println("\t-m nb, -m naive_bayes\n");
 			
 			System.out.println("\tRun support vector machine (default algorithm)");
 			System.out.println("\t-m svm, -m support_vector_machine\n");
@@ -204,6 +207,8 @@ public class AllIS2011 {
 							method = "log";
 					if(Utils.isFlag(new String[]{"-m","-method"},new String[]{"knn","k_nearest_neighbors"},args))	
 							method = "knn";
+					if(Utils.isFlag(new String[]{"-m","-method"},new String[]{"nb","naive_bayes"},args))	
+							method = "nb";
 					if(Utils.isFlag(new String[]{"-m","-method"},new String[]{"svm","support_vector_machine"},args) || method == null){	
 							method = "svm";
 							
@@ -221,6 +226,10 @@ public class AllIS2011 {
 			else if(method.equals("knn")){
 				filenameExtension += "knn";
 				headerType = "knn";
+			}
+			else if(method.equals("nb")){
+				filenameExtension += "nb";
+				headerType = "nb";
 			}
 			else{
 				filenameExtension += "svm";	
@@ -247,6 +256,9 @@ public class AllIS2011 {
 			}
 			else if(method.equals("knn")){
 				results = WekaMagic.runTestUARIS2011KNNThreads(sets, withAttributeSelection, text, maxThreads);
+			}
+			else if(method.equals("nb")){
+				results = WekaMagic.runTestUARIS2011NBThreads(sets, withAttributeSelection, text, maxThreads);
 			}
 			else{
 				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, text, Kernel, maxThreads);
