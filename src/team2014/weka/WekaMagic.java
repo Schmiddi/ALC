@@ -1444,7 +1444,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		
 		ArrayList<Double> Cval = new ArrayList<Double>();
 		
-		/*
+		
 		Cval.add(0.0005);
 		Cval.add(0.001);
 		Cval.add(0.005);
@@ -1459,10 +1459,10 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		Cval.add(0.5);
 		Cval.add(1.0);
 		Cval.add(2.0);
-		*/
 		
 		
 		
+		/*
 		//optimzied for all
 		Cval.add(0.0075);
 		Cval.add(0.009);
@@ -1472,7 +1472,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		Cval.add(0.015);
 		Cval.add(0.0175);
 		Cval.add(0.019);
-		
+		*/
 		
 		
 		/*
