@@ -1,10 +1,10 @@
 package team2014.test;
-import team2014.weka.CrossValidationOutput;
+
 import team2014.weka.WekaMagic;
 import weka.core.Instances;
 
 
-public class CorpusMod {
+public class CreateLanguageModel {
 	public static void main(String[] args) {
 		
 		
@@ -44,6 +44,13 @@ public class CorpusMod {
 				filtered_train = WekaMagic.cleanCorpus(train, s_key);
 				
 				WekaMagic.createReferenceText("language_train+dev.txt", filtered_train, s_key);
+				
+				train = sets[0];	
+				train.addAll(sets[1]);
+				train.addAll(sets[2]);
+				filtered_train = WekaMagic.cleanCorpus(train, s_key);
+				
+				WekaMagic.createReferenceText("language_train+all.txt", filtered_train, s_key);
 				
 				
 				
