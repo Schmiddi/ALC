@@ -44,8 +44,8 @@ public class MultiWeka implements Runnable {
 				int ngram_min = 1;
 				int ngram_max = 3;
 				Boolean LowerCase = true; //default:true - best: true
-				Boolean IDFTransform = true; //default:false - best: true
-				Boolean TFTransform = true; //default:false - best: true
+				Boolean IDFTransform = false; //default:false - best: true
+				Boolean TFTransform = false; //default:false - best: true
 				Boolean Stopword = true; //default:true - best: true
 				String list1 = "resources\\germanST.txt";
 				int wordsToKeep = 1000000;
