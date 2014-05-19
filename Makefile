@@ -5,6 +5,7 @@ JARS_WEKA := $(HOMELIB)/jcommon-1.0.20.jar:$(HOMELIB)/commons-lang-2.6.jar:$(HOM
 JARS_TEST := $(HOME)bin
 JARS_ALL := $(JARS):$(JARS_TEST):$(JARS_WEKA)
 PATH_SOUND_WO_TT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/myIS13_ComParE
+PATH_CONFIG_13_TT_SOUND_16k := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS13_ComParE_16k
 PATH_CONFIG_13_TT_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS13_ComParE
 PATH_IS2011_SETS := /home/bas-alc/corpus/DOC/IS2011CHALLENGE
 PATH_CONFIG_11_TT_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS11_speaker_state
@@ -114,6 +115,9 @@ sound_wott_twtt_config11:
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) twtt | ./log.sh
 
 
+all_wott_config13_16k:
+	echo "all_wott_config13_16k" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_13_TT_SOUND_16k) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) | ./log.sh
 #####################################
 ##   Build classes from packages   ##
 #####################################
