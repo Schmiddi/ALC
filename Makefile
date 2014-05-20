@@ -12,7 +12,7 @@ PATH_SET_WOTT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/
 PATH_ORIGINAL_CSV := /import/scratch/tjr/tjr40/sound/tests/combined_all/output.csv
 XMX := -Xmx38g
 NOW := date +"%Y_%m_%d"
-OUTPUT_DIR := /home/alc/workspace/ALC/output
+OUTPUT_DIR := /import/scratch/tjr/tjr40/sound/tests/output
 WER_OUTPUT := $(OUTPUT_DIR)/mergedOutput.csv
 
 #####################################
