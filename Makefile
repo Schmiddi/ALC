@@ -11,7 +11,7 @@ PATH_IS2011_SETS := /home/bas-alc/corpus/DOC/IS2011CHALLENGE
 PATH_CONFIG_11_TT_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS11_speaker_state
 PATH_SET_WOTT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/
 PATH_ORIGINAL_CSV := /import/scratch/tjr/tjr40/sound/tests/combined_all/output.csv
-XMX := -Xmx38g
+XMX := -Xmx70g
 NOW := date +"%Y_%m_%d"
 OUTPUT_DIR := /import/scratch/tjr/tjr40/sound/tests/output
 WER_OUTPUT := $(OUTPUT_DIR)/mergedOutput.csv
@@ -113,6 +113,14 @@ sound_wott_config11:
 sound_wott_twtt_config11:
 	echo "sound_wott_twtt_config11" | ./log.sh
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) twtt | ./log.sh
+
+text_wott_config11:
+	echo "text_wott_config11" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) | ./log.sh
+
+grammar_wott_config11:
+	echo "grammar_wott_config11" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 grammar -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) | ./log.sh
 
 
 all_wott_config13_16k:
