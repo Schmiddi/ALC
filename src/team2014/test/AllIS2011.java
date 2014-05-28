@@ -61,7 +61,10 @@ public class AllIS2011 {
 			System.out.println("-mT <number>, -maxThreads <number>");
 			System.out.println("Default: -1 (use as many threads as cores)\n");
 			
-			System.out.println("Classify only instances without tongue twisters / name the folder which contains only arff files without tongue twisters");
+			System.out.println("Use Synthetic Minority Oversampling TEchnique (SMOTE)");
+			System.out.println("smote");
+			
+			System.out.println("Classify only instances with experiments for both states / name the folder which contains only arff files with mapped instances");
 			System.out.println("-wott <path>, -without_tongue_twisters <path>");
 			System.out.println("Example: -wott /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/");
 			System.out.println("Focus on ending with a file separator!\n");
@@ -147,6 +150,11 @@ public class AllIS2011 {
 				int class_index = WekaMagic.setClassIndex(dataGrammar);
 				dataGrammar.renameAttribute(class_index, "classGrammar");
 				dataGrammar.setClassIndex(-1);
+				
+				for(int s=0;s<dataGrammar.numAttributes();s++){
+					System.out.println(dataGrammar.attribute(s).name());
+				}
+				
 				System.out.println("Grammar features loaded.");
 			}
 			if(sound){
@@ -249,19 +257,21 @@ public class AllIS2011 {
 			
 			System.out.println("Total number of Instances: " + (sets[0].size() + sets[1].size() + sets[2].size()));
 			
+			Boolean smote = Utils.isFlag(new String[]{"smote"},args);
+			
 			List<List<Double>> results = null;
 			
 			if(method.equals("log")){
-				results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, text, maxThreads);
+				results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, text, maxThreads, smote);
 			}
 			else if(method.equals("knn")){
-				results = WekaMagic.runTestUARIS2011KNNThreads(sets, withAttributeSelection, text, maxThreads);
+				results = WekaMagic.runTestUARIS2011KNNThreads(sets, withAttributeSelection, text, maxThreads, smote);
 			}
 			else if(method.equals("nb")){
-				results = WekaMagic.runTestUARIS2011NBThreads(sets, withAttributeSelection, text, maxThreads);
+				results = WekaMagic.runTestUARIS2011NBThreads(sets, withAttributeSelection, text, maxThreads, smote);
 			}
 			else{
-				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, text, Kernel, maxThreads);
+				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, text, Kernel, maxThreads, smote);
 			}
 			
 			String name = "class_" + ((text)?"text-":"") + ((grammar)?"grammar-":"") + ((sound)?"sound-":""); 

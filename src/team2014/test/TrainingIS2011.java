@@ -54,9 +54,18 @@ public class TrainingIS2011 {
 				}
 				System.out.println();
 				
-				Instances notInSets = WekaMagic.getOutOfSets(sets, text, s_key);				
+				
+				
+				Instances notInSets;// = WekaMagic.getOutOfSets(sets, text, s_key);
+				//SpeakerSet speakerDataWott = WekaMagic.matchSpeakerToInstances(speakerTable, notInSets, s_key);
+				//speakerDataWott.printALCDistributionByRecType();
+				
+				
+				
 				//System.out.println("out of interspeech sets - size: " + notInSets.size());
 				//System.out.println(notInSets);
+				
+				
 				
 				//difference between all instances and the set without tongue twisters
 				Instances text_wott = WekaMagic.textCSVToInstances(csv_dir + "output_wott.csv",s_key);
@@ -64,6 +73,8 @@ public class TrainingIS2011 {
 				notInSets = WekaMagic.getOutOfSets(new Instances [] { text_wott }, text, s_key);				
 				System.out.println("deleted tongue twister - size: " + notInSets.size());
 				//System.out.println(notInSets); //print all affected tongue twisters
+				SpeakerSet speakerDataWott = WekaMagic.matchSpeakerToInstances(speakerTable, notInSets, s_key);
+				speakerDataWott.printALCDistributionByRecType();
 				
 				//delete all tongue twisters in the Interspeech 2011 set
 				
@@ -78,6 +89,28 @@ public class TrainingIS2011 {
 					System.out.println();
 				}
 				System.out.println();
+
+			
+				
+				//category				
+				String category_file = args[3];
+				
+				Instances [] cat = WekaMagic.getInterspeech11ByCategory(is11wott,s_key,category_file);
+				
+				Instances [] catwott = WekaMagic.deleteFromSets(cat, notInSets, s_key);
+				
+				System.out.println();
+				for(int i=0;i<3;i++){
+					SpeakerSet speakerData = WekaMagic.matchSpeakerToInstances(speakerTable, catwott[i], s_key);
+				
+					System.out.println("Details on " + name[i] + "set without tongue twisters:");
+					speakerData.printInfo();
+					System.out.println();
+				}
+				System.out.println();
+				
+				
+				
 				
 				
 				

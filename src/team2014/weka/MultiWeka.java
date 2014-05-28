@@ -19,10 +19,13 @@ public class MultiWeka implements Runnable {
 	   private double threshold;	   
 	   private List<Double> listRun;
 	   private int classifier;
+	   private Boolean smote;
+	   private int smoteKNN;
+	   private double smotePercentage;
 	   
 	   public MultiWeka(Instances[] sets,
 			Boolean withAttributeSelection, Boolean isText, Double [] parameters,
-			double threshold, int classifier) {
+			double threshold, int classifier, Boolean smote, int smoteKNN, double smotePercentage) {
 			super();
 			this.t=null;
 			this.sets = sets;
@@ -31,6 +34,9 @@ public class MultiWeka implements Runnable {
 			this.parameters = parameters;
 			this.threshold = threshold;
 			this.classifier = classifier;
+			this.smote = smote;
+			this.smoteKNN = smoteKNN;
+			this.smotePercentage = smotePercentage;
 	   }
 	
 	   public void run() {
@@ -69,7 +75,7 @@ public class MultiWeka implements Runnable {
 			MyOutput filtered = null;
 			ArrayList<MyOutput> filters = null;
 			
-			if(isText || withAttributeSelection)
+			if(isText || withAttributeSelection || smote)
 				filters = new ArrayList<MyOutput>();
 			
 			if(isText)
@@ -86,6 +92,18 @@ public class MultiWeka implements Runnable {
 					e.printStackTrace();
 				}
 				filters.add(filtered);
+			}
+			
+			if(smote){
+				MyOutput oversample = null;
+				try {
+					oversample = WekaMagic.smote(null, null, smoteKNN, smotePercentage);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				filters.add(oversample);
+				
 			}
 			
 			MyClassificationOutput[] output;

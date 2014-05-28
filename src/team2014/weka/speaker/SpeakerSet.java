@@ -1,6 +1,7 @@
 package team2014.weka.speaker;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class SpeakerSet {
 	private ArrayList<SpeakerSamples> speakerSamples;
@@ -89,8 +90,40 @@ public class SpeakerSet {
 		System.out.println("Number of speakers: " + numberSpeakers() + " (m: " + getNumberMale() + " | f: " + getNumberFemale()+")");
 		System.out.println("Number of samples: " + numberSamples());
 		System.out.println("Sample gender balance: (m: " + getNumberMaleSamples() + " | f: " + getNumberFemaleSamples()+")");
-		System.out.println("Class balance: (alc: " + getNumberALC() + " | nonalc: " + getNumberNONALC()+")");
+		System.out.println("Class balance: (nonalc: " + getNumberNONALC() + " | alc: " + getNumberALC()+")");
 	}
+	
+	public HashSet<Integer> getDistincRecTypeSet(){
+		HashSet<Integer> list = new HashSet<Integer>();
+		
+		for(SpeakerSamples s: speakerSamples){
+			list.addAll(s.getDistincRecTypeSet());
+		}
+		
+		return list;
+	}
+	
+	public void printALCDistributionByRecType(){
+		HashSet<Integer> list = getDistincRecTypeSet();
+		
+		System.out.println("\n Alc distribution by type:\n");
+		
+		int total =0;
+		for(int type: list){
+			int alc =0;
+			int nonalc =0;
+			for(SpeakerSamples s: speakerSamples){
+				alc += s.getALCByRecType(type);
+				nonalc += s.getNONALCByRecType(type);
+			}
+			System.out.println("Type: " + type + " (nonalc: " + nonalc + " | alc: " + alc+") = "+ (double)alc / (double)(nonalc+alc) );
+			
+			total += alc + nonalc;
+		}
+		
+		System.out.println("\ntotal: " + total + "\n\n");
+	}
+	
 	
 	
 	
