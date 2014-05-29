@@ -6,7 +6,6 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +30,6 @@ import weka.core.converters.TextDirectoryLoader;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.supervised.attribute.AttributeSelection;
 import weka.filters.unsupervised.attribute.StringToWordVector;
-import weka.core.stemmers.*;
 import weka.core.tokenizers.*;
 import weka.core.SelectedTag;
 import weka.classifiers.bayes.NaiveBayes;
@@ -41,7 +39,6 @@ import weka.filters.Filter;
 import weka.core.Attribute;
 import weka.classifiers.Classifier;
 import weka.filters.supervised.instance.SMOTE;
-//import wlsvm.WLSVM;
 import weka.classifiers.functions.LibSVM;
 import weka.classifiers.lazy.IBk;
 import weka.filters.unsupervised.attribute.Normalize;
@@ -1138,6 +1135,22 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		return cvo;
 	}
 	
+	public static int getNumberNonAlc(Instances train){
+		int non_alc = 0;
+		for(int i=0;i<train.size();i++){		
+			String classValue = train.get(i).stringValue(train.classAttribute()); //get class attribute value from instance		
+			if(classValue.toUpperCase().contains("NON")){
+				non_alc++;
+			}
+		}
+		return non_alc;
+	}
+	
+	public static double getWeightFactor(Instances train){
+		double non_alc = getNumberNonAlc(train);
+		return non_alc / (double)(train.size()-non_alc);		
+	}
+	
 	/**
 	 * Run our own cross validation
 	 * 
@@ -1184,7 +1197,8 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 					currentResult = WekaMagic.runLogistic(sets1[SetType.TRAIN.ordinal()], parameters[0], 5);
 					break;
 			case 2: //SVM
-					currentResult = WekaMagic.runSVM(sets1[SetType.TRAIN.ordinal()], parameters[0], parameters[1]);
+					System.out.println("alc: " + sets1[0].classAttribute().indexOfValue("alc") + " weight factor: " + getWeightFactor(sets1[0]));
+					currentResult = WekaMagic.runSVM(sets1[SetType.TRAIN.ordinal()], parameters[0], parameters[1], new Double[]{1.0,getWeightFactor(sets1[0])});
 					break;
 			case 3: //KNN
 					currentResult = WekaMagic.runKNN(sets1[SetType.TRAIN.ordinal()], parameters[0].intValue());
@@ -1215,7 +1229,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 					currentResult = WekaMagic.runLogistic(sets2[0], parameters[0], 5);
 					break;
 			case 2: //SVM
-					currentResult = WekaMagic.runSVM(sets2[0], parameters[0], parameters[1]);
+					currentResult = WekaMagic.runSVM(sets2[0], parameters[0], parameters[1], new Double[]{1.0,getWeightFactor(sets2[0])});
 					break;
 			case 3: //KNN
 					currentResult = WekaMagic.runKNN(sets2[0], parameters[0].intValue());
@@ -1966,13 +1980,19 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	 * @return
 	 * @throws Exception
 	 */
-	public static MyClassificationOutput runSVM(Instances train, Double C, Double gamma)
+	public static MyClassificationOutput runSVM(Instances train, Double C, Double gamma, Double [] classweights)
 	throws Exception {
 
 		LibSVM svm = new LibSVM();
 		long elapsedTime;
 		Evaluation eval = null;
 		String options = "SVM: C = " + C + " gamma = " + gamma;
+		
+		String weightsStr = "";
+		for(Double weight : classweights){
+			weightsStr += weight + " ";
+		}
+		svm.setWeights(weightsStr.trim());
 		
 		//Set cache memory size in MB (default: 40)
 		svm.setCacheSize(20000.0); //speed up algorithm - try 20 GB
