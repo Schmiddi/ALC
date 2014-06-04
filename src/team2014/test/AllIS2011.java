@@ -49,6 +49,10 @@ public class AllIS2011 {
 			System.out.println("-c <path>, -config <path>");
 			System.out.println("Example: -c /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS13_ComParE\n");
 			
+			System.out.println("Specify csv of text feature data");
+			System.out.println("-tp <file>, -text_path <file>");
+			System.out.println("Example: -tp /import/scratch/tjr/tjr40/sound/tests/combined_all/output_speech_recognizer_train.csv\n");
+			
 			System.out.println("Specify distribution of training, dev, test sets / name directory which includes TRAIN.TBL, TEST.TBL, D1.TBL");
 			System.out.println("-s <path>, -set_definition <path>");
 			System.out.println("Example: -s /home/bas-alc/corpus/DOC/IS2011CHALLENGE\n");
@@ -62,7 +66,7 @@ public class AllIS2011 {
 			System.out.println("Default: -1 (use as many threads as cores)\n");
 			
 			System.out.println("Use Synthetic Minority Oversampling TEchnique (SMOTE)");
-			System.out.println("smote");
+			System.out.println("smote\n");
 			
 			System.out.println("Classify only instances with experiments for both states / name the folder which contains only arff files with mapped instances");
 			System.out.println("-wott <path>, -without_tongue_twisters <path>");
@@ -127,7 +131,6 @@ public class AllIS2011 {
 		
 		
 		
-		
 		if(args.length < 3){
 			System.out.println("Too few parameters");
 		}
@@ -137,16 +140,24 @@ public class AllIS2011 {
 			String dirInterspeech = Utils.getFlag(new String[]{"-s","-set_definition"}, args);
 			String outputFolder   = Utils.getFlag(new String[]{"-o","-output"}, args) + fileSep;
 			String csv_dir        = WekaMagic.getParent(arff_dir);
+			
+			String text_csv = "";
+			if(Utils.isFlag(new String[]{"-tp","-text_path"},args)){
+				text_csv = Utils.getFlag(new String[]{"-tp","-text_path"}, args);
+			}
+			else{
+				text_csv = csv_dir + "output.csv";
+			}
 
 			if(text){
-				dataText    = WekaMagic.textCSVToInstances(csv_dir + "output.csv", "file");
+				dataText    = WekaMagic.textCSVToInstances(text_csv, "file");
 				int class_index = WekaMagic.setClassIndex(dataText);
 				dataText.renameAttribute(class_index, "classText");
 				dataText.setClassIndex(-1);
 				System.out.println("Text features loaded.");
 			}
 			if(grammar){		
-				dataGrammar = WekaMagic.getGrammarInstancesWithFile(csv_dir + "output.csv", true);
+				dataGrammar = WekaMagic.getGrammarInstancesWithFile(text_csv, true);
 				int class_index = WekaMagic.setClassIndex(dataGrammar);
 				dataGrammar.renameAttribute(class_index, "classGrammar");
 				dataGrammar.setClassIndex(-1);
@@ -158,7 +169,7 @@ public class AllIS2011 {
 				System.out.println("Grammar features loaded.");
 			}
 			if(sound){
-				dataSound   = WekaMagic.getSoundInstancesWithFile(arff_dir, csv_dir + "output.csv"); 
+				dataSound   = WekaMagic.getSoundInstancesWithFile(arff_dir, text_csv); 
 				int class_index = WekaMagic.setClassIndex(dataSound);
 				dataSound.renameAttribute(class_index, "classSound");
 				dataSound.setClassIndex(-1);
