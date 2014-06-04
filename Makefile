@@ -126,6 +126,11 @@ grammar_wott_config11:
 all_wott_config13_16k:
 	echo "all_wott_config13_16k" | ./log.sh
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_13_TT_SOUND_16k) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) | ./log.sh
+
+sound_tt_config11_smote:
+	echo "sound_tt_config_11_smote" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote| ./log.sh
+
 #####################################
 ##   Build classes from packages   ##
 #####################################
