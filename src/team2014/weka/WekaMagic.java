@@ -1483,20 +1483,20 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		ArrayList<Double> Cval = new ArrayList<Double>();
 		
 		
-		Cval.add(0.0005);
-		Cval.add(0.001);
-		Cval.add(0.005);
-		Cval.add(0.01);
+		//Cval.add(0.0005);
+		//Cval.add(0.001);
+		//Cval.add(0.005);
+		//Cval.add(0.01);
 		Cval.add(0.02);
 		Cval.add(0.03);
 		Cval.add(0.04);
 		Cval.add(0.06);
 		Cval.add(0.08);
-		Cval.add(0.1);
-		Cval.add(0.2);
-		Cval.add(0.5);
-		Cval.add(1.0);
-		Cval.add(2.0);
+		//Cval.add(0.1);
+		//Cval.add(0.2);
+		//Cval.add(0.5);
+		//Cval.add(1.0);
+		//Cval.add(2.0);
 		
 		/*
 		//optimzied for all
@@ -1527,10 +1527,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		ArrayList<Double> SmotePerVal = new ArrayList<Double>();
 		
 		if(smote){
-			SmotePerVal.add(25.0);		
-			SmotePerVal.add(50.0);
-			SmotePerVal.add(75.0);
-			SmotePerVal.add(100.0);
+			SmotePerVal.add(127.0);
 		}else{
 			SmotePerVal.add(0.0); //no application of smote
 		}
@@ -1629,7 +1626,6 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		ArrayList<Integer> SmoteKNNVal = new ArrayList<Integer>();
 		
 		if(smote){
-			SmoteKNNVal.add(5);		
 			SmoteKNNVal.add(7);
 			SmoteKNNVal.add(51);
 			SmoteKNNVal.add(101);
