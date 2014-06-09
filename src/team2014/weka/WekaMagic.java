@@ -1197,8 +1197,8 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 					currentResult = WekaMagic.runLogistic(sets1[SetType.TRAIN.ordinal()], parameters[0], 5);
 					break;
 			case 2: //SVM
-					System.out.println("alc: " + sets1[0].classAttribute().indexOfValue("alc") + " weight factor: " + getWeightFactor(sets1[0]));
-					currentResult = WekaMagic.runSVM(sets1[SetType.TRAIN.ordinal()], parameters[0], parameters[1], new Double[]{1.0,getWeightFactor(sets1[0])});
+					//System.out.println("alc: " + sets1[0].classAttribute().indexOfValue("alc") + " weight factor: " + getWeightFactor(sets1[0]));
+					currentResult = WekaMagic.runSVM(sets1[SetType.TRAIN.ordinal()], parameters[0], parameters[1], new Double[]{1.0,1.0});
 					break;
 			case 3: //KNN
 					currentResult = WekaMagic.runKNN(sets1[SetType.TRAIN.ordinal()], parameters[0].intValue());
@@ -1229,7 +1229,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 					currentResult = WekaMagic.runLogistic(sets2[0], parameters[0], 5);
 					break;
 			case 2: //SVM
-					currentResult = WekaMagic.runSVM(sets2[0], parameters[0], parameters[1], new Double[]{1.0,getWeightFactor(sets2[0])});
+					currentResult = WekaMagic.runSVM(sets2[0], parameters[0], parameters[1], new Double[]{1.0,1.0});
 					break;
 			case 3: //KNN
 					currentResult = WekaMagic.runKNN(sets2[0], parameters[0].intValue());
