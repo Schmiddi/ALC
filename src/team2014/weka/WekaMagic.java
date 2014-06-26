@@ -1197,8 +1197,8 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 					currentResult = WekaMagic.runLogistic(sets1[SetType.TRAIN.ordinal()], parameters[0], 5);
 					break;
 			case 2: //SVM
-					System.out.println("alc: " + sets1[0].classAttribute().indexOfValue("alc") + " weight factor: " + getWeightFactor(sets1[0]));
-					currentResult = WekaMagic.runSVM(sets1[SetType.TRAIN.ordinal()], parameters[0], parameters[1], new Double[]{1.0,getWeightFactor(sets1[0])});
+					//System.out.println("alc: " + sets1[0].classAttribute().indexOfValue("alc") + " weight factor: " + getWeightFactor(sets1[0]));
+					currentResult = WekaMagic.runSVM(sets1[SetType.TRAIN.ordinal()], parameters[0], parameters[1], new Double[]{1.0,1.0});
 					break;
 			case 3: //KNN
 					currentResult = WekaMagic.runKNN(sets1[SetType.TRAIN.ordinal()], parameters[0].intValue());
@@ -1229,7 +1229,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 					currentResult = WekaMagic.runLogistic(sets2[0], parameters[0], 5);
 					break;
 			case 2: //SVM
-					currentResult = WekaMagic.runSVM(sets2[0], parameters[0], parameters[1], new Double[]{1.0,getWeightFactor(sets2[0])});
+					currentResult = WekaMagic.runSVM(sets2[0], parameters[0], parameters[1], new Double[]{1.0,1.0});
 					break;
 			case 3: //KNN
 					currentResult = WekaMagic.runKNN(sets2[0], parameters[0].intValue());
@@ -1483,8 +1483,8 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		ArrayList<Double> Cval = new ArrayList<Double>();
 		
 		
-		Cval.add(0.0005);
-		Cval.add(0.001);
+		//Cval.add(0.0005);
+		//Cval.add(0.001);
 		Cval.add(0.005);
 		Cval.add(0.01);
 		Cval.add(0.02);
@@ -1493,10 +1493,10 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		Cval.add(0.06);
 		Cval.add(0.08);
 		Cval.add(0.1);
-		Cval.add(0.2);
-		Cval.add(0.5);
-		Cval.add(1.0);
-		Cval.add(2.0);
+		//Cval.add(0.2);
+		//Cval.add(0.5);
+		//Cval.add(1.0);
+		//Cval.add(2.0);
 		
 		/*
 		//optimzied for all
@@ -1527,10 +1527,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		ArrayList<Double> SmotePerVal = new ArrayList<Double>();
 		
 		if(smote){
-			SmotePerVal.add(25.0);		
-			SmotePerVal.add(50.0);
-			SmotePerVal.add(75.0);
-			SmotePerVal.add(100.0);
+			SmotePerVal.add(227.0);
 		}else{
 			SmotePerVal.add(0.0); //no application of smote
 		}
@@ -1629,10 +1626,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		ArrayList<Integer> SmoteKNNVal = new ArrayList<Integer>();
 		
 		if(smote){
-			SmoteKNNVal.add(5);		
-			SmoteKNNVal.add(7);
-			SmoteKNNVal.add(51);
-			SmoteKNNVal.add(101);
+			SmoteKNNVal.add(5);
 		}else{
 			SmoteKNNVal.add(0); //no application of smote
 		}
