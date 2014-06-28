@@ -83,7 +83,9 @@ public class WekaMagic {
 	public static int setClassIndex(Instances data){
 		int i=-1;
 		for(i=0;i<data.numAttributes();i++){
-			if(data.attribute(i).isNominal() && (data.attribute(i).toString().contains("alc,nonalc") || data.attribute(i).toString().contains("nonalc,alc"))){
+			if(data.attribute(i).isNominal() && 
+				(		data.attribute(i).name().equals("class") ||
+						data.attribute(i).toString().contains("alc,nonalc") || data.attribute(i).toString().contains("nonalc,alc"))){
 				data.setClassIndex(i);
 				break;
 			}
@@ -1709,6 +1711,17 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
     	
     	return data;
 	}
+
+	public static Instances loadArff(String file) throws Exception{
+		DataSource source = new DataSource(file); //load ARFF file
+    	Instances data = source.getDataSet();
+    	if(data == null){
+    		System.out.println("Please fix the input path!");
+    	}
+    	
+    	return data;
+	}
+	
 	
 	
 	/**
@@ -2654,6 +2667,74 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		}
 		
 		return values;
+	}
+	
+	public static HashMap<String,String> LoadTestMapping(String path) throws IOException{
+		InputStream    fis;
+		BufferedReader br;
+		String         line;
+		
+		HashMap<String,String> testmapping = new HashMap<String,String>();
+		
+		fis = new FileInputStream(path);
+		br = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
+		while ((line = br.readLine()) != null) {
+			//System.out.println("\""+line+"\""); // format example: BLOCK30/SES3066/5653066001_h_01.WAV
+			if(!line.isEmpty() && line != null && line.length()>5){
+				String[] tokens = line.split("\t");
+				
+				String id 		= tokens[0].split("/")[1];
+				String classVal = (tokens[0].equals("A")?"AL":"NAL");
+				testmapping.put(id, classVal);
+				
+				System.out.println("id: " + id + " class: " + classVal);
+			}
+		}
+		
+		// Done with the file
+		br.close();
+		br = null;
+		fis = null;
+		
+		return testmapping;
+	}
+	
+
+	public static Instances[] convertOriginalToUs(Instances train,
+			Instances dev, Instances test, String testmappingFile) throws Exception {
+		
+		Instances sets [] = new Instances [3];
+		sets[0] = new Instances(train);
+		sets[1] = new Instances(dev);
+		sets[2] = new Instances(test);
+		
+		HashMap<String, String> testmapping = LoadTestMapping(testmappingFile);
+		
+		FastVector values = new FastVector(); 
+        values.addElement("AL");              
+        values.addElement("NAL");
+        sets[2].insertAttributeAt(new Attribute("NewClass", values), sets[2].numAttributes());
+		
+		for(int i=0;i<sets[2].size();i++){
+			sets[2].get(i).setValue(sets[2].attribute("NewClass"), testmapping.get(sets[2].get(i).stringValue(sets[2].attribute("name"))));
+		}
+		sets[2].deleteAttributeAt(sets[2].attribute("class").index());
+		sets[2].renameAttribute(sets[2].attribute("NewClass"), "class");
+		
+		for(int u=0;u<3;u++){
+			setClassIndex(sets[u]);
+			
+			//System.out.println("attribute size: " + train.size());			
+			//System.out.println("attribute num: " + train.numAttributes());			
+			//System.out.println("class attribute: " + train.classAttribute().name());
+			
+			sets[u].renameAttribute(sets[u].attribute("name"), "file");
+			sets[u].renameAttributeValue(sets[u].classAttribute(), "NAL", "nonalc");
+			sets[u].renameAttributeValue(sets[u].classAttribute(), "AL",  "alc");
+		}
+		
+		
+		return sets;
 	}
 	
 }
