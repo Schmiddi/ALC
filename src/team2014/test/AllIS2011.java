@@ -174,9 +174,11 @@ public class AllIS2011 {
 				
 				sets = WekaMagic.convertOriginalToUs(train,dev,test,testmappingFile, dataText);
 				
+				/*
 				SpeakerSet speakerData = WekaMagic.matchSpeakerToInstances("C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Felix\\doc\\SPEAEXT.TBL", sets[2], s_key);
 				speakerData.printInfo();
 				System.out.println();
+				*/
 				
 				for(int i=0;i<3;i++){
 					sets[i].deleteAttributeAt(sets[i].attribute("file").index());
