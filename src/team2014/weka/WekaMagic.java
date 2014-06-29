@@ -2684,24 +2684,25 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 				String[] tokens = line.split("\t");
 				
 				String id 		= tokens[0].split("/")[1];
-				String classVal = (tokens[0].equals("A")?"AL":"NAL");
-				testmapping.put(id, classVal);
+				//String classVal = (tokens[0].equals("A")?"AL":"NAL");
+				String orgID	= tokens[2].split("\\.")[0];
+				testmapping.put(id, orgID);
 				
-				System.out.println("id: " + id + " class: " + classVal);
+				//System.out.println("id: " + id + " class: " + orgID);
 			}
 		}
 		
 		// Done with the file
 		br.close();
 		br = null;
-		fis = null;
+		fis = null;		
 		
 		return testmapping;
 	}
 	
 
 	public static Instances[] convertOriginalToUs(Instances train,
-			Instances dev, Instances test, String testmappingFile) throws Exception {
+			Instances dev, Instances test, String testmappingFile, Instances data) throws Exception {
 		
 		Instances sets [] = new Instances [3];
 		sets[0] = new Instances(train);
@@ -2709,15 +2710,22 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		sets[2] = new Instances(test);
 		
 		HashMap<String, String> testmapping = LoadTestMapping(testmappingFile);
+		HashMap<String, String> classmapp = FindClassMapping(testmapping,data);
 		
 		FastVector values = new FastVector(); 
-        values.addElement("AL");              
-        values.addElement("NAL");
+        values.addElement("alc");              
+        values.addElement("nonalc");
         sets[2].insertAttributeAt(new Attribute("NewClass", values), sets[2].numAttributes());
-		
-		for(int i=0;i<sets[2].size();i++){
-			sets[2].get(i).setValue(sets[2].attribute("NewClass"), testmapping.get(sets[2].get(i).stringValue(sets[2].attribute("name"))));
+        
+        sets[2].insertAttributeAt(new Attribute("file", (FastVector) null), sets[2].numAttributes());
+        
+        for(int i=0;i<sets[2].size();i++){
+			String file_id = testmapping.get(sets[2].get(i).stringValue(sets[2].attribute("name")));
+			sets[2].get(i).setValue(sets[2].attribute("file"), file_id);
+			sets[2].get(i).setValue(sets[2].attribute("NewClass"), classmapp.get(sets[2].get(i).stringValue(sets[2].attribute("name"))));
 		}
+		
+		sets[2].deleteAttributeAt(sets[2].attribute("name").index());
 		sets[2].deleteAttributeAt(sets[2].attribute("class").index());
 		sets[2].renameAttribute(sets[2].attribute("NewClass"), "class");
 		
@@ -2728,13 +2736,44 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 			//System.out.println("attribute num: " + train.numAttributes());			
 			//System.out.println("class attribute: " + train.classAttribute().name());
 			
-			sets[u].renameAttribute(sets[u].attribute("name"), "file");
-			sets[u].renameAttributeValue(sets[u].classAttribute(), "NAL", "nonalc");
-			sets[u].renameAttributeValue(sets[u].classAttribute(), "AL",  "alc");
+			if(u<2){
+				sets[u].renameAttribute(sets[u].attribute("name"), "file");
+				sets[u].renameAttributeValue(sets[u].classAttribute(), "NAL", "nonalc");
+				sets[u].renameAttributeValue(sets[u].classAttribute(), "AL",  "alc");
+			}
 		}
 		
 		
 		return sets;
+	}
+
+	private static HashMap<String, String> FindClassMapping(
+			HashMap<String, String> testmappingFile, Instances data) throws Exception {
+		
+		HashMap<String, String> classmap = new HashMap<String, String>();
+		
+		
+		Iterator it = testmappingFile.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        //System.out.println(pairs.getKey() + " = " + pairs.getValue());
+	        
+	        Boolean found = false;
+	        for(int i=0;i<data.size();i++){
+	        	if(data.get(i).stringValue(data.attribute("file")).equals(pairs.getValue())){
+	        		classmap.put((String)pairs.getKey(), data.get(i).stringValue(data.classAttribute()));
+	        		found = true;
+	        		break;
+	        	}
+	        }
+	        if(found == false){
+	        	System.out.println("One file id is only present in one file: " + (String)pairs.getKey());
+				throw new Exception();
+	        }
+	        
+	        //it.remove(); // avoids a ConcurrentModificationException
+	    }
+		return classmap;
 	}
 	
 }

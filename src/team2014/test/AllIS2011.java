@@ -4,6 +4,7 @@ import java.util.List;
 
 import weka.core.Instances;
 
+import team2014.weka.speaker.SpeakerSet;
 import team2014.weka.svm.KernelType;
 import team2014.weka.WekaMagic;
 import team2014.weka.Utils;
@@ -151,6 +152,19 @@ public class AllIS2011 {
 			
 			
 			if(Utils.isFlag(new String[]{"-original"},args) && Utils.isFlag(new String[]{"-testmapping"},args)){
+				
+				String text_csv = "";
+				if(Utils.isFlag(new String[]{"-tp","-text_path"},args)){
+					text_csv = Utils.getFlag(new String[]{"-tp","-text_path"}, args);
+				}
+				else{
+					String arff_dir       = Utils.getFlag(new String[]{"-c","-config"}, args);
+					String csv_dir        = WekaMagic.getParent(arff_dir);
+					text_csv = csv_dir + "output.csv";
+				}
+				
+				dataText    = WekaMagic.textCSVToInstances(text_csv, "file");
+				
 				String is11path = Utils.getFlag(new String[]{"-original"},args);
 				String testmappingFile = Utils.getFlag(new String[]{"-testmapping"},args);
 				
@@ -158,7 +172,11 @@ public class AllIS2011 {
 				Instances dev   = WekaMagic.loadArff( is11path + fileSep + "IS11.DEVEL.arff");
 				Instances test  = WekaMagic.loadArff( is11path + fileSep + "IS11.TEST.arff");
 				
-				sets = WekaMagic.convertOriginalToUs(train,dev,test,testmappingFile);
+				sets = WekaMagic.convertOriginalToUs(train,dev,test,testmappingFile, dataText);
+				
+				SpeakerSet speakerData = WekaMagic.matchSpeakerToInstances("C:\\Users\\IBM_ADMIN\\Dropbox\\Detecting Alcohol Intoxication in Speech\\Felix\\doc\\SPEAEXT.TBL", sets[2], s_key);
+				speakerData.printInfo();
+				System.out.println();
 				
 				for(int i=0;i<3;i++){
 					sets[i].deleteAttributeAt(sets[i].attribute("file").index());
