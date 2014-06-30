@@ -4,8 +4,8 @@ import java.util.List;
 
 import weka.core.Instances;
 
-import team2014.weka.speaker.SpeakerSet;
 import team2014.weka.svm.KernelType;
+import team2014.weka.SpeakerSet;
 import team2014.weka.WekaMagic;
 import team2014.weka.Utils;
 

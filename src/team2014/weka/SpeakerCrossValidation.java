@@ -1,4 +1,4 @@
-package team2014.weka.speaker;
+package team2014.weka;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,9 +7,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-import team2014.weka.MyClassificationOutput;
-import team2014.weka.MyOutput;
-import team2014.weka.WekaMagic;
 import weka.classifiers.Classifier;
 import weka.classifiers.misc.SerializedClassifier;
 import weka.core.Attribute;

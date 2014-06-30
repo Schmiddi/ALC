@@ -2,10 +2,10 @@ package team2014.test;
 import java.util.ArrayList;
 
 import team2014.weka.CrossValidationOutput;
+import team2014.weka.Speaker;
+import team2014.weka.SpeakerSamples;
+import team2014.weka.SpeakerSet;
 import team2014.weka.WekaMagic;
-import team2014.weka.speaker.Speaker;
-import team2014.weka.speaker.SpeakerSamples;
-import team2014.weka.speaker.SpeakerSet;
 import weka.core.Instances;
 
 

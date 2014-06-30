@@ -14,10 +14,6 @@ import java.util.Random;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-import team2014.weka.speaker.Sample;
-import team2014.weka.speaker.Speaker;
-import team2014.weka.speaker.SpeakerSamples;
-import team2014.weka.speaker.SpeakerSet;
 import team2014.weka.svm.KernelType;
 
 import weka.core.stemmers.SnowballStemmer;
