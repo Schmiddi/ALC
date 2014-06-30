@@ -11,19 +11,29 @@ PATH_IS2011_SETS := /home/bas-alc/corpus/DOC/IS2011CHALLENGE
 PATH_CONFIG_11_TT_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS11_speaker_state
 PATH_SET_WOTT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/
 PATH_ORIGINAL_CSV := /import/scratch/tjr/tjr40/sound/tests/combined_all/output.csv
+PATH_ORIGINAL_IS2011 := /import/scratch/tjr/tjr40/alc_is2011/ALC_Features
+PATH_TESTMAPPING := /home/bas-alc/corpus/DOC/IS2011CHALLENGE/TESTMAPPING.txt
 XMX := -Xmx70g
 NOW := date +"%Y_%m_%d"
 OUTPUT_DIR := /import/scratch/tjr/tjr40/sound/tests/output
 WER_OUTPUT := $(OUTPUT_DIR)/mergedOutput.csv
 
+
+
 #####################################
 ##  Build all targets of team2014  ##
 #####################################
-all: clean andi wekaSpeaker wekaPlot wekaSVM weka test
+all: clean andi wekaPlot wekaSVM weka test
 
+help:
+	java -classpath $(JARS_ALL) team2014.test.AllIS2011 -help
 ###################
 ##   Run tests   ##
 ###################
+IS2011_baseline:
+	echo "IS2011_baseline" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -mT 4 -original $(PATH_ORIGINAL_IS2011) -testmapping $(PATH_TESTMAPPING) smote| ./log.sh
+
 WerTest:
 	java -classpath $(JARS_ALL) team2014.test.PrepareForWerTest $(PATH_ORIGINAL_CSV) /home/alc/workspace/ALC/speech_recognizer/experiment/output_speech_recognizer_old.csv $(WER_OUTPUT)
 	python scripts/wer.py $(WER_OUTPUT)
