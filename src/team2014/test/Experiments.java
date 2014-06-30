@@ -3,13 +3,15 @@ import java.util.ArrayList;
 
 import team2014.weka.CrossValidationOutput;
 import team2014.weka.Speaker;
+import team2014.weka.SpeakerCrossValidation;
 import team2014.weka.SpeakerSamples;
 import team2014.weka.SpeakerSet;
 import team2014.weka.WekaMagic;
 import weka.core.Instances;
+import weka.filters.Filter;
 
 
-public class TrainingIS2011 {
+public class Experiments {
 	public static void main(String[] args) {
 		
 		
@@ -17,8 +19,6 @@ public class TrainingIS2011 {
 			String fileSep = isWindows?"\\":"/";
 			
 			String s_key="file";
-			
-			String [] name ={ "training", "dev", "test" };
 			
 			try {
 				Instances data = null;
@@ -28,12 +28,46 @@ public class TrainingIS2011 {
 				
 				String speakerTable = args[2];
 				
-				//Instances sound = WekaMagic.soundArffToInstances(arff_dir);		
+				
+				
+				
+				Instances sound = WekaMagic.getSoundInstancesWithFile(arff_dir, csv_dir + "output.csv"); 	
 				Instances text = WekaMagic.textCSVToInstances(csv_dir + "output.csv",s_key);
 				
 				//data = WekaMagic.mergeInstancesBy(sound, text, s_key);
 				
 				System.out.println("whole data size: " + text.size());
+				
+				SpeakerSet speakerData = WekaMagic.matchSpeakerToInstances(speakerTable, text, s_key);
+				
+				speakerData.printInfo();
+				System.out.println();
+				
+				//speakerData.reduceFemale(6, 1);
+				//speakerData.reduceMale(14,2);
+				//speakerData.reduceBySize(1);
+				speakerData.filterByClassBalance(0.5);
+				
+				if(speakerData.getNumberMale()>speakerData.getNumberFemale()){
+					speakerData.reduceMale(speakerData.getNumberMale()-speakerData.getNumberFemale(),2);
+				}
+				else{
+					speakerData.reduceFemale(speakerData.getNumberFemale() - speakerData.getNumberMale(), 2);
+				}
+				
+				speakerData.printInfo();
+				System.out.println();
+				
+				//SpeakerCrossValidation.check();
+				
+				//Filter f = SpeakerCrossValidation.createModel(speakerData, sound, 0.04, s_key);
+				
+				//SpeakerCrossValidation.check();
+				
+				SpeakerCrossValidation.run(speakerData, speakerTable, sound,  s_key);
+				
+				
+				/*
 				Instances [] sets = WekaMagic.getInterspeech2011Sets(args[1], text, s_key, null);
 				
 				Instances train = sets[0];
@@ -111,7 +145,7 @@ public class TrainingIS2011 {
 				
 				
 				
-				
+				*/
 				
 				
 			} catch (Exception e) {

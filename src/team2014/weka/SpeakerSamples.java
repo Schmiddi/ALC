@@ -1,7 +1,8 @@
-package team2014.weka.speaker;
+package team2014.weka;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+
 
 
 public class SpeakerSamples {

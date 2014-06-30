@@ -1,4 +1,4 @@
-package team2014.weka.speaker;
+package team2014.weka;
 
 public class Speaker {
 	private int 	scd; 		 // speaker id

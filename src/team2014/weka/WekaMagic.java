@@ -14,10 +14,6 @@ import java.util.Random;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-import team2014.weka.speaker.Sample;
-import team2014.weka.speaker.Speaker;
-import team2014.weka.speaker.SpeakerSamples;
-import team2014.weka.speaker.SpeakerSet;
 import team2014.weka.svm.KernelType;
 
 import weka.core.stemmers.SnowballStemmer;
@@ -83,7 +79,9 @@ public class WekaMagic {
 	public static int setClassIndex(Instances data){
 		int i=-1;
 		for(i=0;i<data.numAttributes();i++){
-			if(data.attribute(i).isNominal() && (data.attribute(i).toString().contains("alc,nonalc") || data.attribute(i).toString().contains("nonalc,alc"))){
+			if(data.attribute(i).isNominal() && 
+				(		data.attribute(i).name().equals("class") ||
+						data.attribute(i).toString().contains("alc,nonalc") || data.attribute(i).toString().contains("nonalc,alc"))){
 				data.setClassIndex(i);
 				break;
 			}
@@ -1709,6 +1707,17 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
     	
     	return data;
 	}
+
+	public static Instances loadArff(String file) throws Exception{
+		DataSource source = new DataSource(file); //load ARFF file
+    	Instances data = source.getDataSet();
+    	if(data == null){
+    		System.out.println("Please fix the input path!");
+    	}
+    	
+    	return data;
+	}
+	
 	
 	
 	/**
@@ -2654,6 +2663,113 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		}
 		
 		return values;
+	}
+	
+	public static HashMap<String,String> LoadTestMapping(String path) throws IOException{
+		InputStream    fis;
+		BufferedReader br;
+		String         line;
+		
+		HashMap<String,String> testmapping = new HashMap<String,String>();
+		
+		fis = new FileInputStream(path);
+		br = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
+		while ((line = br.readLine()) != null) {
+			//System.out.println("\""+line+"\""); // format example: BLOCK30/SES3066/5653066001_h_01.WAV
+			if(!line.isEmpty() && line != null && line.length()>5){
+				String[] tokens = line.split("\t");
+				
+				String id 		= tokens[0].split("/")[1];
+				//String classVal = (tokens[0].equals("A")?"AL":"NAL");
+				String orgID	= tokens[2].split("\\.")[0];
+				testmapping.put(id, orgID);
+				
+				//System.out.println("id: " + id + " class: " + orgID);
+			}
+		}
+		
+		// Done with the file
+		br.close();
+		br = null;
+		fis = null;		
+		
+		return testmapping;
+	}
+	
+
+	public static Instances[] convertOriginalToUs(Instances train,
+			Instances dev, Instances test, String testmappingFile, Instances data) throws Exception {
+		
+		Instances sets [] = new Instances [3];
+		sets[0] = new Instances(train);
+		sets[1] = new Instances(dev);
+		sets[2] = new Instances(test);
+		
+		HashMap<String, String> testmapping = LoadTestMapping(testmappingFile);
+		HashMap<String, String> classmapp = FindClassMapping(testmapping,data);
+		
+		FastVector values = new FastVector(); 
+        values.addElement("alc");              
+        values.addElement("nonalc");
+        sets[2].insertAttributeAt(new Attribute("NewClass", values), sets[2].numAttributes());
+        
+        sets[2].insertAttributeAt(new Attribute("file", (FastVector) null), sets[2].numAttributes());
+        
+        for(int i=0;i<sets[2].size();i++){
+			String file_id = testmapping.get(sets[2].get(i).stringValue(sets[2].attribute("name")));
+			sets[2].get(i).setValue(sets[2].attribute("file"), file_id);
+			sets[2].get(i).setValue(sets[2].attribute("NewClass"), classmapp.get(sets[2].get(i).stringValue(sets[2].attribute("name"))));
+		}
+		
+		sets[2].deleteAttributeAt(sets[2].attribute("name").index());
+		sets[2].deleteAttributeAt(sets[2].attribute("class").index());
+		sets[2].renameAttribute(sets[2].attribute("NewClass"), "class");
+		
+		for(int u=0;u<3;u++){
+			setClassIndex(sets[u]);
+			
+			//System.out.println("attribute size: " + train.size());			
+			//System.out.println("attribute num: " + train.numAttributes());			
+			//System.out.println("class attribute: " + train.classAttribute().name());
+			
+			if(u<2){
+				sets[u].renameAttribute(sets[u].attribute("name"), "file");
+				sets[u].renameAttributeValue(sets[u].classAttribute(), "NAL", "nonalc");
+				sets[u].renameAttributeValue(sets[u].classAttribute(), "AL",  "alc");
+			}
+		}
+		
+		
+		return sets;
+	}
+
+	private static HashMap<String, String> FindClassMapping(
+			HashMap<String, String> testmappingFile, Instances data) throws Exception {
+		
+		HashMap<String, String> classmap = new HashMap<String, String>();
+		
+		
+		Iterator it = testmappingFile.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        //System.out.println(pairs.getKey() + " = " + pairs.getValue());
+	        
+	        Boolean found = false;
+	        for(int i=0;i<data.size();i++){
+	        	if(data.get(i).stringValue(data.attribute("file")).equals(pairs.getValue())){
+	        		classmap.put((String)pairs.getKey(), data.get(i).stringValue(data.classAttribute()));
+	        		found = true;
+	        		break;
+	        	}
+	        }
+	        if(found == false){
+	        	System.out.println("One file id is only present in one file: " + (String)pairs.getKey());
+				throw new Exception();
+	        }
+	        
+	        //it.remove(); // avoids a ConcurrentModificationException
+	    }
+		return classmap;
 	}
 	
 }
