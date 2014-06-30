@@ -5,8 +5,10 @@ then
     echo "Usage: $0 <CLASSES-DIRECTORY> <ARFF-OUTPUT-DIRECTORY>"
 else
 
-CONF=/home/alc/workspace/ALC/test/conf/myIS11_speaker_state.conf
-BIN=/home/alc/tools/opensmile-2.0-rc1/opensmile/SMILExtract
+#CONF=/home/alc/workspace/ALC/test/conf/myIS11_speaker_state.conf
+#BIN=/home/alc/tools/opensmile-2.0-rc1/opensmile/SMILExtract
+CONF=/import/scratch/tjr/tjr40/alc_is2011/openSMILE/IS11.conf
+BIN=/import/scratch/tjr/tjr40/alc_is2011/openSMILE/linux_amd64_static/SMILExtract
 
 COUNT=0
 
