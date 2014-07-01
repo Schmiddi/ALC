@@ -7,6 +7,7 @@ JARS_ALL := $(JARS):$(JARS_TEST):$(JARS_WEKA):$(HOMELIB)/SMOTE.jar
 PATH_SOUND_WO_TT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/myIS13_ComParE
 PATH_CONFIG_13_TT_SOUND_16k := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS13_ComParE_16k
 PATH_CONFIG_13_TT_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS13_ComParE
+PATH_CONFIG_11_ORIG_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/alc_is2011
 PATH_IS2011_SETS := /home/bas-alc/corpus/DOC/IS2011CHALLENGE
 PATH_CONFIG_11_TT_SOUND := /import/scratch/tjr/tjr40/sound/tests/combined_all/myIS11_speaker_state
 PATH_SET_WOTT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/
@@ -30,6 +31,10 @@ help:
 ###################
 ##   Run tests   ##
 ###################
+sound_config11_orig_smote:
+	echo "sound__config11_orig_smote" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_ORIG_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4| ./log.sh
+
 IS2011_baseline:
 	echo "IS2011_baseline" | ./log.sh
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -mT 4 -original $(PATH_ORIGINAL_IS2011) -testmapping $(PATH_TESTMAPPING) smote| ./log.sh
