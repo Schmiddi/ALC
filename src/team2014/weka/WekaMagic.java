@@ -400,9 +400,8 @@ public class WekaMagic {
 		filter.setPercentage(percent);
 		filter.setRandomSeed(1);
 		
-		filter.setClassValue(train.classAttribute().indexOfValue("alc") + "" );
-		
 		if(train != null){
+			filter.setClassValue(train.classAttribute().indexOfValue("alc") + "" );
 			filter.setInputFormat(train);
 		}
 		
@@ -1268,6 +1267,10 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 			    	attributes[0] =	retsets[SetType.TRAIN.ordinal()].attribute("text").index(); //eventuell +1 ???
 			    	((StringToWordVector)f).setAttributeIndicesArray(attributes);						   
 			    }
+			    
+			    if (f instanceof SMOTE) {
+			    	((SMOTE)f).setClassValue(retsets[SetType.TRAIN.ordinal()].classAttribute().indexOfValue("alc") + "" );
+				}
 			    
 			    for(int i=0;i<sets.length;i++){
 			    	if(i>0 && f instanceof SMOTE){} //don't apply SMOTE to the test set!
