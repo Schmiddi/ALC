@@ -401,6 +401,7 @@ public class WekaMagic {
 		filter.setRandomSeed(1);
 		
 		if(train != null){
+			filter.setClassValue(train.classAttribute().indexOfValue("alc") + "" );
 			filter.setInputFormat(train);
 		}
 		
@@ -1267,6 +1268,10 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 			    	((StringToWordVector)f).setAttributeIndicesArray(attributes);						   
 			    }
 			    
+			    if (f instanceof SMOTE) {
+			    	((SMOTE)f).setClassValue(retsets[SetType.TRAIN.ordinal()].classAttribute().indexOfValue("alc") + "" );
+				}
+			    
 			    for(int i=0;i<sets.length;i++){
 			    	if(i>0 && f instanceof SMOTE){} //don't apply SMOTE to the test set!
 			    	else{
@@ -1525,7 +1530,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		ArrayList<Double> SmotePerVal = new ArrayList<Double>();
 		
 		if(smote){
-			SmotePerVal.add(227.0);
+			SmotePerVal.add(100.0);
 		}else{
 			SmotePerVal.add(0.0); //no application of smote
 		}
@@ -2709,8 +2714,8 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		HashMap<String, String> classmapp = FindClassMapping(testmapping,data);
 		
 		FastVector values = new FastVector(); 
-        values.addElement("alc");              
-        values.addElement("nonalc");
+		values.addElement("nonalc");
+        values.addElement("alc");    
         sets[2].insertAttributeAt(new Attribute("NewClass", values), sets[2].numAttributes());
         
         sets[2].insertAttributeAt(new Attribute("file", (FastVector) null), sets[2].numAttributes());
