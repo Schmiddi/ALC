@@ -400,6 +400,8 @@ public class WekaMagic {
 		filter.setPercentage(percent);
 		filter.setRandomSeed(1);
 		
+		filter.setClassValue(train.classAttribute().indexOfValue("alc") + "" );
+		
 		if(train != null){
 			filter.setInputFormat(train);
 		}
@@ -2709,8 +2711,8 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		HashMap<String, String> classmapp = FindClassMapping(testmapping,data);
 		
 		FastVector values = new FastVector(); 
-        values.addElement("alc");              
-        values.addElement("nonalc");
+		values.addElement("nonalc");
+        values.addElement("alc");    
         sets[2].insertAttributeAt(new Attribute("NewClass", values), sets[2].numAttributes());
         
         sets[2].insertAttributeAt(new Attribute("file", (FastVector) null), sets[2].numAttributes());

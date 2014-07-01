@@ -320,6 +320,9 @@ public class AllIS2011 {
 			System.out.println("Total number of Instances: " + (sets[0].size() + sets[1].size() + sets[2].size()));
 			
 			Boolean smote = Utils.isFlag(new String[]{"smote"},args);
+			if(smote){
+				System.out.println("Smote is applied :)");
+			}
 			
 			List<List<Double>> results = null;
 			

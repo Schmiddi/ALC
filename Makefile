@@ -32,7 +32,7 @@ help:
 ###################
 IS2011_baseline:
 	echo "IS2011_baseline" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -mT 4 -original $(PATH_ORIGINAL_IS2011) -testmapping $(PATH_TESTMAPPING) smote| ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -mT 4 -original $(PATH_ORIGINAL_IS2011) -testmapping $(PATH_TESTMAPPING) smote | ./log.sh
 
 WerTest:
 	java -classpath $(JARS_ALL) team2014.test.PrepareForWerTest $(PATH_ORIGINAL_CSV) /home/alc/workspace/ALC/speech_recognizer/experiment/output_speech_recognizer_old.csv $(WER_OUTPUT)
