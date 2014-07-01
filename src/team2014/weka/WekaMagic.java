@@ -1527,7 +1527,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		ArrayList<Double> SmotePerVal = new ArrayList<Double>();
 		
 		if(smote){
-			SmotePerVal.add(227.0);
+			SmotePerVal.add(100.0);
 		}else{
 			SmotePerVal.add(0.0); //no application of smote
 		}
