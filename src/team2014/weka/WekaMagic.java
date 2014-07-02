@@ -401,7 +401,6 @@ public class WekaMagic {
 		filter.setRandomSeed(1);
 		
 		if(train != null){
-			filter.setClassValue(train.classAttribute().indexOfValue("alc") + "" );
 			filter.setInputFormat(train);
 		}
 		
@@ -1268,14 +1267,13 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 			    	((StringToWordVector)f).setAttributeIndicesArray(attributes);						   
 			    }
 			    
-			    if (f instanceof SMOTE) {
-			    	((SMOTE)f).setClassValue(retsets[SetType.TRAIN.ordinal()].classAttribute().indexOfValue("alc") + "" );
-				}
-			    
 			    for(int i=0;i<sets.length;i++){
 			    	if(i>0 && f instanceof SMOTE){} //don't apply SMOTE to the test set!
 			    	else{
 			    		retsets[i] = Filter.useFilter(retsets[i], f); //use filter on the training data
+			    		if(f instanceof SMOTE) {
+			    			System.out.println("NAL: " + WekaMagic.getNumberNonAlc(retsets[i]) + " ALC: " + (retsets[i].size() - WekaMagic.getNumberNonAlc(retsets[i]) ));
+			    		}
 			    	}
 				}
 		    }
