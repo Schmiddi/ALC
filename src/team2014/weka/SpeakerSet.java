@@ -201,15 +201,17 @@ public class SpeakerSet {
 				for(Sample s:speakerSamples.get(i).getFiles()){
 					subset.add(s.getFilename());
 				}
-				//System.out.println("i-test: " +i);
+				System.out.print("m"+i + ", ");
 			}	
 			if((female >= fold*numberSpeaker) && (female < (fold+1)*numberSpeaker) && speakerSamples.get(i).getSpeaker().isFemale()){
 				for(Sample s:speakerSamples.get(i).getFiles()){
 					subset.add(s.getFilename());
 				}			
-				//System.out.println("i-test: " +i);
+				System.out.print("f"+i + ", ");
 			}
 		}
+		System.out.println();
+		
 		
 		for(int i=0;i<data.size();i++){
 			for(String in_key:subset){

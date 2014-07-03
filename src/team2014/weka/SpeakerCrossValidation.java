@@ -26,12 +26,16 @@ public class SpeakerCrossValidation {
 		
 		WekaMagic.setClassIndex(data);
 		int i;
-		
+
 		Instances totaltest = speakerdata.buildTest(data,key,10);
 		
 		SpeakerSet speakerData = WekaMagic.matchSpeakerToInstances(speakerTable, totaltest, key);
-		
+		System.out.println("test: ");
 		speakerData.printInfo();
+		System.out.println();
+		
+		System.out.println("dev: ");
+		speakerdata.printInfo();
 		System.out.println();
 		
 		totaltest.deleteAttributeAt(totaltest.attribute(key).index());
@@ -42,44 +46,57 @@ public class SpeakerCrossValidation {
 			double realUAR = 0;
 			for(i=0;1==1;i++){
 				Instances train = speakerdata.getTrain(i,data,key,numberSpeakerTest);			
-				Instances test  = speakerdata.getTest(i,data,key,numberSpeakerTest);
-				
-				
+				Instances test  = speakerdata.getTest(i,data,key,numberSpeakerTest);			
 				
 				if(test.size()==0) break;
 				
+				//delete attribute filename
 				train.deleteAttributeAt(train.attribute(key).index());
 				test.deleteAttributeAt(test.attribute(key).index());
 				
 				System.out.println("train/test: " + train.size() + "/" + test.size());
 				
-				MyOutput normalized = WekaMagic.normalize(train, test);
 				
+				//Normalize:
+				MyOutput normalized = WekaMagic.normalize(train, test);				
 				train = normalized.getTrainData();
 				test = normalized.getTestData();
 				
+				//set class
 				WekaMagic.setClassIndex(train);
 				WekaMagic.setClassIndex(test);
 				
+				//classify
 				MyClassificationOutput classifier = WekaMagic.runSVM(train, clist.get(c), null,  new Double[]{1.0,1.0});
-				
 				MyClassificationOutput test_classifier = WekaMagic.applyClassifier(test,classifier);
 				System.out.println("UAR: " + test_classifier.getUAR());
 				
-				Instances new_totaltest = new Instances(totaltest);
-				new_totaltest = WekaMagic.applyFilter(new_totaltest, normalized);
-				
-				MyClassificationOutput totaltest_classifier = WekaMagic.applyClassifier(totaltest,classifier);
-				System.out.println("Totaltest UAR: " + totaltest_classifier.getUAR());
-				
 				totalUAR  +=  test_classifier.getUAR();	
-				realUAR   +=  totaltest_classifier.getUAR();
 				
-				System.out.println("Current total UAR: " + (totalUAR / (i+1)));
-				System.out.println("Current real UAR: " + (realUAR / (i+1)));
+				System.out.println(i + ". Current total UAR: " + (totalUAR / (i+1)));
 			}
 			System.out.println("C: " +  clist.get(c) + " Final total UAR: " + (totalUAR / i));
-			System.out.println("C: " +  clist.get(c) + " Final real UAR: " + (realUAR / i));
+			
+			//get whole dev set
+			Instances train = speakerdata.getTrain(0,data,key,numberSpeakerTest);			
+			Instances test  = speakerdata.getTest(0,data,key,numberSpeakerTest);
+			
+			train.addAll(test);
+			train.deleteAttributeAt(train.attribute(key).index());
+			
+			//normalize based on dev set
+			MyOutput normalized = WekaMagic.normalize(train, totaltest);			
+			train = normalized.getTrainData();
+			test = normalized.getTestData();
+			
+			//set class
+			WekaMagic.setClassIndex(train);
+			WekaMagic.setClassIndex(test);		
+			
+			//classify
+			MyClassificationOutput classifier = WekaMagic.runSVM(train, clist.get(c), null,  new Double[]{1.0,1.0});			
+			MyClassificationOutput test_classifier = WekaMagic.applyClassifier(test,classifier);
+			System.out.println("C: " +  clist.get(c) + " Totaltest UAR: " + test_classifier.getUAR());
 		}	
 	}
 	
