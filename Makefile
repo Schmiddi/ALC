@@ -14,6 +14,7 @@ PATH_SET_WOTT := /import/scratch/tjr/tjr40/sound/tests/combined_all_wo_tt/
 PATH_ORIGINAL_CSV := /import/scratch/tjr/tjr40/sound/tests/combined_all/output.csv
 PATH_ORIGINAL_IS2011 := /import/scratch/tjr/tjr40/alc_is2011/ALC_Features
 PATH_TESTMAPPING := /home/bas-alc/corpus/DOC/IS2011CHALLENGE/TESTMAPPING.txt
+PATH_TOCATS := /import/scratch/tjr/tjr40/sound/tests/separate_all/
 XMX := -Xmx70g
 NOW := date +"%Y_%m_%d"
 OUTPUT_DIR := /import/scratch/tjr/tjr40/sound/tests/output
@@ -38,6 +39,10 @@ sound_config11_orig_smote:
 IS2011_baseline:
 	echo "IS2011_baseline" | ./log.sh
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -mT 4 -original $(PATH_ORIGINAL_IS2011) -testmapping $(PATH_TESTMAPPING) smote | ./log.sh
+
+sound_tt_config13_16k_smote:
+	echo "sound_tt_config13_16k_smote" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_13_TT_SOUND_16k) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4  | ./log.sh
 
 WerTest:
 	java -classpath $(JARS_ALL) team2014.test.PrepareForWerTest $(PATH_ORIGINAL_CSV) /home/alc/workspace/ALC/speech_recognizer/experiment/output_speech_recognizer_old.csv $(WER_OUTPUT)
@@ -129,6 +134,10 @@ sound_wott_twtt_config11:
 	echo "sound_wott_twtt_config11" | ./log.sh
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) twtt | ./log.sh
 
+text_tt_config11_smote:
+	echo "text_tt_config11_smote" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 | ./log.sh
+
 text_wott_config11:
 	echo "text_wott_config11" | ./log.sh
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -wott $(PATH_SET_WOTT) | ./log.sh
@@ -149,6 +158,59 @@ sound_tt_config11_smote:
 all_tt_config11_smote:
 	echo "all_tt_config_11_smote" | ./log.sh
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4| ./log.sh
+
+
+######################################
+##          Categories              ##
+######################################
+
+# output_DP.csv  output_DQ.csv  output_EC.csv  output_LN.csv  output_LS.csv  output_LT.csv  output_MP.csv  output_MQ.csv  output_RA.csv  output_RR.csv  output_RT.csv
+
+text_tt_config11_smote_cat_all: text_tt_config11_smote_cat_DP text_tt_config11_smote_cat_DQ text_tt_config11_smote_cat_EC text_tt_config11_smote_cat_LN text_tt_config11_smote_cat_LS text_tt_config11_smote_cat_LT text_tt_config11_smote_cat_MP text_tt_config11_smote_cat_MQ text_tt_config11_smote_cat_RA text_tt_config11_smote_cat_RR text_tt_config11_smote_cat_RT
+
+text_tt_config11_smote_cat_DP:
+	echo "text_tt_config_11_smote_cat_DP" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_DP.csv | ./log.sh
+
+text_tt_config11_smote_cat_DQ:
+	echo "text_tt_config_11_smote_cat_DQ" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_DQ.csv | ./log.sh
+
+text_tt_config11_smote_cat_EC:
+	echo "text_tt_config_11_smote_cat_EC" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_EC.csv | ./log.sh
+
+text_tt_config11_smote_cat_LN:
+	echo "text_tt_config_11_smote_cat_LN" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_LN.csv | ./log.sh
+
+text_tt_config11_smote_cat_LS:
+	echo "text_tt_config_11_smote_cat_LS" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_LS.csv | ./log.sh
+
+text_tt_config11_smote_cat_LT:
+	echo "text_tt_config_11_smote_cat_LT" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_LT.csv | ./log.sh
+
+text_tt_config11_smote_cat_MP:
+	echo "text_tt_config_11_smote_cat_MP" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_MP.csv | ./log.sh
+
+text_tt_config11_smote_cat_MQ:
+	echo "text_tt_config_11_smote_cat_MQ" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_MQ.csv | ./log.sh
+
+text_tt_config11_smote_cat_RA:
+	echo "text_tt_config_11_smote_cat_RA" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_RA.csv | ./log.sh
+
+text_tt_config11_smote_cat_RR:
+	echo "text_tt_config_11_smote_cat_RR" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_RR.csv | ./log.sh
+
+text_tt_config11_smote_cat_RT:
+	echo "text_tt_config_11_smote_cat_RT" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_RT.csv | ./log.sh
 #####################################
 ##   Build classes from packages   ##
 #####################################
