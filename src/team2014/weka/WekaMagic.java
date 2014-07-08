@@ -1270,7 +1270,18 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 			    for(int i=0;i<sets.length;i++){
 			    	if(i>0 && f instanceof SMOTE){} //don't apply SMOTE to the test set!
 			    	else{
+			    		if(f instanceof SMOTE && ((SMOTE)f).getPercentage()==0) {
+			    			double nal = WekaMagic.getNumberNonAlc(retsets[i]);
+			    			double al  = (retsets[i].size() - WekaMagic.getNumberNonAlc(retsets[i]));
+			    			
+			    			double factor = ((nal / al) * 100)-100;
+			    			System.out.println("NAL: " + nal + " ALC: " + al);
+			    			
+			    			((SMOTE)f).setPercentage(factor);
+			    		}
+			    		
 			    		retsets[i] = Filter.useFilter(retsets[i], f); //use filter on the training data
+			    		
 			    		if(f instanceof SMOTE) {
 			    			System.out.println("NAL: " + WekaMagic.getNumberNonAlc(retsets[i]) + " ALC: " + (retsets[i].size() - WekaMagic.getNumberNonAlc(retsets[i]) ));
 			    		}
@@ -1416,7 +1427,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection, int maxThreads, Boolean smote) throws Exception {
+	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection, int maxThreads, double smote) throws Exception {
 		return WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, false,-1,smote);
 	}
 	
@@ -1430,7 +1441,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	 * @return Results of each loop iteration (test)
 	 * @throws Exception
 	 */
-	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int maxThreads, Boolean smote) throws Exception {
+	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int maxThreads, double smotep) throws Exception {
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
 		double stdRidge = 0.00000001; //10^-8
@@ -1462,7 +1473,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 				currentRidge = stdRidge * (Math.pow(10, u));
 				
 				// Start all threads
-				threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,new Double[]{currentRidge},threshold.get(i),ClassifierE.LOGISTIC.getValue(),smote, 5, 100.0);  //TODO: optimize smote
+				threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,new Double[]{currentRidge},threshold.get(i),ClassifierE.LOGISTIC.getValue(), 5, smotep);  //TODO: optimize smote
 				threads[count%nrThreads].start();
 				
 				// If all threads are up and running
@@ -1524,13 +1535,15 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		return Cval;
 	}
 	
-	public static ArrayList<Double> createsmotePercentageValueSetList(Boolean smote){
+	public static ArrayList<Double> createsmotePercentageValueSetList(double smote){
 		ArrayList<Double> SmotePerVal = new ArrayList<Double>();
 		
-		if(smote){
+		if(smote > 0){
 			SmotePerVal.add(100.0);
+		}else if(smote == 0){
+			SmotePerVal.add(0.0);
 		}else{
-			SmotePerVal.add(0.0); //no application of smote
+			SmotePerVal.add(-1.0); //no application of smote
 		}
 		
 		
@@ -1546,11 +1559,11 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	 * @param isText If feature generation is necessary
 	 * @param kernelType - int number of Kernel type defined in team2014.weka.svm
 	 * @param maxThreads 
-	 * @param smote 
+	 * @param smotep 
 	 * @return Results of each loop iteration (test)
 	 * @throws Exception
 	 */
-	public static List<List<Double>> runTestUARIS2011SVMThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int kernelType, int maxThreads, Boolean smote) throws Exception {
+	public static List<List<Double>> runTestUARIS2011SVMThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int kernelType, int maxThreads, double smotep) throws Exception {
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
 		ArrayList<Double> threshold = new ArrayList<Double>();
@@ -1576,8 +1589,8 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		}
 				
 		
-		ArrayList<Double> percentages = createsmotePercentageValueSetList(smote);
-		ArrayList<Integer> smoteKNNval = createsmoteKNNValueSetList(smote);
+		ArrayList<Double> percentages = createsmotePercentageValueSetList(smotep);
+		ArrayList<Integer> smoteKNNval = createsmoteKNNValueSetList(smotep);
 		
 		System.out.println("Running tests for train, dev and test set...");
 		
@@ -1602,7 +1615,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 							
 							// Start all threads
 							threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
-																	new Double[]{currentC, Gammaval.get(u)},threshold.get(i),ClassifierE.SVM.getValue(), smote, smoteKNN, smotePer); 
+																	new Double[]{currentC, Gammaval.get(u)},threshold.get(i),ClassifierE.SVM.getValue(), smoteKNN, smotePer); 
 							threads[count%nrThreads].start();
 							
 							// If all threads are up and running
@@ -1623,10 +1636,10 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	}
 	
 	
-	private static ArrayList<Integer> createsmoteKNNValueSetList(Boolean smote) {
+	private static ArrayList<Integer> createsmoteKNNValueSetList(double smote) {
 		ArrayList<Integer> SmoteKNNVal = new ArrayList<Integer>();
 		
-		if(smote){
+		if(smote >=0){
 			SmoteKNNVal.add(5);
 		}else{
 			SmoteKNNVal.add(0); //no application of smote
@@ -2564,7 +2577,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 
 	public static List<List<Double>> runTestUARIS2011KNNThreads(
 			Instances[] sets, Boolean withAttributeSelection, Boolean isText,
-			int maxThreads, Boolean smote) throws InterruptedException {
+			int maxThreads, double smotep) throws InterruptedException {
 		
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
@@ -2603,7 +2616,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 				
 				// Start all threads
 				threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
-														new Double[]{currentK},threshold.get(i),ClassifierE.KNN.getValue(),smote, 5, 100.0); //TODO: optimize smote
+														new Double[]{currentK},threshold.get(i),ClassifierE.KNN.getValue(), 5, smotep); //TODO: optimize smote
 				threads[count%nrThreads].start();
 				
 				// If all threads are up and running
@@ -2622,7 +2635,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 
 	public static List<List<Double>> runTestUARIS2011NBThreads(
 			Instances[] sets, Boolean withAttributeSelection, Boolean isText,
-			int maxThreads, Boolean smote) throws InterruptedException {
+			int maxThreads, double smotep) throws InterruptedException {
 		
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
@@ -2650,7 +2663,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 				
 					// Start all threads
 					threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
-															new Double[]{(double)kernel,(double)discret},threshold.get(i),ClassifierE.NB.getValue(),smote, 5, 100.0); //TODO: optimize smote
+															new Double[]{(double)kernel,(double)discret},threshold.get(i),ClassifierE.NB.getValue(), 5, smotep); //TODO: optimize smote
 					threads[count%nrThreads].start();
 					
 					// If all threads are up and running

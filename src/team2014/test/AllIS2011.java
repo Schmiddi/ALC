@@ -319,24 +319,27 @@ public class AllIS2011 {
 			
 			System.out.println("Total number of Instances: " + (sets[0].size() + sets[1].size() + sets[2].size()));
 			
-			Boolean smote = Utils.isFlag(new String[]{"smote"},args);
+			Boolean smote = Utils.isFlag(new String[]{"-smote"},args);
+			double smotep=-1;
 			if(smote){
-				System.out.println("Smote is applied :)");
+				smotep = Double.parseDouble(Utils.getFlag(new String[]{"-smote"},args));
+				System.out.println("Smote is applied :) - " + smotep);
+				
 			}
 			
 			List<List<Double>> results = null;
 			
 			if(method.equals("log")){
-				results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, text, maxThreads, smote);
+				results = WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, text, maxThreads, smotep);
 			}
 			else if(method.equals("knn")){
-				results = WekaMagic.runTestUARIS2011KNNThreads(sets, withAttributeSelection, text, maxThreads, smote);
+				results = WekaMagic.runTestUARIS2011KNNThreads(sets, withAttributeSelection, text, maxThreads, smotep);
 			}
 			else if(method.equals("nb")){
-				results = WekaMagic.runTestUARIS2011NBThreads(sets, withAttributeSelection, text, maxThreads, smote);
+				results = WekaMagic.runTestUARIS2011NBThreads(sets, withAttributeSelection, text, maxThreads, smotep);
 			}
 			else{
-				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, text, Kernel, maxThreads, smote);
+				results = WekaMagic.runTestUARIS2011SVMThreads(sets, withAttributeSelection, text, Kernel, maxThreads, smotep);
 			}
 			
 			String name = "class_" + ((text)?"text-":"") + ((grammar)?"grammar-":"") + ((sound)?"sound-":""); 
