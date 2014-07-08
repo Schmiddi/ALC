@@ -165,7 +165,7 @@ all_tt_config11_smote:
 
 
 ######################################
-##          Categories              ##
+##          Categories text         ##
 ######################################
 
 # output_DP.csv  output_DQ.csv  output_EC.csv  output_LN.csv  output_LS.csv  output_LT.csv  output_MP.csv  output_MQ.csv  output_RA.csv  output_RR.csv  output_RT.csv
@@ -174,47 +174,151 @@ text_tt_config11_smote_cat_all: text_tt_config11_smote_cat_DP text_tt_config11_s
 
 text_tt_config11_smote_cat_DP:
 	echo "text_tt_config_11_smote_cat_DP" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_DP.csv | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_DP.csv | ./log.sh
 
 text_tt_config11_smote_cat_DQ:
 	echo "text_tt_config_11_smote_cat_DQ" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_DQ.csv | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_DQ.csv | ./log.sh
 
 text_tt_config11_smote_cat_EC:
 	echo "text_tt_config_11_smote_cat_EC" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_EC.csv | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_EC.csv | ./log.sh
 
 text_tt_config11_smote_cat_LN:
 	echo "text_tt_config_11_smote_cat_LN" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_LN.csv | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_LN.csv | ./log.sh
 
 text_tt_config11_smote_cat_LS:
 	echo "text_tt_config_11_smote_cat_LS" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_LS.csv | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_LS.csv | ./log.sh
 
 text_tt_config11_smote_cat_LT:
 	echo "text_tt_config_11_smote_cat_LT" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_LT.csv | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_LT.csv | ./log.sh
 
 text_tt_config11_smote_cat_MP:
 	echo "text_tt_config_11_smote_cat_MP" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_MP.csv | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_MP.csv | ./log.sh
 
 text_tt_config11_smote_cat_MQ:
 	echo "text_tt_config_11_smote_cat_MQ" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_MQ.csv | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_MQ.csv | ./log.sh
 
 text_tt_config11_smote_cat_RA:
 	echo "text_tt_config_11_smote_cat_RA" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_RA.csv | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_RA.csv | ./log.sh
 
 text_tt_config11_smote_cat_RR:
 	echo "text_tt_config_11_smote_cat_RR" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_RR.csv | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_RR.csv | ./log.sh
 
 text_tt_config11_smote_cat_RT:
 	echo "text_tt_config_11_smote_cat_RT" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4 -sc $(PATH_TOCATS)output_RT.csv | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_RT.csv | ./log.sh
+
+######################################
+##          Categories sound        ##
+######################################
+
+# output_DP.csv  output_DQ.csv  output_EC.csv  output_LN.csv  output_LS.csv  output_LT.csv  output_MP.csv  output_MQ.csv  output_RA.csv  output_RR.csv  output_RT.csv
+
+sound_tt_config11_smote_cat_all: sound_tt_config11_smote_cat_DP sound_tt_config11_smote_cat_DQ sound_tt_config11_smote_cat_EC sound_tt_config11_smote_cat_LN sound_tt_config11_smote_cat_LS sound_tt_config11_smote_cat_LT sound_tt_config11_smote_cat_MP sound_tt_config11_smote_cat_MQ sound_tt_config11_smote_cat_RA sound_tt_config11_smote_cat_RR sound_tt_config11_smote_cat_RT
+
+sound_tt_config11_smote_cat_DP:
+	echo "sound_tt_config_11_smote_cat_DP" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_DP.csv | ./log.sh
+
+sound_tt_config11_smote_cat_DQ:
+	echo "sound_tt_config_11_smote_cat_DQ" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_DQ.csv | ./log.sh
+
+sound_tt_config11_smote_cat_EC:
+	echo "sound_tt_config_11_smote_cat_EC" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_EC.csv | ./log.sh
+
+sound_tt_config11_smote_cat_LN:
+	echo "sound_tt_config_11_smote_cat_LN" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_LN.csv | ./log.sh
+
+sound_tt_config11_smote_cat_LS:
+	echo "sound_tt_config_11_smote_cat_LS" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_LS.csv | ./log.sh
+
+sound_tt_config11_smote_cat_LT:
+	echo "sound_tt_config_11_smote_cat_LT" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_LT.csv | ./log.sh
+
+sound_tt_config11_smote_cat_MP:
+	echo "sound_tt_config_11_smote_cat_MP" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_MP.csv | ./log.sh
+
+sound_tt_config11_smote_cat_MQ:
+	echo "sound_tt_config_11_smote_cat_MQ" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_MQ.csv | ./log.sh
+
+sound_tt_config11_smote_cat_RA:
+	echo "sound_tt_config_11_smote_cat_RA" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_RA.csv | ./log.sh
+
+sound_tt_config11_smote_cat_RR:
+	echo "sound_tt_config_11_smote_cat_RR" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_RR.csv | ./log.sh
+
+sound_tt_config11_smote_cat_RT:
+	echo "sound_tt_config_11_smote_cat_RT" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_RT.csv | ./log.sh
+
+######################################
+##          Categories all          ##
+######################################
+
+# output_DP.csv  output_DQ.csv  output_EC.csv  output_LN.csv  output_LS.csv  output_LT.csv  output_MP.csv  output_MQ.csv  output_RA.csv  output_RR.csv  output_RT.csv
+
+all_tt_config11_smote_cat_all: all_tt_config11_smote_cat_DP all_tt_config11_smote_cat_DQ all_tt_config11_smote_cat_EC all_tt_config11_smote_cat_LN all_tt_config11_smote_cat_LS all_tt_config11_smote_cat_LT all_tt_config11_smote_cat_MP all_tt_config11_smote_cat_MQ all_tt_config11_smote_cat_RA all_tt_config11_smote_cat_RR all_tt_config11_smote_cat_RT
+
+all_tt_config11_smote_cat_DP:
+	echo "all_tt_config_11_smote_cat_DP" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_DP.csv | ./log.sh
+
+all_tt_config11_smote_cat_DQ:
+	echo "all_tt_config_11_smote_cat_DQ" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_DQ.csv | ./log.sh
+
+all_tt_config11_smote_cat_EC:
+	echo "all_tt_config_11_smote_cat_EC" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_EC.csv | ./log.sh
+
+all_tt_config11_smote_cat_LN:
+	echo "all_tt_config_11_smote_cat_LN" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_LN.csv | ./log.sh
+
+all_tt_config11_smote_cat_LS:
+	echo "all_tt_config_11_smote_cat_LS" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_LS.csv | ./log.sh
+
+all_tt_config11_smote_cat_LT:
+	echo "all_tt_config_11_smote_cat_LT" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_LT.csv | ./log.sh
+
+all_tt_config11_smote_cat_MP:
+	echo "all_tt_config_11_smote_cat_MP" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_MP.csv | ./log.sh
+
+all_tt_config11_smote_cat_MQ:
+	echo "all_tt_config_11_smote_cat_MQ" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_MQ.csv | ./log.sh
+
+all_tt_config11_smote_cat_RA:
+	echo "all_tt_config_11_smote_cat_RA" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_RA.csv | ./log.sh
+
+all_tt_config11_smote_cat_RR:
+	echo "all_tt_config_11_smote_cat_RR" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_RR.csv | ./log.sh
+
+all_tt_config11_smote_cat_RT:
+	echo "all_tt_config_11_smote_cat_RT" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_RT.csv | ./log.sh
 #####################################
 ##   Build classes from packages   ##
 #####################################
