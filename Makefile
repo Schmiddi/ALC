@@ -319,6 +319,31 @@ all_tt_config11_smote_cat_RR:
 all_tt_config11_smote_cat_RT:
 	echo "all_tt_config_11_smote_cat_RT" | ./log.sh
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_RT.csv | ./log.sh
+
+#####################################
+##   Run experiment wise		   ##
+#####################################
+
+text_tt_config11_smote_exp_all:
+	for number in 001  002  003  005  006  007  008  009  010  011  012  013  014  015  016  017  018  019  020  021  022  023  024  025  026  027  028  029  030; do\
+		echo "TEXT: Run experiment "$$number;\
+		name="/import/scratch/tjr/tjr40/sound/tests/single_experiments/"$$number"/output.csv"; \
+		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name | ./log.sh ;\
+	done
+
+sound_tt_config11_smote_exp_all:
+	for number in 001  002  003  005  006  007  008  009  010  011  012  013  014  015  016  017  018  019  020  021  022  023  024  025  026  027  028  029  030; do\
+		echo "SOUND: Run experiment "$$number;\
+		name="/import/scratch/tjr/tjr40/sound/tests/single_experiments/"$$number"/output.csv"; \
+		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name | ./log.sh ;\
+	done
+
+all_tt_config11_smote_exp_all:
+	for number in 001  002  003  005  006  007  008  009  010  011  012  013  014  015  016  017  018  019  020  021  022  023  024  025  026  027  028  029  030; do\
+		echo "ALL: Run experiment "$$number;\
+		name="/import/scratch/tjr/tjr40/sound/tests/single_experiments/"$$number"/output.csv"; \
+		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name | ./log.sh ;\
+	done
 #####################################
 ##   Build classes from packages   ##
 #####################################
