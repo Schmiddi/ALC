@@ -75,7 +75,7 @@ public class AllIS2011 {
 			System.out.println("Default: -1 (use as many threads as cores)\n");
 			
 			System.out.println("Use Synthetic Minority Oversampling TEchnique (SMOTE)");
-			System.out.println("smote\n");
+			System.out.println("-smote 0 (means balance the dataset)\n");
 			
 			System.out.println("Classify only instances with experiments for both states / name the folder which contains only arff files with mapped instances");
 			System.out.println("-wott <path>, -without_tongue_twisters <path>");
@@ -258,9 +258,10 @@ public class AllIS2011 {
 					sets = WekaMagic.getInterspeech11wott(dirInterspeech, data, s_key, dir_wott, applyOnTest, category_file);
 				}else{
 					sets = WekaMagic.getInterspeech2011Sets(dirInterspeech, data, s_key, category_file);
-				}
-			
+				}			
 			}
+			
+			System.out.println("train: " + sets[0].size() + " dev: " + sets[1].size() + " test: " + sets[2].size());
 			
 			//get classification algorithm configurations
             Boolean withAttributeSelection = false;			
