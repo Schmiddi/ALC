@@ -328,41 +328,41 @@ all_tt_config11_smote_cat_RT:
 
 text_tt_config11_smote_exp_all:
 	for number in 001  002  003  005  006  007  008  009  010  011  012  013  014  015  016  017  018  019  020  021  022  023  024  025  026  027  028  029  030; do\
-		echo "TEXT: Run experiment "$$number;\
+		echo "TEXT: Run experiment "$$number | ./log.sh; \
 		name="/import/scratch/tjr/tjr40/sound/tests/single_experiments/"$$number"/output.csv"; \
 		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name | ./log.sh ;\
 	done
 
 sound_tt_config11_smote_exp_all:
 	for number in 001  002  003  005  006  007  008  009  010  011  012  013  014  015  016  017  018  019  020  021  022  023  024  025  026  027  028  029  030; do\
-		echo "SOUND: Run experiment "$$number;\
+		echo "SOUND: Run experiment "$$number | ./log.sh;\
 		name="/import/scratch/tjr/tjr40/sound/tests/single_experiments/"$$number"/output.csv"; \
 		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name | ./log.sh ;\
 	done
 
 all_tt_config11_smote_exp_all:
 	for number in 001  002  003  005  006  007  008  009  010  011  012  013  014  015  016  017  018  019  020  021  022  023  024  025  026  027  028  029  030; do\
-		echo "ALL: Run experiment "$$number;\
+		echo "ALL: Run experiment "$$number | ./log.sh; \
 		name="/import/scratch/tjr/tjr40/sound/tests/single_experiments/"$$number"/output.csv"; \
 		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name | ./log.sh ;\
 	done
 
 text_speech_rec_tt_config11_smote_exp_all:
 	for number in 001  002  003  005  006  007  008  009  010  011  012  013  014  015  016  017  018  019  020  021  022  023  024  025  026  027  028  029  030; do\
-		echo "TEXT - TRAIN: Run experiment "$$number;\
+		echo "TEXT - TRAIN: Run experiment "$$number | ./log.sh;\
 		name="/import/scratch/tjr/tjr40/sound/tests/single_experiments/"$$number"/output.csv"; \
 		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name -tp $(PATH_SPEECH_REC_TRAIN) | ./log.sh ;\
-		echo "TEXT - TRAIN-DEV: Run experiment "$$number;\
+		echo "TEXT - TRAIN-DEV: Run experiment "$$number | ./log.sh ;\
 		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name -tp $(PATH_SPEECH_REC_TRAINDEV) | ./log.sh ;\
 	done
 
 
 all_speech_rec_tt_config11_smote_exp_all:
 	for number in 001  002  003  005  006  007  008  009  010  011  012  013  014  015  016  017  018  019  020  021  022  023  024  025  026  027  028  029  030; do\
-		echo "ALL - TRAIN: Run experiment "$$number;\
+		echo "ALL - TRAIN: Run experiment "$$number | ./log.sh ;\
 		name="/import/scratch/tjr/tjr40/sound/tests/single_experiments/"$$number"/output.csv"; \
 		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name -tp $(PATH_SPEECH_REC_TRAIN) | ./log.sh ;\
-		echo "ALL - TRAIN-DEV: Run experiment "$$number;\
+		echo "ALL - TRAIN-DEV: Run experiment "$$number | ./log.sh;\
 		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name -tp $(PATH_SPEECH_REC_TRAINDEV) | ./log.sh ;\
 	done
 #####################################
