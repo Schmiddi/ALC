@@ -15,6 +15,8 @@ PATH_ORIGINAL_CSV := /import/scratch/tjr/tjr40/sound/tests/combined_all/output.c
 PATH_ORIGINAL_IS2011 := /import/scratch/tjr/tjr40/alc_is2011/ALC_Features
 PATH_TESTMAPPING := /home/bas-alc/corpus/DOC/IS2011CHALLENGE/TESTMAPPING.txt
 PATH_TOCATS := /import/scratch/tjr/tjr40/sound/tests/separate_all/
+PATH_SPEECH_REC_TRAIN := /import/scratch/tjr/tjr40/sound/tests/combined_all/output_speech_recognizer_train.csv
+PATH_SPEECH_REC_TRAINDEV := /import/scratch/tjr/tjr40/sound/tests/combined_all/output_speech_recognizer_train+dev_is2011.csv
 XMX := -Xmx70g
 NOW := date +"%Y_%m_%d"
 OUTPUT_DIR := /import/scratch/tjr/tjr40/sound/tests/output
@@ -343,6 +345,25 @@ all_tt_config11_smote_exp_all:
 		echo "ALL: Run experiment "$$number;\
 		name="/import/scratch/tjr/tjr40/sound/tests/single_experiments/"$$number"/output.csv"; \
 		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name | ./log.sh ;\
+	done
+
+text_speech_rec_tt_config11_smote_exp_all:
+	for number in 001  002  003  005  006  007  008  009  010  011  012  013  014  015  016  017  018  019  020  021  022  023  024  025  026  027  028  029  030; do\
+		echo "TEXT - TRAIN: Run experiment "$$number;\
+		name="/import/scratch/tjr/tjr40/sound/tests/single_experiments/"$$number"/output.csv"; \
+		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name -tp $(PATH_SPEECH_REC_TRAIN) | ./log.sh ;\
+		echo "TEXT - TRAIN-DEV: Run experiment "$$number;\
+		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 text -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name -tp $(PATH_SPEECH_REC_TRAINDEV) | ./log.sh ;\
+	done
+
+
+all_speech_rec_tt_config11_smote_exp_all:
+	for number in 001  002  003  005  006  007  008  009  010  011  012  013  014  015  016  017  018  019  020  021  022  023  024  025  026  027  028  029  030; do\
+		echo "ALL - TRAIN: Run experiment "$$number;\
+		name="/import/scratch/tjr/tjr40/sound/tests/single_experiments/"$$number"/output.csv"; \
+		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name -tp $(PATH_SPEECH_REC_TRAIN) | ./log.sh ;\
+		echo "ALL - TRAIN-DEV: Run experiment "$$number;\
+		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name -tp $(PATH_SPEECH_REC_TRAINDEV) | ./log.sh ;\
 	done
 #####################################
 ##   Build classes from packages   ##
