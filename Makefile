@@ -322,6 +322,13 @@ all_tt_config11_smote_cat_RT:
 	echo "all_tt_config_11_smote_cat_RT" | ./log.sh
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $(PATH_TOCATS)output_RT.csv | ./log.sh
 
+grammar_tt_config11_smote_cat_all:
+	for number in DP DQ EC LN LS LT MP MQ RA RR RT; do\
+		echo "GRAMMAR: Run category "$$number | ./log.sh; \
+		name=$(PATH_TOCATS)"output_"$$number".csv"; \
+		java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 grammar -config $(PATH_CONFIG_11_TT_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -sc $$name | ./log.sh ;\
+	done
+
 #####################################
 ##   Run experiment wise		   ##
 #####################################
