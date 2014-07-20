@@ -60,11 +60,11 @@ public class Experiments {
 				
 				//SpeakerCrossValidation.check();
 				
-				//Filter f = SpeakerCrossValidation.createModel(speakerData, sound, 0.04, s_key);
+				Filter f = SpeakerCrossValidation.createModel(speakerData, sound, 0.005, s_key);
 				
 				//SpeakerCrossValidation.check();
 				
-				SpeakerCrossValidation.run(speakerData, speakerTable, sound,  s_key);
+				//SpeakerCrossValidation.run(speakerData, speakerTable, sound,  s_key);
 				
 				
 				/*

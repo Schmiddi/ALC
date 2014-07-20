@@ -1144,6 +1144,10 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		return non_alc;
 	}
 	
+	public static int getNumberAlc(Instances train){
+		return train.size() - getNumberNonAlc(train);
+	}
+	
 	public static double getWeightFactor(Instances train){
 		double non_alc = getNumberNonAlc(train);
 		return non_alc / (double)(train.size()-non_alc);		
@@ -1984,6 +1988,9 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		Instances grammar = checkGrammar(text, normalizeSentenceLength); //get grammar features
 		
 		grammar.deleteAttributeAt(grammar.attribute("text").index()); 		  //remove text attribute
+		
+		if(grammar.attribute("conf_score") != null)
+			grammar.deleteAttributeAt(grammar.attribute("conf_score").index());	  //remove confidence score
 
 		return grammar;
 	}

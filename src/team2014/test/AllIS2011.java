@@ -262,6 +262,11 @@ public class AllIS2011 {
 			}
 			
 			System.out.println("train: " + sets[0].size() + " dev: " + sets[1].size() + " test: " + sets[2].size());
+			System.out.println("\ntrain: (non: " + WekaMagic.getNumberNonAlc(sets[0]) + "; alc: " + WekaMagic.getNumberAlc(sets[0]) + ")");
+			System.out.println("dev: (non: " + WekaMagic.getNumberNonAlc(sets[1]) + "; alc: " + WekaMagic.getNumberAlc(sets[1])+ ")");
+			System.out.println("test: (non: " + WekaMagic.getNumberNonAlc(sets[2]) + "; alc: " + WekaMagic.getNumberAlc(sets[2])+ ")");
+			System.out.println("total: (non: " + (WekaMagic.getNumberNonAlc(sets[0])+WekaMagic.getNumberNonAlc(sets[1])+WekaMagic.getNumberNonAlc(sets[2])) + "; alc: " + (WekaMagic.getNumberAlc(sets[0])+WekaMagic.getNumberAlc(sets[1])+WekaMagic.getNumberAlc(sets[2]))+ ")\n");
+			
 			
 			//get classification algorithm configurations
             Boolean withAttributeSelection = false;			
