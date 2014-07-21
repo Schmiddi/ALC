@@ -46,10 +46,17 @@ sound_tt_config13_16k_smote:
 	echo "sound_tt_config13_16k_smote" | ./log.sh
 	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 sound -config $(PATH_CONFIG_13_TT_SOUND_16k) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4  | ./log.sh
 
-# old output name "all__config11_orig_smote" but was sound, not all -> going to rename log to sound__ ...
 all_config11_orig_smote:
 	echo "all_config11_orig_smote" | ./log.sh
-	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_ORIG_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) smote -mT 4| ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_ORIG_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4| ./log.sh
+
+all_config11_smote_sr_train:
+	echo "all_config11_smote_sr_train" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_ORIG_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -tp $(PATH_SPEECH_REC_TRAIN) |  ./log.sh
+
+all_config11_smote_sr_traindev:
+	echo "all_config11_smote_sr_traindev" | ./log.sh
+	java $(XMX) -classpath $(JARS_ALL) team2014.test.AllIS2011 all -config $(PATH_CONFIG_11_ORIG_SOUND) -s $(PATH_IS2011_SETS) -o $(OUTPUT_DIR) -smote 0 -mT 4 -tp $(PATH_SPEECH_REC_TRAINDEV) |  ./log.sh
 
 WerTest:
 	java -classpath $(JARS_ALL) team2014.test.PrepareForWerTest $(PATH_ORIGINAL_CSV) /home/alc/workspace/ALC/speech_recognizer/experiment/output_speech_recognizer_old.csv $(WER_OUTPUT)
