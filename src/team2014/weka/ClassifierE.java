@@ -1,7 +1,7 @@
 package team2014.weka;
 
 public enum ClassifierE {
-	LOGISTIC(1), SVM(2),KNN(3);
+	LOGISTIC(1), SVM(2),KNN(3),NB(4);
     private int value;
 
     private ClassifierE(int value) {
@@ -21,6 +21,12 @@ public enum ClassifierE {
     	if(classifier == KNN.value){
     		return "K";
     	}
+    	if(classifier == NB.value){
+    		switch(id){
+    			case 0: return "UseKernelEstimator";
+    			case 1: return "UseSupervisedDiscretization";
+    		}
+    	}
     	if(classifier == SVM.value){
     		switch(id){
     			case 0: return "C";
@@ -39,6 +45,7 @@ public enum ClassifierE {
 			case 1: return "Logistic Regression";
 			case 2: return "SVM"; 
 			case 3: return "KNN";  
+			case 4: return "Naive Bayes";
 		}
 		return null;
 	}

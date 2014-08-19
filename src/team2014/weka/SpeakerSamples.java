@@ -1,6 +1,8 @@
-package team2014.weka.speaker;
+package team2014.weka;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+
 
 
 public class SpeakerSamples {
@@ -72,6 +74,36 @@ public class SpeakerSamples {
 		int sum=0;
 		for(Sample s:files){
 			if(s.getRecording_nr() == rec){
+				sum++;
+			}
+		}
+		return sum;
+	}
+	
+	public HashSet<Integer> getDistincRecTypeSet(){
+		HashSet<Integer> list = new HashSet<Integer>();
+		
+		for(Sample s: files){
+			list.add(s.getRecording_nr());
+		}
+		
+		return list;
+	}
+
+	public int getALCByRecType(int type) {
+		int sum=0;
+		for(Sample s: files){
+			if(s.getRecording_nr()==type && s.isIntoxicated()){
+				sum++;
+			}
+		}
+		return sum;
+	}
+	
+	public int getNONALCByRecType(int type) {
+		int sum=0;
+		for(Sample s: files){
+			if(s.getRecording_nr()==type && s.isSober()){
 				sum++;
 			}
 		}

@@ -6,7 +6,6 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,10 +14,6 @@ import java.util.Random;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-import team2014.weka.speaker.Sample;
-import team2014.weka.speaker.Speaker;
-import team2014.weka.speaker.SpeakerSamples;
-import team2014.weka.speaker.SpeakerSet;
 import team2014.weka.svm.KernelType;
 
 import weka.core.stemmers.SnowballStemmer;
@@ -31,15 +26,15 @@ import weka.core.converters.TextDirectoryLoader;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.supervised.attribute.AttributeSelection;
 import weka.filters.unsupervised.attribute.StringToWordVector;
-import weka.core.stemmers.*;
 import weka.core.tokenizers.*;
 import weka.core.SelectedTag;
+import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.Evaluation;
 import weka.filters.Filter;
 import weka.core.Attribute;
 import weka.classifiers.Classifier;
-//import wlsvm.WLSVM;
+import weka.filters.supervised.instance.SMOTE;
 import weka.classifiers.functions.LibSVM;
 import weka.classifiers.lazy.IBk;
 import weka.filters.unsupervised.attribute.Normalize;
@@ -84,7 +79,9 @@ public class WekaMagic {
 	public static int setClassIndex(Instances data){
 		int i=-1;
 		for(i=0;i<data.numAttributes();i++){
-			if(data.attribute(i).isNominal() && (data.attribute(i).toString().contains("alc,nonalc") || data.attribute(i).toString().contains("nonalc,alc"))){
+			if(data.attribute(i).isNominal() && 
+				(		data.attribute(i).name().equals("class") ||
+						data.attribute(i).toString().contains("alc,nonalc") || data.attribute(i).toString().contains("nonalc,alc"))){
 				data.setClassIndex(i);
 				break;
 			}
@@ -393,6 +390,42 @@ public class WekaMagic {
 		return new MyOutput(dataFiltered, filter, elapsedTime);
 	}
 	
+	
+	public static MyOutput smote(Instances train, Instances test, int kNN, double percent)
+	throws Exception {
+
+		SMOTE filter = new SMOTE();
+		
+		filter.setNearestNeighbors(kNN);
+		filter.setPercentage(percent);
+		filter.setRandomSeed(1);
+		
+		if(train != null){
+			filter.setInputFormat(train);
+		}
+		
+		long startTime = System.currentTimeMillis();
+		Instances train_dataFiltered = null;
+		if(train != null){
+			train_dataFiltered = Filter.useFilter(train, filter); //run filter on training data
+		}
+		long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		
+		Instances test_dataFiltered;
+		if(test != null){
+			test_dataFiltered = Filter.useFilter(test, filter);   //run filter on test data
+			setClassIndex(test_dataFiltered);
+		}
+		else{
+			test_dataFiltered = null;
+		}
+		
+		
+		Instances [] dataFiltered = iToArray(train_dataFiltered,test_dataFiltered);
+		
+		return new MyOutput(dataFiltered, filter, elapsedTime);
+	}
 	
 	
 	/**
@@ -1100,6 +1133,26 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		return cvo;
 	}
 	
+	public static int getNumberNonAlc(Instances train){
+		int non_alc = 0;
+		for(int i=0;i<train.size();i++){		
+			String classValue = train.get(i).stringValue(train.classAttribute()); //get class attribute value from instance		
+			if(classValue.toUpperCase().contains("NON")){
+				non_alc++;
+			}
+		}
+		return non_alc;
+	}
+	
+	public static int getNumberAlc(Instances train){
+		return train.size() - getNumberNonAlc(train);
+	}
+	
+	public static double getWeightFactor(Instances train){
+		double non_alc = getNumberNonAlc(train);
+		return non_alc / (double)(train.size()-non_alc);		
+	}
+	
 	/**
 	 * Run our own cross validation
 	 * 
@@ -1146,10 +1199,14 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 					currentResult = WekaMagic.runLogistic(sets1[SetType.TRAIN.ordinal()], parameters[0], 5);
 					break;
 			case 2: //SVM
-					currentResult = WekaMagic.runSVM(sets1[SetType.TRAIN.ordinal()], parameters[0], parameters[1]);
+					//System.out.println("alc: " + sets1[0].classAttribute().indexOfValue("alc") + " weight factor: " + getWeightFactor(sets1[0]));
+					currentResult = WekaMagic.runSVM(sets1[SetType.TRAIN.ordinal()], parameters[0], parameters[1], new Double[]{1.0,1.0});
 					break;
 			case 3: //KNN
 					currentResult = WekaMagic.runKNN(sets1[SetType.TRAIN.ordinal()], parameters[0].intValue());
+					break;
+			case 4:	//Naive Bayes
+					currentResult = WekaMagic.runNaiveBayes(sets1[SetType.TRAIN.ordinal()], parameters[0]==1.0, parameters[1]==1.0);
 					break;
 		}
 		
@@ -1158,6 +1215,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		}
 		
 		//create model on test + training set
+		//here we have to load the training set which was produced by second language model
 		Instances trainDev = new Instances(sets[SetType.TRAIN.ordinal()]);
 		trainDev.addAll(sets[SetType.DEV.ordinal()]);
 		
@@ -1173,10 +1231,13 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 					currentResult = WekaMagic.runLogistic(sets2[0], parameters[0], 5);
 					break;
 			case 2: //SVM
-					currentResult = WekaMagic.runSVM(sets2[0], parameters[0], parameters[1]);
+					currentResult = WekaMagic.runSVM(sets2[0], parameters[0], parameters[1], new Double[]{1.0,1.0});
 					break;
 			case 3: //KNN
 					currentResult = WekaMagic.runKNN(sets2[0], parameters[0].intValue());
+					break;
+			case 4:	//Naive Bayes
+					currentResult = WekaMagic.runNaiveBayes(sets2[0], parameters[0]==1.0, parameters[1]==1.0);
 					break;
 		}
 		
@@ -1211,7 +1272,24 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 			    }
 			    
 			    for(int i=0;i<sets.length;i++){
-			    	retsets[i] = Filter.useFilter(retsets[i], f); //use filter on the training data
+			    	if(i>0 && f instanceof SMOTE){} //don't apply SMOTE to the test set!
+			    	else{
+			    		if(f instanceof SMOTE && ((SMOTE)f).getPercentage()==0) {
+			    			double nal = WekaMagic.getNumberNonAlc(retsets[i]);
+			    			double al  = (retsets[i].size() - WekaMagic.getNumberNonAlc(retsets[i]));
+			    			
+			    			double factor = ((nal / al) * 100)-100;
+			    			System.out.println("NAL: " + nal + " ALC: " + al);
+			    			
+			    			((SMOTE)f).setPercentage(factor);
+			    		}
+			    		
+			    		retsets[i] = Filter.useFilter(retsets[i], f); //use filter on the training data
+			    		
+			    		if(f instanceof SMOTE) {
+			    			System.out.println("NAL: " + WekaMagic.getNumberNonAlc(retsets[i]) + " ALC: " + (retsets[i].size() - WekaMagic.getNumberNonAlc(retsets[i]) ));
+			    		}
+			    	}
 				}
 		    }
 		}
@@ -1347,11 +1425,14 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	 * 
 	 * @param sets
 	 * @param withAttributeSelection - whether to use attribute selection or not
+	 * @param smote 
+	 * @param maxThreads 
+	 * @param text 
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection) throws Exception {
-		return WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, false,-1);
+	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection, int maxThreads, double smote) throws Exception {
+		return WekaMagic.runTestUARIS2011LogisticThreads(sets, withAttributeSelection, false,-1,smote);
 	}
 	
 	/**
@@ -1364,7 +1445,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	 * @return Results of each loop iteration (test)
 	 * @throws Exception
 	 */
-	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int maxThreads) throws Exception {
+	public static List<List<Double>> runTestUARIS2011LogisticThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int maxThreads, double smotep) throws Exception {
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
 		double stdRidge = 0.00000001; //10^-8
@@ -1396,7 +1477,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 				currentRidge = stdRidge * (Math.pow(10, u));
 				
 				// Start all threads
-				threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,new Double[]{currentRidge},threshold.get(i),ClassifierE.LOGISTIC.getValue()); 
+				threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,new Double[]{currentRidge},threshold.get(i),ClassifierE.LOGISTIC.getValue(), 5, smotep);  //TODO: optimize smote
 				threads[count%nrThreads].start();
 				
 				// If all threads are up and running
@@ -1413,6 +1494,67 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		return values;
 	}
 	
+	
+	public static ArrayList<Double> createCValueSetList(){
+		ArrayList<Double> Cval = new ArrayList<Double>();
+		
+		
+		//Cval.add(0.0005);
+		//Cval.add(0.001);
+		Cval.add(0.005);
+		Cval.add(0.01);
+		Cval.add(0.02);
+		Cval.add(0.03);
+		Cval.add(0.04);
+		Cval.add(0.06);
+		Cval.add(0.08);
+		Cval.add(0.1);
+		//Cval.add(0.2);
+		//Cval.add(0.5);
+		//Cval.add(1.0);
+		//Cval.add(2.0);
+		
+		/*
+		//optimzied for all
+		Cval.add(0.0075);
+		Cval.add(0.009);
+		Cval.add(0.01);
+		Cval.add(0.011);
+		Cval.add(0.0125);
+		Cval.add(0.015);
+		Cval.add(0.0175);
+		Cval.add(0.019);
+		*/
+		
+		
+		/*
+		//optimzied for text
+		Cval.add(0.1);
+		Cval.add(0.15);
+		Cval.add(0.2);
+		Cval.add(0.25);
+		Cval.add(0.3);
+		*/
+		
+		return Cval;
+	}
+	
+	public static ArrayList<Double> createsmotePercentageValueSetList(double smote){
+		ArrayList<Double> SmotePerVal = new ArrayList<Double>();
+		
+		if(smote > 0){
+			SmotePerVal.add(100.0);
+		}else if(smote == 0){
+			SmotePerVal.add(0.0);
+		}else{
+			SmotePerVal.add(-1.0); //no application of smote
+		}
+		
+		
+		return SmotePerVal;
+	}
+	
+	
 	/**
 	 * Run the test for the IS dataset.
 	 * 
@@ -1421,10 +1563,11 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	 * @param isText If feature generation is necessary
 	 * @param kernelType - int number of Kernel type defined in team2014.weka.svm
 	 * @param maxThreads 
+	 * @param smotep 
 	 * @return Results of each loop iteration (test)
 	 * @throws Exception
 	 */
-	public static List<List<Double>> runTestUARIS2011SVMThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int kernelType, int maxThreads) throws Exception {
+	public static List<List<Double>> runTestUARIS2011SVMThreads(Instances [] sets, Boolean withAttributeSelection, Boolean isText, int kernelType, int maxThreads, double smotep) throws Exception {
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
 		ArrayList<Double> threshold = new ArrayList<Double>();
@@ -1434,22 +1577,8 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 			addThreshold(threshold);
 		}
 		
-		ArrayList<Double> Cval = new ArrayList<Double>();
+		ArrayList<Double> Cval = createCValueSetList();	
 		
-		Cval.add(0.0005);
-		Cval.add(0.001);
-		Cval.add(0.005);
-		Cval.add(0.01);
-		Cval.add(0.02);
-		Cval.add(0.03); //probably best
-		Cval.add(0.04);
-		Cval.add(0.06);
-		Cval.add(0.08);
-		Cval.add(0.1);
-		Cval.add(0.2);
-		Cval.add(0.5);
-		Cval.add(1.0);
-		Cval.add(2.0);
 		
 		ArrayList<Double> Gammaval = new ArrayList<Double>();
 		double currentC;
@@ -1463,6 +1592,10 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 			Gammaval.add(null);
 		}
 				
+		
+		ArrayList<Double> percentages = createsmotePercentageValueSetList(smotep);
+		ArrayList<Integer> smoteKNNval = createsmoteKNNValueSetList(smotep);
+		
 		System.out.println("Running tests for train, dev and test set...");
 		
 		int nrThreads=getNumberOfThreads(maxThreads);
@@ -1472,27 +1605,33 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		int count = 0;
 		
 		int wMax = Cval.size();
-		int maxIter = threshold.size() * wMax * Gammaval.size();
+		int maxIter = threshold.size() * wMax * Gammaval.size() * percentages.size() * smoteKNNval.size();
 		
-		for (int i=0; i<threshold.size(); i++) {		//iterating through Threshold values
-			for(int w=0; w<wMax; w++){  				//iterating through C values
-				for (int u=0; u<Gammaval.size(); u++)   //iterating through Gamma
-				{
-					currentC = Cval.get(w);	// range of C
-					
-					// Start all threads
-					threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
-															new Double[]{currentC, Gammaval.get(u)},threshold.get(i),ClassifierE.SVM.getValue()); 
-					threads[count%nrThreads].start();
-					
-					// If all threads are up and running
-					if(count % nrThreads == nrThreads-1 || count == maxIter - 1){
-						for(MultiWeka r: threads){
-							r.join();
-							values.add(r.getResult());
+		
+		//smote
+		for(int smoteKNN:smoteKNNval){ //iterating through all smote percentages
+			for(double smotePer:percentages){ //iterating through all smote percentages
+				for (int i=0; i<threshold.size(); i++) {		//iterating through Threshold values
+					for(int w=0; w<wMax; w++){  				//iterating through C values
+						for (int u=0; u<Gammaval.size(); u++)   //iterating through Gamma
+						{
+							currentC = Cval.get(w);	// range of C
+							
+							// Start all threads
+							threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
+																	new Double[]{currentC, Gammaval.get(u)},threshold.get(i),ClassifierE.SVM.getValue(), smoteKNN, smotePer); 
+							threads[count%nrThreads].start();
+							
+							// If all threads are up and running
+							if(count % nrThreads == nrThreads-1 || count == maxIter - 1){
+								for(MultiWeka r: threads){
+									r.join();
+									values.add(r.getResult());
+								}
+							}			
+							count++;
 						}
-					}			
-					count++;
+					}
 				}
 			}
 		}
@@ -1501,6 +1640,19 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	}
 	
 	
+	private static ArrayList<Integer> createsmoteKNNValueSetList(double smote) {
+		ArrayList<Integer> SmoteKNNVal = new ArrayList<Integer>();
+		
+		if(smote >=0){
+			SmoteKNNVal.add(5);
+		}else{
+			SmoteKNNVal.add(0); //no application of smote
+		}
+		
+		
+		return SmoteKNNVal;
+	}
+
 	/**
 	 * copy array of instances - similar to clone
 	 * 
@@ -1575,6 +1727,17 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
     	
     	return data;
 	}
+
+	public static Instances loadArff(String file) throws Exception{
+		DataSource source = new DataSource(file); //load ARFF file
+    	Instances data = source.getDataSet();
+    	if(data == null){
+    		System.out.println("Please fix the input path!");
+    	}
+    	
+    	return data;
+	}
+	
 	
 	
 	/**
@@ -1757,17 +1920,39 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	 */
 	public static Instances getSoundInstancesWithFile(String arffdir, String csv_file) throws Exception
 	{
-		Instances sound = WekaMagic.soundArffToInstances(arffdir);		  //get sound data
-		Instances text = WekaMagic.textCSVToInstances(csv_file,"file");   //get text data (with class)
+		//first check whether aggregated arff file exists
+		boolean isWindows = ((System.getProperty("os.name").contains("Windows"))) ? true : false;
+		String fileSep = isWindows ? "\\" : "/";
 		
-		Instances data = WekaMagic.mergeInstancesBy(sound, text, "file"); //merge text and sound data by using the key fileid
-				
-		//delete unnecessary attributes
-		data.deleteAttributeAt(data.attribute("text").index()); 		  //remove text attribute
-		//data.deleteAttributeAt(data.attribute("file").index());		//remove key(file id) attribute
-		//data.deleteAttributeAt(data.attribute("numeric_class").index());
-    	
-    	return data;
+		String allfolder = arffdir + fileSep + "all";	
+		String arfffile = allfolder + fileSep + "sound_all.arff";
+		File f = new File(arfffile);
+		
+		Instances data = null;
+		
+		if(f.exists()){
+			DataSource source = new DataSource(arfffile); //load ARFF file
+			data = source.getDataSet();
+			System.out.println("fast sound loader");
+		}
+		else{	
+			Instances sound = WekaMagic.soundArffToInstances(arffdir);		  //get sound data
+			Instances text = WekaMagic.textCSVToInstances(csv_file,"file");   //get text data (with class)
+			
+			data = WekaMagic.mergeInstancesBy(sound, text, "file"); //merge text and sound data by using the key fileid
+			//delete unnecessary attributes
+			data.deleteAttributeAt(data.attribute("text").index()); 		  //remove text attribute
+			//data.deleteAttributeAt(data.attribute("file").index());		//remove key(file id) attribute
+			//data.deleteAttributeAt(data.attribute("numeric_class").index());
+			
+			//aggregate data to one arff file
+			Boolean success = (new File(allfolder)).mkdirs();
+			if (success) {
+				WekaMagic.saveToArff(data,arfffile.split("\\.")[0], null);
+			}
+		}
+		
+		return data;
 	}
 	
 	
@@ -1803,6 +1988,9 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		Instances grammar = checkGrammar(text, normalizeSentenceLength); //get grammar features
 		
 		grammar.deleteAttributeAt(grammar.attribute("text").index()); 		  //remove text attribute
+		
+		if(grammar.attribute("conf_score") != null)
+			grammar.deleteAttributeAt(grammar.attribute("conf_score").index());	  //remove confidence score
 
 		return grammar;
 	}
@@ -1818,13 +2006,19 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	 * @return
 	 * @throws Exception
 	 */
-	public static MyClassificationOutput runSVM(Instances train, Double C, Double gamma)
+	public static MyClassificationOutput runSVM(Instances train, Double C, Double gamma, Double [] classweights)
 	throws Exception {
 
 		LibSVM svm = new LibSVM();
 		long elapsedTime;
 		Evaluation eval = null;
 		String options = "SVM: C = " + C + " gamma = " + gamma;
+		
+		String weightsStr = "";
+		for(Double weight : classweights){
+			weightsStr += weight + " ";
+		}
+		svm.setWeights(weightsStr.trim());
 		
 		//Set cache memory size in MB (default: 40)
 		svm.setCacheSize(20000.0); //speed up algorithm - try 20 GB
@@ -1930,6 +2124,34 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		}
 				
 		return new MyClassificationOutput(knn, eval, options, elapsedTime);
+	}
+	
+	public static MyClassificationOutput runNaiveBayes(Instances train, Boolean UseKernelEstimator, Boolean UseSupervisedDiscretization)
+	throws Exception {
+
+		NaiveBayes naive = new NaiveBayes();
+		long elapsedTime;
+		Evaluation eval = null;
+		String options = "Naive Bayes: UseKernelEstimator = " + UseKernelEstimator + " UseSupervisedDiscretization = " + UseSupervisedDiscretization;
+		
+		naive.setUseKernelEstimator(UseKernelEstimator);
+		naive.setUseSupervisedDiscretization(UseSupervisedDiscretization);
+		
+		//build classifier
+		long startTime = System.currentTimeMillis();
+		if(train != null){
+			naive.buildClassifier(train);
+		}
+		long stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		
+		//evaluate how good it performes on the training set
+		if(train != null){
+			eval = new Evaluation(train);
+			eval.evaluateModel(naive,train);
+		}
+				
+		return new MyClassificationOutput(naive, eval, options, elapsedTime);
 	}
 	
 	
@@ -2170,10 +2392,13 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		return sets;
 	}
 	
-	public static Instances[] getInterspeech2011Sets(String dir, Instances allInstances, String fileAttribute) throws Exception{
+	public static Instances[] getInterspeech2011Sets(String dir, Instances allInstances, String fileAttribute, String category_file) throws Exception{
 		Instances [] sets = new Instances [3];
 		
 		sets = getInterspeech2011SetsWithFile(dir, allInstances, fileAttribute);
+		
+		//filter by category if necessary
+		sets = getInterspeech11ByCategory(sets,fileAttribute,category_file);
 		
 		for(int i=0;i<sets.length;i++){
 			sets[i].deleteAttributeAt(sets[i].attribute(fileAttribute).index());
@@ -2211,6 +2436,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 			}
 			if(!found){
 				outOfSets.add(a.get(i));
+				//System.out.println(a.get(i).toString());
 			}
 		}
 		
@@ -2272,7 +2498,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 	}
 
 	public static Instances[] getInterspeech11wott(String dirInterspeech,
-			Instances data, String s_key, String dir_wott, Boolean applyOnTest) throws Exception {
+			Instances data, String s_key, String dir_wott, Boolean applyOnTest, String category_file) throws Exception {
 		
 		Instances [] sets = WekaMagic.getInterspeech2011SetsWithFile(dirInterspeech, data, s_key);
 		
@@ -2284,6 +2510,10 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		
 		//delete all tongue twisters in the Interspeech 2011 set
 		Instances [] is11wott = WekaMagic.deleteFromSets(sets, notInSets, s_key);
+		
+		//filter by category if necessary
+		is11wott = getInterspeech11ByCategory(is11wott,s_key,category_file);
+		
 		
 		//delete corresponding file column
 		for(int i=0;i<is11wott.length;i++){
@@ -2297,6 +2527,29 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		}
 		
 		return is11wott;
+	}
+	
+	
+	public static Instances[] getInterspeech11ByCategory(Instances[] sets, String s_key, String category_file) throws Exception {
+		
+		if(category_file == null) return sets;
+		
+		//difference between all instances and the category set 
+		Instances text_category = WekaMagic.textCSVToInstances(category_file,s_key);
+		
+		Instances data = new Instances(sets[0]);
+		data.addAll(sets[1]);
+		data.addAll(sets[2]);
+		
+		//get all instances which are not in the category set
+		Instances notInSets = WekaMagic.getOutOfSets(new Instances [] { text_category }, data, s_key);				
+		
+		
+		//delete all non category instances in the Interspeech 2011 set
+		Instances [] is11category = WekaMagic.deleteFromSets(sets, notInSets, s_key);
+		
+		
+		return is11category;
 	}
 	
 	public static void addThreshold(ArrayList<Double> threshold){
@@ -2331,7 +2584,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 
 	public static List<List<Double>> runTestUARIS2011KNNThreads(
 			Instances[] sets, Boolean withAttributeSelection, Boolean isText,
-			int maxThreads) throws InterruptedException {
+			int maxThreads, double smotep) throws InterruptedException {
 		
 		List<List<Double>> values = new ArrayList<List<Double>>();
 		
@@ -2370,7 +2623,7 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 				
 				// Start all threads
 				threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
-														new Double[]{currentK},threshold.get(i),ClassifierE.KNN.getValue()); 
+														new Double[]{currentK},threshold.get(i),ClassifierE.KNN.getValue(), 5, smotep); //TODO: optimize smote
 				threads[count%nrThreads].start();
 				
 				// If all threads are up and running
@@ -2387,5 +2640,159 @@ public static Instances fastmergeInstancesBy(Instances a, Instances b, String At
 		return values;
 	}
 
+	public static List<List<Double>> runTestUARIS2011NBThreads(
+			Instances[] sets, Boolean withAttributeSelection, Boolean isText,
+			int maxThreads, double smotep) throws InterruptedException {
+		
+		List<List<Double>> values = new ArrayList<List<Double>>();
+		
+		ArrayList<Double> threshold = new ArrayList<Double>();
+		threshold.add(0.0);
+		
+		if (withAttributeSelection) {
+			addThreshold(threshold);
+		}
+		
+		
+		System.out.println("Running tests for train, dev and test set...");
+		
+		int nrThreads=getNumberOfThreads(maxThreads);
+		
+		MultiWeka [] threads = new MultiWeka[nrThreads];
+		
+		int count = 0;
+		
+		int maxIter = threshold.size() * 4;
+		
+		for (int i=0; i<threshold.size(); i++) {		//iterating through Threshold values
+			for(int kernel=0;kernel<=1;kernel++){
+				for(int discret=0;discret<=1;discret++){
+				
+					// Start all threads
+					threads[count%nrThreads] = new MultiWeka(WekaMagic.copyInstancesArray(sets),withAttributeSelection,isText,
+															new Double[]{(double)kernel,(double)discret},threshold.get(i),ClassifierE.NB.getValue(), 5, smotep); //TODO: optimize smote
+					threads[count%nrThreads].start();
+					
+					// If all threads are up and running
+					if(count % nrThreads == nrThreads-1 || count == maxIter - 1){
+						for(MultiWeka r: threads){
+							r.join();
+							values.add(r.getResult());
+						}
+					}			
+					count++;
+				}
+			}
+		}
+		
+		return values;
+	}
+	
+	public static HashMap<String,String> LoadTestMapping(String path) throws IOException{
+		InputStream    fis;
+		BufferedReader br;
+		String         line;
+		
+		HashMap<String,String> testmapping = new HashMap<String,String>();
+		
+		fis = new FileInputStream(path);
+		br = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
+		while ((line = br.readLine()) != null) {
+			//System.out.println("\""+line+"\""); // format example: BLOCK30/SES3066/5653066001_h_01.WAV
+			if(!line.isEmpty() && line != null && line.length()>5){
+				String[] tokens = line.split("\t");
+				
+				String id 		= tokens[0].split("/")[1];
+				//String classVal = (tokens[0].equals("A")?"AL":"NAL");
+				String orgID	= tokens[2].split("\\.")[0];
+				testmapping.put(id, orgID);
+				
+				//System.out.println("id: " + id + " class: " + orgID);
+			}
+		}
+		
+		// Done with the file
+		br.close();
+		br = null;
+		fis = null;		
+		
+		return testmapping;
+	}
+	
+
+	public static Instances[] convertOriginalToUs(Instances train,
+			Instances dev, Instances test, String testmappingFile, Instances data) throws Exception {
+		
+		Instances sets [] = new Instances [3];
+		sets[0] = new Instances(train);
+		sets[1] = new Instances(dev);
+		sets[2] = new Instances(test);
+		
+		HashMap<String, String> testmapping = LoadTestMapping(testmappingFile);
+		HashMap<String, String> classmapp = FindClassMapping(testmapping,data);
+		
+		FastVector values = new FastVector(); 
+		values.addElement("nonalc");
+        values.addElement("alc");    
+        sets[2].insertAttributeAt(new Attribute("NewClass", values), sets[2].numAttributes());
+        
+        sets[2].insertAttributeAt(new Attribute("file", (FastVector) null), sets[2].numAttributes());
+        
+        for(int i=0;i<sets[2].size();i++){
+			String file_id = testmapping.get(sets[2].get(i).stringValue(sets[2].attribute("name")));
+			sets[2].get(i).setValue(sets[2].attribute("file"), file_id);
+			sets[2].get(i).setValue(sets[2].attribute("NewClass"), classmapp.get(sets[2].get(i).stringValue(sets[2].attribute("name"))));
+		}
+		
+		sets[2].deleteAttributeAt(sets[2].attribute("name").index());
+		sets[2].deleteAttributeAt(sets[2].attribute("class").index());
+		sets[2].renameAttribute(sets[2].attribute("NewClass"), "class");
+		
+		for(int u=0;u<3;u++){
+			setClassIndex(sets[u]);
+			
+			//System.out.println("attribute size: " + train.size());			
+			//System.out.println("attribute num: " + train.numAttributes());			
+			//System.out.println("class attribute: " + train.classAttribute().name());
+			
+			if(u<2){
+				sets[u].renameAttribute(sets[u].attribute("name"), "file");
+				sets[u].renameAttributeValue(sets[u].classAttribute(), "NAL", "nonalc");
+				sets[u].renameAttributeValue(sets[u].classAttribute(), "AL",  "alc");
+			}
+		}
+		
+		
+		return sets;
+	}
+
+	private static HashMap<String, String> FindClassMapping(
+			HashMap<String, String> testmappingFile, Instances data) throws Exception {
+		
+		HashMap<String, String> classmap = new HashMap<String, String>();
+		
+		
+		Iterator it = testmappingFile.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        //System.out.println(pairs.getKey() + " = " + pairs.getValue());
+	        
+	        Boolean found = false;
+	        for(int i=0;i<data.size();i++){
+	        	if(data.get(i).stringValue(data.attribute("file")).equals(pairs.getValue())){
+	        		classmap.put((String)pairs.getKey(), data.get(i).stringValue(data.classAttribute()));
+	        		found = true;
+	        		break;
+	        	}
+	        }
+	        if(found == false){
+	        	System.out.println("One file id is only present in one file: " + (String)pairs.getKey());
+				throw new Exception();
+	        }
+	        
+	        //it.remove(); // avoids a ConcurrentModificationException
+	    }
+		return classmap;
+	}
 	
 }

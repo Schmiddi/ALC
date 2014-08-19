@@ -19,10 +19,12 @@ public class MultiWeka implements Runnable {
 	   private double threshold;	   
 	   private List<Double> listRun;
 	   private int classifier;
+	   private int smoteKNN;
+	   private double smotePercentage;
 	   
 	   public MultiWeka(Instances[] sets,
 			Boolean withAttributeSelection, Boolean isText, Double [] parameters,
-			double threshold, int classifier) {
+			double threshold, int classifier, int smoteKNN, double smotePercentage) {
 			super();
 			this.t=null;
 			this.sets = sets;
@@ -31,6 +33,8 @@ public class MultiWeka implements Runnable {
 			this.parameters = parameters;
 			this.threshold = threshold;
 			this.classifier = classifier;
+			this.smoteKNN = smoteKNN;
+			this.smotePercentage = smotePercentage;
 	   }
 	
 	   public void run() {
@@ -40,19 +44,19 @@ public class MultiWeka implements Runnable {
 			
 			if(isText){
 				// perfect configuration
-				Boolean Ngram = true; //default:true
+				Boolean Ngram = true; //default:true - best: true
 				int ngram_min = 1;
 				int ngram_max = 3;
-				Boolean LowerCase = true; //default:true
-				Boolean IDFTransform = false; //default:false
-				Boolean TFTransform = false; //default:false
-				Boolean Stopword = true; //default:true
+				Boolean LowerCase = true; //default:true - best: true
+				Boolean IDFTransform = false; //default:false - best: true
+				Boolean TFTransform = false; //default:false - best: true
+				Boolean Stopword = true; //default:true - best: true
 				String list1 = "resources\\germanST.txt";
 				int wordsToKeep = 1000000;
-				Boolean NormalizeDocLength = true; //default:true
-				Boolean OutputWordCounts = true; //default:true
-				Boolean Stemming = true; 		//default:true - false performs better
-				int minTermFrequency = 2; //default:2
+				Boolean NormalizeDocLength = true; //default:true - best: true
+				Boolean OutputWordCounts = true; //default:true - best true
+				Boolean Stemming = false; 		//default:true - best: false
+				int minTermFrequency = 2; //default:2 - best: 2
 				try {
 					featuresGen = WekaMagic.generateFeatures(null, wordsToKeep, Ngram,
 							ngram_min, ngram_max, LowerCase, NormalizeDocLength, Stemming,
@@ -69,7 +73,7 @@ public class MultiWeka implements Runnable {
 			MyOutput filtered = null;
 			ArrayList<MyOutput> filters = null;
 			
-			if(isText || withAttributeSelection)
+			if(isText || withAttributeSelection || smotePercentage >=0)
 				filters = new ArrayList<MyOutput>();
 			
 			if(isText)
@@ -86,6 +90,18 @@ public class MultiWeka implements Runnable {
 					e.printStackTrace();
 				}
 				filters.add(filtered);
+			}
+			
+			if(smotePercentage >=0 ){
+				MyOutput oversample = null;
+				try {
+					oversample = WekaMagic.smote(null, null, smoteKNN, smotePercentage);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				filters.add(oversample);
+				
 			}
 			
 			MyClassificationOutput[] output;
